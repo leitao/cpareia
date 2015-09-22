@@ -11,12 +11,18 @@ each_token(char *begin, char *end, char *delim,
   while (1) {
     if (*current != *delim) {
       current++;
-      if (current < end) continue;
+      if (current <= end) continue;
     }
 
     call_back(begin, current - 1);
 
     current++;
+
+    /* two delimiters together */
+    while(*current == *delim && current <= end) {
+      call_back(NULL, NULL);
+      current++;
+    }
 
     return (current >= end) ? NULL: current;
   }
@@ -27,9 +33,8 @@ pointers_to_string(char *begin, char *end) {
   char *string;
   int i, size;
 
-  size = end - begin + 2;
-
-  assert(end > begin);
+  /*Empty string*/
+  size = !(begin && end) ? 1 : end - begin + 2;
 
   string = (char *) malloc(sizeof(char) * size);
 
@@ -39,6 +44,29 @@ pointers_to_string(char *begin, char *end) {
   string[size - 1] = 0;
 
   return string;
+}
+
+void update_current_record(char *begin, char *end) {
+  char *string;
+
+  string = pointers_to_string(begin, end);
+  record_add_field(_current_record, string);
+}
+
+void parse_line(char *begin, char *end) {
+  char *current;
+  char delim = '\t';
+
+  current = begin;
+
+  _current_record = record_new(0, 18);
+
+  while ((current = each_token(current, end, &delim, update_current_record)));
+
+  /*
+  record_print(_current_record);
+  record_free(_current_record);
+  */
 }
 
 void
