@@ -1,16 +1,39 @@
 #include "database.h"
 
 database *database_new() {
-  database *my_db;
+  database *db;
 
-  my_db = (database *) malloc(sizeof(database));
+  db = (database *) malloc(sizeof(database));
 
-  my_db->size = 0;
-  my_db->records = NULL;
+  db->size = 0;
+  db->records = NULL;
 
-  return my_db;
+  return db;
 }
 
-void database_add_record(database *my_db, record *rec) {
+void database_free(database *db) {
+  size_t i;
 
+  for(i = 0; i < db->size; i++) {
+    record_free(db->records[i]);
+  }
+
+  free(db->records);
+  free(db);
+}
+
+record *database_remove_last_record(database *db) {
+  record *rec;
+
+  db->size--;
+
+  rec = db->records[db->size];
+  db->records = (record **) realloc(db->records, sizeof(record *) * (db->size));
+
+  return rec;
+}
+
+void database_add_record(database *db, record *rec) {
+  db->records = (record **) realloc(db->records, sizeof(record *) * (db->size + 1));
+  db->records[db->size++] = rec;
 }
