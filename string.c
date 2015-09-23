@@ -27,30 +27,3 @@ each_token(char *begin, char *end, char delim, void *data,
     return (current >= end) ? NULL: current;
   }
 }
-
-char *
-pointers_to_string(char *begin, char *end) {
-  char *string;
-  int i, size;
-
-  /*Empty string*/
-  size = !(begin && end) ? 1 : end - begin + 2;
-
-  string = (char *) malloc(sizeof(char) * size);
-
-  for (i = 0; i < size - 1; i++) {
-    string[i] = begin[i];
-  }
-  string[size - 1] = 0;
-
-  return string;
-}
-
-void
-print_pointers(char *begin, char *end) {
-  char *string;
-
-  string = pointers_to_string(begin, end);
-  printf("%s\n", string);
-  free(string);
-}

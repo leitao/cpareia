@@ -12,13 +12,14 @@
 
 #include "string.h"
 #include "record.h"
+#include "buffer.h"
 
 #define handle_error(msg) \
   do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
-void parse_line(char *, char *, void *);
+void parse_line(buffer *, void *);
 int open_file(char *, char **);
-void parse_file(char *, int, int);
-void close_file(char *buf, int size);
+record **parse_file(char *, int, int);
+void close_file(char *, int);
 
 #endif
