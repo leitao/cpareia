@@ -17,6 +17,8 @@
   do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
 void parse_line(char *, char *, void *);
-void open_file(char *, int);
+int open_file(char *, char **);
+void parse_file(char *, int, int);
+void close_file(char *buf, int size);
 
 #endif
