@@ -1,87 +1,36 @@
 #include "file.h"
 
-char *
-each_token(char *begin, char *end, char *delim,
-    void (*call_back)(char*, char*)) {
-
-  char *current;
-
-  current = begin;
-
-  while (1) {
-    if (*current != *delim) {
-      current++;
-      if (current <= end) continue;
-    }
-
-    call_back(begin, current - 1);
-
-    current++;
-
-    /* two delimiters together */
-    while(*current == *delim && current <= end) {
-      call_back(NULL, NULL);
-      current++;
-    }
-
-    return (current >= end) ? NULL: current;
-  }
-}
-
-char *
-pointers_to_string(char *begin, char *end) {
+void update_current_record(char *begin, char *end, void *data) {
   char *string;
-  int i, size;
+  record *rec;
 
-  /*Empty string*/
-  size = !(begin && end) ? 1 : end - begin + 2;
-
-  string = (char *) malloc(sizeof(char) * size);
-
-  for (i = 0; i < size - 1; i++) {
-    string[i] = begin[i];
-  }
-  string[size - 1] = 0;
-
-  return string;
-}
-
-void update_current_record(char *begin, char *end) {
-  char *string;
+  rec = (record *) data;
 
   string = pointers_to_string(begin, end);
-  record_add_field(_current_record, string);
+  record_add_field(rec, string);
 }
 
-void parse_line(char *begin, char *end) {
+void parse_line(char *begin, char *end, void *data) {
   char *current;
-  char delim = '\t';
+  record *rec;
+
+  (void)(data);
 
   current = begin;
 
-  _current_record = record_new(0, 18);
+  rec = record_new(0, 19);
 
-  while ((current = each_token(current, end, &delim, update_current_record)));
+  while ((current = each_token(current, end, '\t', (void *) rec, update_current_record)));
 
   /*
-  record_print(_current_record);
-  record_free(_current_record);
+  record_print(rec);
   */
+  record_free(rec);
 }
 
 void
-print_pointers(char *begin, char *end) {
-  char *string;
-
-  string = pointers_to_string(begin, end);
-  printf("%s\n", string);
-  free(string);
-}
-
-void
-open_file(char *fname, void (*call_back)(char*, char*)) {
-  char *buf, *buf_end, *begin, delim;
-
+open_file(char *fname, int num_fields) {
+  char *buf, *buf_end, *begin;
   int fd;
   struct stat fs;
 
@@ -103,9 +52,9 @@ open_file(char *fname, void (*call_back)(char*, char*)) {
 
   begin = buf;
   buf_end = buf + fs.st_size;
-  delim = '\n';
 
-  while ((begin = each_token(begin, buf_end, &delim, call_back)));
+  while ((begin = each_token(begin, buf_end, '\n', (void *) &num_fields,
+          parse_line)));
 
   munmap(buf, fs.st_size);
   close(fd);

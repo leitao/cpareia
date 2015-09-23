@@ -1,6 +1,6 @@
 NAME = cpareia
 CC = gcc
-CFLAGS = -O0 -g -Wall -Wextra -pedantic
+CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always
 #CFLAGS = -O3 -Wall -Wextra -pedantic -march=native
 SRC = .
 DEPS = $(wildcard $(SRC)/*.h)

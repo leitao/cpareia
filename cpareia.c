@@ -7,9 +7,7 @@ main(int argc, char *argv[]) {
     handle_error("argc");
   }
 
-  _current_record = NULL;
-
-  open_file(argv[1], parse_line);
+  open_file(argv[1], 19);
 
 	return 0;
 }

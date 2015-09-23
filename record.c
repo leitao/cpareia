@@ -1,4 +1,5 @@
 #include "record.h"
+#include <assert.h>
 
 record *record_new(int id, int num_fields) {
   record *rec;
@@ -13,6 +14,8 @@ record *record_new(int id, int num_fields) {
 }
 
 void record_add_field(record *rec, char *field) {
+  assert(rec->_current_fields < rec->num_fields);
+
   rec->fields[rec->_current_fields] = field;
   rec->_current_fields++;
 }
@@ -35,6 +38,6 @@ void record_print(record *rec) {
   printf("FIELDS:\n");
 
   for(i = 0; i < rec->num_fields; i++) {
-    printf("\t%s\n", rec->fields[i]);
+    printf("\t%d: %s\n", i, rec->fields[i]);
   }
 }
