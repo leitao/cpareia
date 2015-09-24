@@ -2,6 +2,7 @@ NAME = cpareia
 CC = gcc
 CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always
 #CFLAGS = -O3 -Wall -Wextra -pedantic -march=native
+LDFLAGS = -lcsv
 SRC = .
 DEPS = $(wildcard $(SRC)/*.h)
 CODE = $(wildcard $(SRC)/*.c)
@@ -14,7 +15,7 @@ OBJ = $(patsubst %.c,%.o,$(CODE))
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 run: $(NAME)
 	./$(NAME) input/amostra.csv

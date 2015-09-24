@@ -9,10 +9,9 @@ typedef struct record {
   int id;
   int num_fields;
   char **fields;
-  int _current_fields;
 } record;
 
-record *record_new(int id, int num_fields);
+record *record_new(int id);
 void record_add_field(record *, char *);
 void record_free(record *);
 void record_print(record *);
