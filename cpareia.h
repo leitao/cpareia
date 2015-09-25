@@ -7,11 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-
+#include "project.h"
 #include "database.h"
 
 #define handle_error(msg) \
