@@ -1,8 +1,8 @@
 NAME = cpareia
 CC = gcc
-CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always
+CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0`
 #CFLAGS = -O3 -Wall -Wextra -pedantic -march=native
-LDFLAGS = -lcsv
+LDFLAGS = -lcsv `pkg-config --libs libxml-2.0`
 SRC = .
 DEPS = $(wildcard $(SRC)/*.h)
 CODE = $(wildcard $(SRC)/*.c)
