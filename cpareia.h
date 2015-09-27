@@ -8,9 +8,7 @@
 #include <assert.h>
 
 #include "project.h"
+#include "error.h"
 #include "database.h"
-
-#define handle_error(msg) \
-  do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
 #endif

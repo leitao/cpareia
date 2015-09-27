@@ -6,12 +6,11 @@
 #include <string.h>
 
 typedef struct record {
-  int id;
-  int num_fields;
+  int num_fields, _used_fields;
   char **fields;
 } record;
 
-record *record_new(int id);
+record *record_new(int numb_fields);
 void record_add_field(record *, char *);
 void record_free(record *);
 void record_print(record *);

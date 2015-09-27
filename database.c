@@ -1,13 +1,22 @@
 #include "database.h"
 
 database *
-database_new() {
+database_new(int num_fields) {
+  int i;
   database *db;
 
   db = (database *) malloc(sizeof(database));
 
   db->size = 0;
-  db->records = NULL;
+  db->_total_size = INITIAL_SIZE;
+  db->records = (record **) malloc(sizeof(record *) * INITIAL_SIZE);
+  db->num_fields = num_fields;
+
+  db->fields = (unsigned char **) malloc(sizeof(unsigned char *) * num_fields);
+
+  for(i = 0; i < num_fields; i++) {
+    db->fields[i] = NULL;
+  }
 
   return db;
 }
@@ -20,7 +29,14 @@ database_free(database *db) {
     record_free(db->records[i]);
   }
 
+  for(i = 0; i < db->num_fields; i++) {
+    free(db->fields[i]);
+  }
+
+  free(db->filename);
+  free(db->fields);
   free(db->records);
+
   free(db);
 }
 
@@ -31,14 +47,17 @@ database_remove_last_record(database *db) {
   db->size--;
 
   rec = db->records[db->size];
-  db->records = (record **) realloc(db->records, sizeof(record *) * (db->size));
 
   return rec;
 }
 
 void
 database_add_record(database *db, record *rec) {
-  db->records = (record **) realloc(db->records, sizeof(record *) * (db->size + 1));
+  if(db->size == db->_total_size) {
+    db->records = (record **) realloc(db->records, sizeof(record *) * (db->size * 2));
+    db->_total_size *= 2;
+  }
+
   db->records[db->size++] = rec;
 }
 
@@ -83,26 +102,23 @@ new_field(void *parsed, size_t size, void *db) {
 void
 new_record(int c, void *db) {
   assert(c == '\n');
-  database_add_record((database *) db, record_new(((database *)db)->size));
+  database_add_record((database *) db, record_new(((database *)db)->num_fields));
 }
 
-database *
-read_database(char *file_name) {
+void
+database_read(database *db) {
   size_t size;
   size_t i;
   char *buf;
-  database *db;
   struct csv_parser p;
   record *rec;
 
-  db = database_new();
-
   csv_init(&p, CSV_APPEND_NULL);
-  csv_set_delim(&p, '\t');
+  csv_set_delim(&p, db->sep);
 
-  size = open_file(file_name, &buf);
+  size = open_file((char *) db->filename, &buf);
 
-  database_add_record(db, record_new(0));
+  database_add_record(db, record_new(db->num_fields));
 
   i = csv_parse(&p, buf, size, new_field, new_record, (void *) db);
 
@@ -115,12 +131,18 @@ read_database(char *file_name) {
     rec = database_remove_last_record(db);
     record_free(rec);
   }
-
-  return db;
 }
 
 void database_print(database *db) {
   size_t i;
+
+  printf("File: %s\n", db->filename);
+  printf("Number of Fields: %d\n", (int) db->num_fields);
+  printf("Fields:\n");
+
+  for(i = 0; i < db->num_fields; i++) {
+    printf("%s\n", db->fields[i]);
+  }
 
   for(i = 0; i < db->size; i++) {
     record_print(db->records[i]);

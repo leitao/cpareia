@@ -5,22 +5,27 @@
 #include <csv.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-#include "cpareia.h"
 #include "record.h"
+#include "errors.h"
+
+#define INITIAL_SIZE 10000
 
 typedef struct database {
   record **records;
-  size_t size;
+  unsigned char **fields, sep;
+  size_t size, _total_size, num_fields;
+  unsigned char *filename;
 } database;
 
-database *database_new();
+database *database_new(int num_fields);
 void database_add_record(database *, record *);
 record *database_remove_last_record(database *);
 void database_free(database *);
-database *read_database(char *file_name);
+void database_read(database *);
 void database_print(database *db);
 
 #endif
