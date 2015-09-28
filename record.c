@@ -13,6 +13,10 @@ record *record_new(int num_fields) {
   return rec;
 }
 
+int record_ok(record *rec) {
+  return(rec->num_fields == rec->_used_fields);
+}
+
 void record_add_field(record *rec, char *field) {
   assert(rec->_used_fields < rec->num_fields);
   rec->fields[rec->_used_fields++] = field;
