@@ -27,5 +27,6 @@ record *database_remove_last_record(database *);
 void database_free(database *);
 void database_read(database *);
 void database_print(database *db);
+size_t open_file(char *, char **);
 
 #endif

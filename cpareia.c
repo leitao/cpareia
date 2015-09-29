@@ -1,5 +1,6 @@
 #include "cpareia.h"
 
+/*
 int
 main(int argc,  char *argv[]) {
   project *my_proj;
@@ -16,3 +17,4 @@ main(int argc,  char *argv[]) {
 
   return 0;
 }
+*/

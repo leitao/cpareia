@@ -61,7 +61,7 @@ database_add_record(database *db, record *rec) {
   db->records[db->size++] = rec;
 }
 
-int
+size_t
 open_file(char *fname, char **buf) {
   int fd;
   struct stat fs;
