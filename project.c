@@ -74,7 +74,12 @@ void project_fill(project *my_proj, char *file_name) {
   my_proj->d0 = database_new(xpath->nodesetval->nodeNr);
 
   my_proj->d0->filename = filename;
-  my_proj->d0->sep = *sep;
+
+  if(!strcmp((const char *) sep, "\\t")) {
+    my_proj->d0->sep = '\t';
+  } else {
+    my_proj->d0->sep = *sep;
+  }
 
   for(i = 0; i < xpath->nodesetval->nodeNr; i++) {
     my_proj->d0->fields[i] = xmlGetProp(
