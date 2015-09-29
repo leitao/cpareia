@@ -22,6 +22,12 @@ database_new(int num_fields) {
 }
 
 void
+database_fini(database *db) {
+  db->records = (record **) realloc(db->records, sizeof(record *) * db->size);
+  db->_total_size *= db->size;
+}
+
+void
 database_free(database *db) {
   size_t i;
 

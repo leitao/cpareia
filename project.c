@@ -89,6 +89,8 @@ void project_fill(project *my_proj, char *file_name) {
 
   database_read(my_proj->d0);
 
+  database_fini(my_proj->d0);
+
   free(sep);
   xmlXPathFreeObject(xpath);
   xmlXPathFreeContext(xpath_ctx);
