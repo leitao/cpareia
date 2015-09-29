@@ -111,7 +111,6 @@ database_read(database *db) {
   size_t i;
   char *buf;
   struct csv_parser p;
-  record *rec;
 
   csv_init(&p, CSV_APPEND_NULL);
   csv_set_delim(&p, db->sep);
@@ -127,9 +126,8 @@ database_read(database *db) {
   csv_fini(&p, new_field, new_record, NULL);
   csv_free(&p);
 
-  if (db->records[db->size - 1]->num_fields == 0) {
-    rec = database_remove_last_record(db);
-    record_free(rec);
+  if (!record_ok(db->records[db->size - 1])) {
+    record_free(database_remove_last_record(db));
   }
 }
 
