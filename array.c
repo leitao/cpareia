@@ -36,7 +36,8 @@ void
 array_add(array *ary, void *el) {
   if(ary->size == ary->_total_size) {
     ary->_total_size *= 2;
-    ary->data = (void **) realloc(ary->data, sizeof(void *) * ary->_total_size);
+    ary->data = (void **)
+      realloc(ary->data, sizeof(void *) * ary->_total_size);
   }
 
   ary->data[ary->size++] = el;

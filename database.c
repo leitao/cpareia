@@ -10,7 +10,8 @@ database_new(int num_fields) {
   db->records = array_new();
   db->num_fields = num_fields;
 
-  db->fields = (unsigned char **) malloc(sizeof(unsigned char *) * num_fields);
+  db->fields = (unsigned char **)
+    malloc(sizeof(unsigned char *) * num_fields);
 
   for(i = 0; i < num_fields; i++) {
     db->fields[i] = NULL;
@@ -92,9 +93,13 @@ new_field(void *parsed, size_t size, void *db) {
 }
 
 void
-new_record(int c, void *db) {
+new_record(int c, void *ptr) {
+  database *db;
+  db = (database *) ptr;
+
   assert(c == '\n');
-  database_add_record((database *) db, record_new(((database *)db)->num_fields));
+
+  database_add_record(db, record_new(db->num_fields));
 }
 
 void

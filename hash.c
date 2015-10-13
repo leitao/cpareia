@@ -24,7 +24,11 @@ hash_get_id(hash *my_hash, char *key) {
 
   if(!g_hash_table_lookup(my_hash->table, key)) {
     my_hash->last_id++;
-    g_hash_table_insert(my_hash->table, key, GINT_TO_POINTER(my_hash->last_id));
+    g_hash_table_insert(
+        my_hash->table,
+        key,
+        GINT_TO_POINTER(my_hash->last_id)
+        );
   }
 
   id = g_hash_table_lookup(my_hash->table, key);
