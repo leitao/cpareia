@@ -17,6 +17,6 @@ typedef struct project {
 project *project_new();
 void project_print(project *my_proj);
 void project_free(project *my_proj);
-void project_fill(project *my_proj, char *file_name);
+void project_parse(project *my_proj, char *file_name);
 
 #endif

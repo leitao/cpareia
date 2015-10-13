@@ -1,6 +1,7 @@
 #include "project.h"
 
-project *project_new() {
+project *
+project_new() {
   project *my_proj;
 
   my_proj = (project *) malloc(sizeof(project));
@@ -8,21 +9,24 @@ project *project_new() {
   return my_proj;
 }
 
-void project_print(project *my_proj) {
+void
+project_print(project *my_proj) {
   printf("Project: %s\n", my_proj->name);
   printf("Task: %s\n", my_proj->task);
   printf("D0:\n");
   database_print(my_proj->d0);
 }
 
-void project_free(project *my_proj) {
+void
+project_free(project *my_proj) {
   free(my_proj->task);
   free(my_proj->name);
   database_free(my_proj->d0);
   free(my_proj);
 }
 
-void project_fill(project *my_proj, char *file_name) {
+void
+project_parse(project *my_proj, char *file_name) {
   xmlDocPtr doc;
   xmlXPathContextPtr xpath_ctx;
   xmlXPathObjectPtr xpath;
@@ -86,10 +90,6 @@ void project_fill(project *my_proj, char *file_name) {
         xpath->nodesetval->nodeTab[i],
         BAD_CAST "name");
   }
-
-  database_read(my_proj->d0);
-
-  database_fini(my_proj->d0);
 
   free(sep);
   xmlXPathFreeObject(xpath);
