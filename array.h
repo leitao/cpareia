@@ -10,6 +10,7 @@ typedef struct array {
 } array;
 
 array * array_new();
+array * array_new_prealloc(size_t size);
 void array_fini(array *);
 void array_free(array *);
 void *array_remove_last(array *);

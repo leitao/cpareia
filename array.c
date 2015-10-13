@@ -2,13 +2,18 @@
 
 array *
 array_new() {
+  return array_new_prealloc(INITIAL_SIZE);
+}
+
+array *
+array_new_prealloc(size_t size) {
   array *ary;
 
   ary = (array *) malloc(sizeof(array));
 
   ary->size = 0;
-  ary->_total_size = INITIAL_SIZE;
-  ary->data = (void **) malloc(sizeof(void *) * INITIAL_SIZE);
+  ary->_total_size = size;
+  ary->data = (void **) malloc(sizeof(void *) * size);
 
   return ary;
 }
