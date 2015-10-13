@@ -9,8 +9,10 @@ main(int argc,  char *argv[]) {
 
   my_proj = project_new();
 
-  project_fill(my_proj, argv[1]);
-  /*project_print(my_proj);*/
+  project_parse(my_proj, argv[1]);
+  database_read(my_proj->d0);
+
+  project_print(my_proj);
 
   project_free(my_proj);
 
