@@ -18,7 +18,10 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 run: $(NAME)
-	./$(NAME) input/amostra.csv
+	./$(NAME) input/sage.xml
+
+val: $(NAME)
+	valgrind --leak-check=full ./$(NAME) input/sage.xml
 
 clean:
 	rm -f $(SRC)/*.o *~ $(SRC)/*~ $(NAME)
