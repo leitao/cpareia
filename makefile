@@ -1,8 +1,8 @@
 NAME = cpareia
 CC = gcc
-CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0`
-#CFLAGS = -O3 -march=native -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0`
-LDFLAGS = -lcsv `pkg-config --libs libxml-2.0`
+CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0 glib-2.0`
+#CFLAGS = -O3 -march=native -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0 glib-2.0`
+LDFLAGS = -lcsv `pkg-config --libs libxml-2.0 glib-2.0`
 SRC = .
 DEPS = $(wildcard $(SRC)/*.h)
 CODE = $(wildcard $(SRC)/*.c)
@@ -21,7 +21,7 @@ run: $(NAME)
 	./$(NAME) input/sage.xml
 
 val: $(NAME)
-	valgrind --leak-check=full ./$(NAME) input/sage.xml
+	valgrind --show-leak-kinds=all --leak-check=full ./$(NAME) input/sage.xml
 
 clean:
 	rm -f $(SRC)/*.o *~ $(SRC)/*~ $(NAME)
