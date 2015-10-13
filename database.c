@@ -126,6 +126,8 @@ database_read(database *db) {
   if (!record_ok(db->records->data[db->records->size - 1])) {
     record_free(database_remove_last_record(db));
   }
+
+  database_fini(db);
 }
 
 void database_print(database *db) {
