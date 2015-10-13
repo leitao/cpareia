@@ -11,13 +11,12 @@
 
 #include "record.h"
 #include "errors.h"
-
-#define INITIAL_SIZE 10000
+#include "array.h"
 
 typedef struct database {
-  record **records;
+  array *records;
   unsigned char **fields, sep;
-  size_t size, _total_size, num_fields;
+  size_t num_fields;
   unsigned char *filename;
 } database;
 
