@@ -18,10 +18,10 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 run: $(NAME)
-	./$(NAME) input/sage.xml
+	./$(NAME) input/project.xml
 
 val: $(NAME)
-	valgrind --show-leak-kinds=all --leak-check=full ./$(NAME) input/sage.xml
+	valgrind --show-leak-kinds=all --leak-check=full ./$(NAME) input/project.xml
 
 clean:
 	rm -f $(SRC)/*.o *~ $(SRC)/*~ $(NAME)
