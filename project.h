@@ -7,6 +7,7 @@
 #include <libxml/xpathInternals.h>
 
 #include "database.h"
+#include "conjunction.h"
 
 typedef struct project {
   unsigned char *name;
