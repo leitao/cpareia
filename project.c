@@ -17,7 +17,7 @@ project_print(project *my_proj) {
 
   printf("Project: %s\n", my_proj->name);
   printf("Task: %s\n", my_proj->task);
-  for(i = 0; i < my_proj->conjunctions->size; i++) {
+  for(i = 0; i < array_size(my_proj->conjunctions); i++) {
     printf("Conjunction %d:\n", (int) i);
     conjunction_print(array_get(my_proj->conjunctions, i));
   }
@@ -34,7 +34,7 @@ project_free(project *my_proj) {
   free(my_proj->name);
   database_free(my_proj->d0);
 
-  for(i = 0; i < my_proj->conjunctions->size; i++) {
+  for(i = 0; i < array_size(my_proj->conjunctions); i++) {
     conjunction_free(array_get(my_proj->conjunctions, i));
   }
 

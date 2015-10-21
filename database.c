@@ -29,7 +29,7 @@ void
 database_free(database *db) {
   size_t i;
 
-  for(i = 0; i < db->records->size; i++) {
+  for(i = 0; i < array_size(db->records); i++) {
     record_free((record *) array_get(db->records, i));
   }
 
@@ -84,7 +84,7 @@ new_field(void *parsed, size_t size, void *db) {
   record *rec;
 
   my_db = (database *) db;
-  rec = (record *) array_get(my_db->records, my_db->records->size - 1);
+  rec = (record *) array_get_last(my_db->records);
 
   string = (char *)malloc(sizeof(char) * (size + 1));
   strcpy(string, (char *) parsed);
@@ -123,7 +123,7 @@ database_read(database *db) {
   csv_fini(&p, new_field, new_record, NULL);
   csv_free(&p);
 
-  if (!record_ok(array_get(db->records, db->records->size - 1))) {
+  if (!record_ok(array_get_last(db->records))) {
     record_free(database_remove_last_record(db));
   }
 
@@ -141,7 +141,7 @@ void database_print(database *db) {
     printf("%s\n", db->fields[i]);
   }
 
-  for(i = 0; i < db->records->size; i++) {
+  for(i = 0; i < array_size(db->records); i++) {
     record_print(array_get(db->records, i));
   }
 }

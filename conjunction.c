@@ -53,7 +53,7 @@ void
 conjunction_free(conjunction *my_conj) {
   size_t i;
 
-  for(i = 0; i < my_conj->parts->size; i++) {
+  for(i = 0; i < array_size(my_conj->parts); i++) {
     part_free(array_get(my_conj->parts, i));
   }
 
@@ -65,7 +65,7 @@ void
 conjunction_print(conjunction *my_conj) {
   size_t i;
 
-  for(i = 0; i < my_conj->parts->size; i++) {
+  for(i = 0; i < array_size(my_conj->parts); i++) {
     part_print(array_get(my_conj->parts, i));
   }
 }
