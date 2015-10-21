@@ -6,23 +6,45 @@ project_new() {
 
   my_proj = (project *) malloc(sizeof(project));
 
+  my_proj->conjunctions = array_new();
+
   return my_proj;
 }
 
 void
 project_print(project *my_proj) {
+  size_t i;
+
   printf("Project: %s\n", my_proj->name);
   printf("Task: %s\n", my_proj->task);
+  for(i = 0; i < my_proj->conjunctions->size; i++) {
+    printf("Conjunction %d:\n", (int) i);
+    conjunction_print(array_get(my_proj->conjunctions, i));
+  }
+
   printf("D0:\n");
   database_print(my_proj->d0);
 }
 
 void
 project_free(project *my_proj) {
+  size_t i;
+
   free(my_proj->task);
   free(my_proj->name);
   database_free(my_proj->d0);
+
+  for(i = 0; i < my_proj->conjunctions->size; i++) {
+    conjunction_free(array_get(my_proj->conjunctions, i));
+  }
+
+  array_free(my_proj->conjunctions);
   free(my_proj);
+}
+
+void
+project_add_conjunction(project *my_proj, conjunction *conj) {
+  array_add(my_proj->conjunctions, conj);
 }
 
 void
@@ -122,9 +144,7 @@ project_parse(project *my_proj, char *file_name) {
       }
       part_node = part_node->next;
     }
-    conjunction_print(conj);
-    conjunction_free(conj);
-
+    project_add_conjunction(my_proj, conj);
   }
   xmlXPathFreeObject(xpath);
 
