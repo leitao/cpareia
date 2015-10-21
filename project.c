@@ -146,6 +146,7 @@ project_parse(project *my_proj, char *file_name) {
     }
     project_add_conjunction(my_proj, conj);
   }
+  array_fini(my_proj->conjunctions);
   xmlXPathFreeObject(xpath);
 
   free(sep);
