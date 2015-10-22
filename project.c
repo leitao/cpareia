@@ -48,43 +48,14 @@ project_add_conjunction(project *my_proj, conjunction *conj) {
 }
 
 void
-project_parse(project *my_proj, char *file_name) {
-  xmlDocPtr doc;
-  xmlXPathContextPtr xpath_ctx;
+project_parse_datasource(project *my_proj, xmlXPathContextPtr ctx) {
   xmlXPathObjectPtr xpath;
-  xmlNode *part_node;
   xmlChar *filename, *sep;
-  char *field_name, *transform, *size;
-  conjunction *conj;
   int i;
-
-  xmlInitParser();
-
-  if((doc = xmlParseFile(file_name)) == NULL)
-    handle_error("Unable to parse XML");
-
-  if((xpath_ctx = xmlXPathNewContext(doc)) == NULL)
-    handle_error("Unable to create XPath");
-
-  xpath = xmlXPathEvalExpression(BAD_CAST "/project", xpath_ctx);
-
-  my_proj->name = xmlGetProp(
-      xpath->nodesetval->nodeTab[0],
-      BAD_CAST "name");
-
-  my_proj->task = xmlGetProp(
-      xpath->nodesetval->nodeTab[0],
-      BAD_CAST "task");
-
-  if(strcmp((char *)my_proj->task, "deduplication")) {
-    handle_error("We only support 'deduplication' right now");
-  }
-
-  xmlXPathFreeObject(xpath);
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/data-sources/data-source[@id=0]",
-      xpath_ctx);
+      ctx);
 
   filename = xmlGetProp(
       xpath->nodesetval->nodeTab[0],
@@ -98,7 +69,7 @@ project_parse(project *my_proj, char *file_name) {
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/data-sources/data-source[@id=0]/fields/field",
-      xpath_ctx);
+      ctx);
 
   my_proj->d0 = database_new(xpath->nodesetval->nodeNr);
 
@@ -115,11 +86,43 @@ project_parse(project *my_proj, char *file_name) {
         xpath->nodesetval->nodeTab[i],
         BAD_CAST "name");
   }
+
   xmlXPathFreeObject(xpath);
+  free(sep);
+}
+
+void
+project_parse_project(project *my_proj, xmlXPathContextPtr ctx) {
+  xmlXPathObjectPtr xpath;
+
+  xpath = xmlXPathEvalExpression(BAD_CAST "/project", ctx);
+
+  my_proj->name = xmlGetProp(
+      xpath->nodesetval->nodeTab[0],
+      BAD_CAST "name");
+
+  my_proj->task = xmlGetProp(
+      xpath->nodesetval->nodeTab[0],
+      BAD_CAST "task");
+
+  if(strcmp((char *)my_proj->task, "deduplication")) {
+    handle_error("We only support 'deduplication' right now");
+  }
+
+  xmlXPathFreeObject(xpath);
+}
+
+void
+project_parse_conjunctions(project *my_proj, xmlXPathContextPtr ctx) {
+  xmlXPathObjectPtr xpath;
+  xmlNode *part_node;
+  xmlChar *field_name, *transform, *size;
+  conjunction *conj;
+  int i;
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/blocking/conjunction",
-      xpath_ctx);
+      ctx);
 
   for(i = 0; i < xpath->nodesetval->nodeNr; i++) {
     conj = conjunction_new(1);
@@ -128,15 +131,15 @@ project_parse(project *my_proj, char *file_name) {
 
     while(part_node) {
       if(!strcmp((char *) part_node->name, "part")) {
-        field_name = (char *) xmlGetProp(part_node, BAD_CAST "field-name");
-        transform  = (char *) xmlGetProp(part_node, BAD_CAST "transform");
-        size = (char *) xmlGetProp(part_node, BAD_CAST "size");
+        field_name = xmlGetProp(part_node, BAD_CAST "field-name");
+        transform  = xmlGetProp(part_node, BAD_CAST "transform");
+        size = xmlGetProp(part_node, BAD_CAST "size");
 
         conjunction_add_part(
             conj,
-            field_name,
-            transform,
-            size ? atoi(size) : 0);
+            (char *) field_name,
+            (char *) transform,
+            size ? atoi((char *) size) : 0);
 
         free(field_name);
         free(transform);
@@ -146,10 +149,29 @@ project_parse(project *my_proj, char *file_name) {
     }
     project_add_conjunction(my_proj, conj);
   }
-  array_fini(my_proj->conjunctions);
-  xmlXPathFreeObject(xpath);
 
-  free(sep);
+  array_fini(my_proj->conjunctions);
+
+  xmlXPathFreeObject(xpath);
+}
+
+void
+project_parse(project *my_proj, char *file_name) {
+  xmlDocPtr doc;
+  xmlXPathContextPtr xpath_ctx;
+
+  xmlInitParser();
+
+  if((doc = xmlParseFile(file_name)) == NULL)
+    handle_error("Unable to parse XML");
+
+  if((xpath_ctx = xmlXPathNewContext(doc)) == NULL)
+    handle_error("Unable to create XPath");
+
+  project_parse_project(my_proj, xpath_ctx);
+  project_parse_datasource(my_proj, xpath_ctx);
+  project_parse_conjunctions(my_proj, xpath_ctx);
+
   xmlXPathFreeContext(xpath_ctx);
   xmlFreeDoc(doc);
   xmlCleanupParser();
