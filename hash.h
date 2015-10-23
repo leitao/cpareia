@@ -3,6 +3,8 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef struct hash {
   GHashTable *table;
@@ -12,5 +14,6 @@ typedef struct hash {
 hash * hash_new();
 void hash_free(hash *);
 int hash_get_id(hash *, char *);
+void hash_print(hash *);
 
 #endif
