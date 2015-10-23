@@ -51,7 +51,6 @@ blocking_generate(project *my_proj) {
 
     for(j = 0; j < conj_size; j++) {
       if(ids[j] != -1) {
-        printf("Blocagem: %d, conj: %d\n", ids[j], (int) j);
       }
     }
   }
