@@ -44,7 +44,7 @@ project_free(project *my_proj) {
 
 void
 project_add_conjunction(project *my_proj, conjunction *conj) {
-  array_add(my_proj->conjunctions, conj);
+  array_append(my_proj->conjunctions, conj);
 }
 
 void

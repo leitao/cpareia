@@ -38,14 +38,24 @@ array_remove_last(array *ary) {
 }
 
 void
-array_add(array *ary, void *el) {
-  if(ary->_size == ary->_total_size) {
-    ary->_total_size *= 2;
-    ary->_data = (void **)
-      realloc(ary->_data, sizeof(void *) * ary->_total_size);
-  }
+array_realloc(array *ary) {
+  ary->_total_size *= 2;
+  ary->_data = (void **)
+    realloc(ary->_data, sizeof(void *) * ary->_total_size);
+}
 
-  ary->_data[ary->_size++] = el;
+void
+array_add_at(array *ary, void *el, size_t i) {
+  if(ary->_size == ary->_total_size) {
+    array_realloc(ary);
+  }
+  ary->_data[i] = el;
+  ary->_size++;
+}
+
+void
+array_append(array *ary, void *el) {
+  array_add_at(ary, el, ary->_size);
 }
 
 inline void *
