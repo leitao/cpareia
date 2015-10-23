@@ -5,8 +5,9 @@
 #include "record.h"
 #include "project.h"
 #include "field_comparator.h"
+#include "hash.h"
 
 void
-blocking_generate_keys(project *, size_t);
+blocking_generate(project *my_proj);
 
 #endif

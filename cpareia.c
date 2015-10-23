@@ -3,7 +3,6 @@
 int
 main(int argc,  char *argv[]) {
   project *my_proj;
-  size_t i;
 
   if(argc != 2)
     handle_error("Usage: cpareia XML");
@@ -15,9 +14,7 @@ main(int argc,  char *argv[]) {
 
   /*project_print(my_proj);*/
 
-  for(i = 0; i < array_size(my_proj->d0->records); i++) {
-    blocking_generate_keys(my_proj, i);
-  }
+  blocking_generate(my_proj);
 
   project_free(my_proj);
 
