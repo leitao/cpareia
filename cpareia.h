@@ -10,6 +10,5 @@
 #include "project.h"
 #include "error.h"
 #include "database.h"
-#include "hash.h"
 
 #endif

@@ -21,7 +21,7 @@ run: $(NAME)
 	./$(NAME) input/project.xml
 
 val: $(NAME)
-	valgrind --show-leak-kinds=all --leak-check=full ./$(NAME) input/project.xml
+	valgrind --leak-check=full ./$(NAME) input/project.xml
 
 clean:
 	rm -f $(SRC)/*.o *~ $(SRC)/*~ $(NAME)

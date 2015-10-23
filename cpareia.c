@@ -12,7 +12,7 @@ main(int argc,  char *argv[]) {
   project_parse(my_proj, argv[1]);
   database_read(my_proj->d0);
 
-  /*project_print(my_proj);*/
+  project_print(my_proj);
 
   project_free(my_proj);
 

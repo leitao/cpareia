@@ -118,7 +118,8 @@ project_parse_conjunctions(project *my_proj, xmlXPathContextPtr ctx) {
   xmlNode *part_node;
   xmlChar *field_name, *transform, *size;
   conjunction *conj;
-  int i;
+  int i, field;
+  size_t j;
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/blocking/conjunction",
@@ -134,10 +135,24 @@ project_parse_conjunctions(project *my_proj, xmlXPathContextPtr ctx) {
         field_name = xmlGetProp(part_node, BAD_CAST "field-name");
         transform  = xmlGetProp(part_node, BAD_CAST "transform");
         size = xmlGetProp(part_node, BAD_CAST "size");
+        field = -1;
+
+        /* Finding field_name on fields, so we can save the index
+         * instead of the string. If we don't find it, it's a fatal
+         * error
+         */
+        for(j = 0; j < my_proj->d0->num_fields; j++) {
+          if(!strcmp((char *) field_name, (char *) my_proj->d0->fields[j])) {
+            field = j;
+            break;
+          }
+        }
+
+        assert(field != -1);
 
         conjunction_add_part(
             conj,
-            (char *) field_name,
+            field,
             (char *) transform,
             size ? atoi((char *) size) : 0);
 

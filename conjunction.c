@@ -1,11 +1,11 @@
 #include "conjunction.h"
 
 part *
-part_new(char *field_name, char *transform, int size) {
+part_new(int field, char *transform, int size) {
   part *my_part;
 
   my_part = (part *) malloc(sizeof(part));
-  my_part->field_name = field_name ? strdup(field_name) : NULL;
+  my_part->field = field;
   my_part->transform = transform ? strdup(transform) : NULL;
   my_part->size = size;
 
@@ -15,14 +15,13 @@ part_new(char *field_name, char *transform, int size) {
 void
 part_print(part *my_part) {
   printf("part:\n");
-  printf("field_name: %s\n", my_part->field_name);
+  printf("field: %d\n", my_part->field);
   printf("transform: %s\n", my_part->transform);
   printf("size: %d\n", my_part->size);
 }
 
 void
 part_free(part *my_part) {
-  free(my_part->field_name);
   free(my_part->transform);
   free(my_part);
 }
@@ -40,11 +39,11 @@ conjunction_new(size_t size) {
 void
 conjunction_add_part(
     conjunction *my_conj,
-    char *field_name,
+    int field,
     char *transform,
     int size) {
   part *my_part;
-  my_part = part_new(field_name, transform, size);
+  my_part = part_new(field, transform, size);
 
   array_add(my_conj->parts, my_part);
 }
