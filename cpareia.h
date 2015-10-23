@@ -10,5 +10,6 @@
 #include "project.h"
 #include "error.h"
 #include "database.h"
+#include "blocking.h"
 
 #endif
