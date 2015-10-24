@@ -131,7 +131,7 @@ csv_fields *csv_row_get_fields(
         my_fields->fields[i++] = strdup("\0");
       }
       else {
-        size = current - begin;
+        size = (*current == sep) ? current - begin: current - begin + 1;
         my_fields->fields[i++] = strndup(begin, size);
       }
       if(*current == sep && current == row->end) {
