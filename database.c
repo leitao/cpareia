@@ -94,7 +94,7 @@ database_read(database *db) {
     rec = record_new(db->num_fields);
 
     for(i = 0; i < db->num_fields; i++) {
-      record_add_field(rec, strdup(my_fields->fields[i]));
+      record_add_field(rec, my_fields->fields[i]);
     }
 
     database_add_record(db, rec);

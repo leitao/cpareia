@@ -59,11 +59,6 @@ csv_free(csv *my_csv) {
 
 void
 csv_fields_free(csv_fields *fields) {
-  size_t i;
-
-  for(i = 0; i < fields->size; i++) {
-    free(fields->fields[i]);
-  }
   free(fields->fields);
   free(fields);
 }
