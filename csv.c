@@ -73,24 +73,26 @@ csv_row *csv_get_row(csv *my_csv) {
 
 csv_fields *csv_row_get_fields(csv_row *row, char sep) {
   csv_fields *my_fields;
-  char *begin, *end;
+  char *begin, *current;
 
   my_fields = csv_fields_new();
 
-  begin = end = row->begin;
+  begin = current = row->begin;
 
-  while(end <= row->end) {
-    if(*end == sep || end == row->end) {
-      /* Multiple separators */
-      if(begin == end) {
+  while(current <= row->end) {
+    if(*current == sep || current == row->end) {
+      if(begin == current) {
         printf("encontrei vazio\n");
       }
       else {
-        printf("encontrei. de %c até %c\n", *begin, *(end - 1));
+        printf("encontrei. de %c até %c\n", *begin, *(current - 1));
       }
-      begin = end + 1;
+      if(*current == sep && current == row->end) {
+        printf("Final vazio\n");
+      }
+      begin = current + 1;
     }
-    end++;
+    current++;
   }
 
   return my_fields;
