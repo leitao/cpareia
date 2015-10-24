@@ -61,28 +61,6 @@ database_add_record(database *db, record *rec) {
   db->records[db->size++] = rec;
 }
 
-size_t
-open_file(char *fname, char **buf) {
-  int fd;
-  struct stat fs;
-
-	fd = open(fname, O_RDONLY);
-
-	if (fd == -1)
-		handle_error("open");
-
-  if (fstat(fd, &fs) == -1)
-    handle_error("fstat");
-
-	*buf = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-
-  if (*buf == MAP_FAILED)
-    handle_error("mmap");
-
-  close(fd);
-
-  return fs.st_size;
-}
 
 void
 new_field(void *parsed, size_t size, void *db) {
@@ -107,6 +85,7 @@ new_record(int c, void *db) {
 
 void
 database_read(database *db) {
+  /*
   size_t size;
   size_t i;
   char *buf;
@@ -131,6 +110,7 @@ database_read(database *db) {
     rec = database_remove_last_record(db);
     record_free(rec);
   }
+  */
 }
 
 void database_print(database *db) {

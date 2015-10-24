@@ -2,7 +2,6 @@
 #define _DATABASE_H_
 
 #include <assert.h>
-#include <csv.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -27,6 +26,5 @@ record *database_remove_last_record(database *);
 void database_free(database *);
 void database_read(database *);
 void database_print(database *db);
-size_t open_file(char *, char **);
 
 #endif

@@ -7,7 +7,7 @@
 #include "error.h"
 
 typedef struct csv {
-  size_t size;
+  size_t size, num_fields;
   char *buf;
   char *end;
   char *current;
@@ -23,5 +23,7 @@ typedef struct csv_fields {
   char **fields;
   size_t size;
 } csv_fields;
+
+size_t open_file(char *, char **);
 
 #endif
