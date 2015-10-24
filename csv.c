@@ -1,23 +1,5 @@
 #include "csv.h"
 
-typedef struct csv {
-  size_t size;
-  char *buf;
-  char *end;
-  char *current;
-  char sep;
-} csv;
-
-typedef struct csv_row {
-  char *begin;
-  char *end;
-} csv_row;
-
-typedef struct csv_fields {
-  char **fields;
-  size_t size;
-} csv_fields;
-
 csv_fields *csv_fields_new() {
   csv_fields *my_fields;
 
@@ -59,7 +41,7 @@ csv_row_print(csv_row *my_row) {
 
   current = my_row->begin;
 
-  while(current != my_row->end) {
+  while(current <= my_row->end) {
     printf("%c", *current);
     current++;
   }
@@ -89,22 +71,47 @@ csv_row *csv_get_row(csv *my_csv) {
   return my_row;
 }
 
+csv_fields *csv_row_get_fields(csv_row *row, char sep) {
+  csv_fields *my_fields;
+  char *begin, *end;
+
+  my_fields = csv_fields_new();
+
+  begin = end = row->begin;
+
+  while(end <= row->end) {
+    if(*end == sep || end == row->end) {
+      /* Multiple separators */
+      if(begin == end) {
+        printf("encontrei vazio\n");
+      }
+      else {
+        printf("encontrei. de %c até %c\n", *begin, *(end - 1));
+      }
+      begin = end + 1;
+    }
+    end++;
+  }
+
+  return my_fields;
+}
+
 int
 main(int argv, char *argc[]) {
   csv *my_csv;
   csv_row *my_row;
+  csv_fields *my_fields;
 
   if(argv != 2)
     handle_error("argv");
 
-  my_csv = csv_new(argc[1], '\t');
+  my_csv = csv_new(argc[1], ':');
 
   while((my_row = csv_get_row(my_csv)) != NULL) {
     csv_row_print(my_row);
+    my_fields = csv_row_get_fields(my_row, ':');
     free(my_row);
   }
-
-  free(my_csv);
 
   return 0;
 }
