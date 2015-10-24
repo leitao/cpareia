@@ -7,16 +7,19 @@
 #include <libxml/xpathInternals.h>
 
 #include "database.h"
+#include "conjunction.h"
 
 typedef struct project {
   unsigned char *name;
   unsigned char *task;
   database *d0;
+  array *conjunctions;
 } project;
 
 project *project_new();
-void project_print(project *my_proj);
-void project_free(project *my_proj);
-void project_fill(project *my_proj, char *file_name);
+void project_print(project *);
+void project_free(project *);
+void project_parse(project *, char *);
+void project_add_conjunction(project *, conjunction *);
 
 #endif

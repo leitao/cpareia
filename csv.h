@@ -11,7 +11,6 @@ typedef struct csv {
   char *buf;
   char *end;
   char *current;
-  char sep;
 } csv;
 
 typedef struct csv_row {
@@ -24,6 +23,11 @@ typedef struct csv_fields {
   size_t size;
 } csv_fields;
 
-size_t open_file(char *, char **);
+csv *csv_new(char *filename);
+csv_row *csv_get_row(csv *my_csv);
+csv_fields *csv_row_get_fields(csv_row *, char, size_t);
+void csv_free(csv *);
+void csv_row_free(csv_row *);
+void csv_fields_free(csv_fields *);
 
 #endif

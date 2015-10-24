@@ -69,7 +69,7 @@ csv_fields_free(csv_fields *fields) {
 }
 
 csv *
-csv_new(char *filename, char sep, size_t num_fields) {
+csv_new(char *filename) {
   csv *my_csv;
 
   my_csv = (csv *) malloc(sizeof(csv));
@@ -77,8 +77,6 @@ csv_new(char *filename, char sep, size_t num_fields) {
   my_csv->size = open_file(filename, &(my_csv->buf));
   my_csv->current = my_csv->buf;
   my_csv->end = my_csv->buf + my_csv->size - 1;
-  my_csv->sep = sep;
-  my_csv->num_fields = num_fields;
 
   return my_csv;
 }
@@ -150,31 +148,4 @@ csv_fields *csv_row_get_fields(
   }
 
   return my_fields;
-}
-
-int
-main(int argv, char *argc[]) {
-  csv *my_csv;
-  csv_row *my_row;
-  csv_fields *my_fields;
-  size_t i;
-
-  if(argv != 2)
-    handle_error("argv");
-
-  my_csv = csv_new(argc[1], ':', 7);
-
-  while((my_row = csv_get_row(my_csv)) != NULL) {
-    csv_row_print(my_row);
-    my_fields = csv_row_get_fields(my_row, ':', 7);
-
-    for(i = 0; i < 7; i++) {
-      puts(my_fields->fields[i]);
-    }
-    csv_fields_free(my_fields);
-    csv_row_free(my_row);
-  }
-  csv_free(my_csv);
-
-  return 0;
 }
