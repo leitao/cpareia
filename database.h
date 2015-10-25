@@ -21,8 +21,6 @@ typedef struct database {
 } database;
 
 database *database_new(int num_fields);
-void database_add_record(database *, record *);
-record *database_remove_last_record(database *);
 void database_free(database *);
 void database_read(database *);
 void database_print(database *);

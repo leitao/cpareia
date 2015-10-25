@@ -24,10 +24,12 @@ typedef struct csv_fields {
 } csv_fields;
 
 csv *csv_new(char *filename);
-csv_row *csv_get_row(csv *my_csv);
-csv_fields *csv_row_get_fields(csv_row *, char, size_t);
+int csv_get_row(csv *my_csv, csv_row *my_row);
+void csv_row_get_fields(csv_fields *, csv_row *, char);
 void csv_free(csv *);
 void csv_row_free(csv_row *);
 void csv_fields_free(csv_fields *);
+csv_row *csv_row_new(char *, char *);
+csv_fields *csv_fields_new(size_t);
 
 #endif

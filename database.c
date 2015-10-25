@@ -44,41 +44,6 @@ database_free(database *db) {
   free(db);
 }
 
-record *
-database_remove_last_record(database *db) {
-  return (record *) array_remove_last(db->records);
-}
-
-void
-database_add_record(database *db, record *rec) {
-  array_add(db->records, (void *) rec);
-}
-
-void
-new_field(void *parsed, size_t size, void *db) {
-  char *string;
-  database *my_db;
-  record *rec;
-
-  my_db = (database *) db;
-  rec = (record *) array_get_last(my_db->records);
-
-  string = (char *)malloc(sizeof(char) * (size + 1));
-  strcpy(string, (char *) parsed);
-
-  record_add_field(rec, string);
-}
-
-void
-new_record(int c, void *ptr) {
-  database *db;
-  db = (database *) ptr;
-
-  assert(c == '\n');
-
-  database_add_record(db, record_new(db->num_fields));
-}
-
 void
 database_read(database *db) {
   size_t i;
@@ -88,20 +53,24 @@ database_read(database *db) {
   record *rec;
 
   my_csv = csv_new(db->filename);
+  my_row = csv_row_new(NULL, NULL);
+  my_fields = csv_fields_new(db->num_fields);
 
-  while((my_row = csv_get_row(my_csv)) != NULL) {
-    my_fields = csv_row_get_fields(my_row, db->sep, db->num_fields);
+  while(csv_get_row(my_csv, my_row)) {
+    csv_row_get_fields(my_fields, my_row, db->sep);
     rec = record_new(db->num_fields);
 
     for(i = 0; i < db->num_fields; i++) {
       record_add_field(rec, my_fields->fields[i]);
     }
 
-    database_add_record(db, rec);
+    array_add(db->records, (void *) rec);
 
-    csv_fields_free(my_fields);
-    csv_row_free(my_row);
   }
+  database_fini(db);
+
+  csv_fields_free(my_fields);
+  csv_row_free(my_row);
 
   csv_free(my_csv);
 }

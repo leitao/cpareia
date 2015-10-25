@@ -89,19 +89,19 @@ csv_row_print(csv_row *my_row) {
   printf("\n");
 }
 
-csv_row *csv_get_row(csv *my_csv) {
-  csv_row *my_row;
+int csv_get_row(csv *my_csv, csv_row *my_row) {
   char *begin, *end;
 
   if(my_csv->current == my_csv->end)
-    return NULL;
+    return 0;
 
   begin = end = my_csv->current;
 
   while(*end != '\n')
     end++;
 
-  my_row = csv_row_new(begin, end - 1);
+  my_row->begin = begin;
+  my_row->end = end - 1;
 
   /* Skipping multiple \n's */
   while(*end == '\n' && end != my_csv->end)
@@ -109,20 +109,14 @@ csv_row *csv_get_row(csv *my_csv) {
 
   my_csv->current = end;
 
-  return my_row;
+  return 1;
 }
 
-csv_fields *csv_row_get_fields(
-    csv_row *row,
-    char sep,
-    size_t num_fields) {
-
-  csv_fields *my_fields;
+void csv_row_get_fields(csv_fields *my_fields, csv_row *row, char sep) {
   char *begin, *current;
   size_t i, size;
 
   i = 0;
-  my_fields = csv_fields_new(num_fields);
   begin = current = row->begin;
 
   while(current <= row->end) {
@@ -141,6 +135,4 @@ csv_fields *csv_row_get_fields(
     }
     current++;
   }
-
-  return my_fields;
 }
