@@ -8,6 +8,8 @@ project_new() {
 
   my_proj->conjunctions = array_new();
 
+  my_proj->blocks = hash_new();
+
   return my_proj;
 }
 
@@ -38,6 +40,7 @@ project_free(project *my_proj) {
     conjunction_free(array_get(my_proj->conjunctions, i));
   }
 
+  hash_free(my_proj->blocks);
   array_free(my_proj->conjunctions);
   free(my_proj);
 }

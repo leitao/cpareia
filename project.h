@@ -8,12 +8,14 @@
 
 #include "database.h"
 #include "conjunction.h"
+#include "hash.h"
 
 typedef struct project {
   unsigned char *name;
   unsigned char *task;
   database *d0;
   array *conjunctions;
+  hash *blocks;
 } project;
 
 project *project_new();

@@ -36,6 +36,8 @@ main(int argc,  char *argv[]) {
   gettimeofday(&t1, NULL);
   printf("Chaves geradas em %f segundos\n", delta(t0, t1));
 
+  blocking_print(my_proj);
+
   project_free(my_proj);
 
   return 0;

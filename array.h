@@ -9,8 +9,11 @@ typedef struct array {
   size_t _size, _total_size;
 } array;
 
+typedef void (*array_fn_print)(void *);
+
 array * array_new();
 array * array_new_prealloc(size_t);
+void array_print(array *, array_fn_print);
 void array_fini(array *);
 void array_free(array *);
 void *array_remove_last(array *);

@@ -7,7 +7,6 @@ record *record_new(int num_fields) {
   rec = (record *) malloc(sizeof(record));
   rec->num_fields = num_fields;
   rec->_used_fields = 0;
-
   rec->fields = (char **) malloc(sizeof(char *) * num_fields);
 
   return rec;

@@ -72,3 +72,12 @@ inline size_t
 array_size(array *ary) {
   return ary->_size;
 }
+
+void
+array_print(array *ary, array_fn_print fn_print) {
+  size_t i;
+
+  for(i = 0; i < array_size(ary); i++) {
+    fn_print(array_get(ary, i));
+  }
+}
