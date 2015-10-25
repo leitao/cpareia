@@ -64,7 +64,7 @@ database_read(database *db) {
       record_add_field(rec, my_fields->fields[i]);
     }
 
-    array_add(db->records, (void *) rec);
+    array_append(db->records, (void *) rec);
 
   }
   database_fini(db);

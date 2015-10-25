@@ -5,7 +5,11 @@ hash_new() {
   hash *my_hash;
 
   my_hash = (hash *) malloc(sizeof(hash));
-  my_hash->table = g_hash_table_new(g_str_hash, g_str_equal);
+  my_hash->table = g_hash_table_new_full(
+      g_str_hash,
+      g_str_equal,
+      (GDestroyNotify) free,
+      (GDestroyNotify) array_free);
 
   return my_hash;
 }
@@ -18,20 +22,17 @@ hash_free(hash *my_hash) {
 
 void
 hash_insert(hash *my_hash, char *key, void *rec) {
-  char *my_key;
   array *my_array;
 
-  my_key = strdup(key);
-
-  if(!g_hash_table_lookup(my_hash->table, my_key)) {
+  if(!g_hash_table_lookup(my_hash->table, key)) {
     g_hash_table_insert(
         my_hash->table,
-        my_key,
+        strdup(key),
         array_new()
         );
   }
 
-  my_array = (array *) g_hash_table_lookup(my_hash->table, my_key);
+  my_array = (array *) g_hash_table_lookup(my_hash->table, key);
   array_append(my_array, rec);
 }
 
