@@ -16,17 +16,14 @@ main(int argc,  char *argv[]) {
 
   my_proj = project_new();
 
-  printf("Parseando projeto\n");
-  gettimeofday(&t0, NULL);
   project_parse(my_proj, argv[1]);
-  gettimeofday(&t1, NULL);
-  printf("Parser completo em %f segundos\n", delta(t0, t1));
 
   printf("Lendo database\n");
   gettimeofday(&t0, NULL);
   database_read(my_proj->d0);
   gettimeofday(&t1, NULL);
   printf("Database lida em %f segundos\n",delta(t0, t1));
+  mem_print();
 
   /*project_print(my_proj);*/
 
@@ -36,7 +33,8 @@ main(int argc,  char *argv[]) {
   gettimeofday(&t1, NULL);
   printf("Chaves geradas em %f segundos\n", delta(t0, t1));
 
-  blocking_print(my_proj);
+  /*blocking_print(my_proj);*/
+  mem_print();
 
   project_free(my_proj);
 

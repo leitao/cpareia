@@ -11,5 +11,6 @@
 #include "error.h"
 #include "database.h"
 #include "blocking.h"
+#include "mem.h"
 
 #endif
