@@ -28,7 +28,7 @@ hash_insert(hash *my_hash, char *key, void *rec) {
     g_hash_table_insert(
         my_hash->table,
         strdup(key),
-        array_new()
+        array_new_prealloc(1)
         );
   }
 
