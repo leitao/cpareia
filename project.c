@@ -6,7 +6,7 @@ project_new() {
 
   my_proj = (project *) malloc(sizeof(project));
 
-  my_proj->conjunctions = array_new();
+  my_proj->conjunctions = array_new_prealloc(1);
 
   my_proj->blocks = hash_new();
 
