@@ -4,7 +4,7 @@ project *
 project_new() {
   project *my_proj;
 
-  my_proj = (project *) malloc(sizeof(project));
+  my_proj = malloc(sizeof(project));
 
   my_proj->conjunctions = array_new_prealloc(1);
 

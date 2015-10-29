@@ -5,13 +5,12 @@ database_new(int num_fields) {
   int i;
   database *db;
 
-  db = (database *) malloc(sizeof(database));
+  db = malloc(sizeof(database));
 
   db->records = array_new();
   db->num_fields = num_fields;
 
-  db->fields = (unsigned char **)
-    malloc(sizeof(unsigned char *) * num_fields);
+  db->fields = malloc(sizeof(unsigned char *) * num_fields);
 
   for(i = 0; i < num_fields; i++) {
     db->fields[i] = NULL;

@@ -4,7 +4,7 @@ hash *
 hash_new() {
   hash *my_hash;
 
-  my_hash = (hash *) malloc(sizeof(hash));
+  my_hash = malloc(sizeof(hash));
   my_hash->table = g_hash_table_new_full(
       g_str_hash,
       g_str_equal,

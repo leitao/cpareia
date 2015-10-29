@@ -26,9 +26,9 @@ open_file(char *fname, char **buf) {
 csv_fields *csv_fields_new(size_t num_fields) {
   csv_fields *my_fields;
 
-  my_fields = (csv_fields *) malloc(sizeof(csv_fields));
+  my_fields = malloc(sizeof(csv_fields));
 
-  my_fields->fields = (char **) malloc(sizeof(char *) * num_fields);
+  my_fields->fields = malloc(sizeof(char *) * num_fields);
 
   my_fields->size = num_fields;
 
@@ -39,7 +39,7 @@ csv_row *
 csv_row_new(char *begin, char *end) {
   csv_row *my_row;
 
-  my_row = (csv_row *) malloc(sizeof(csv_row));
+  my_row = malloc(sizeof(csv_row));
   my_row->begin = begin;
   my_row->end = end;
 
@@ -67,7 +67,7 @@ csv *
 csv_new(char *filename) {
   csv *my_csv;
 
-  my_csv = (csv *) malloc(sizeof(csv));
+  my_csv = malloc(sizeof(csv));
 
   my_csv->size = open_file(filename, &(my_csv->buf));
   my_csv->current = my_csv->buf;

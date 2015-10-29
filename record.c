@@ -4,10 +4,10 @@
 record *record_new(int num_fields) {
   record *rec;
 
-  rec = (record *) malloc(sizeof(record));
+  rec = malloc(sizeof(record));
   rec->num_fields = num_fields;
   rec->_used_fields = 0;
-  rec->fields = (char **) malloc(sizeof(char *) * num_fields);
+  rec->fields = malloc(sizeof(char *) * num_fields);
 
   return rec;
 }

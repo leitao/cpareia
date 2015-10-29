@@ -9,18 +9,18 @@ array *
 array_new_prealloc(size_t size) {
   array *ary;
 
-  ary = (array *) malloc(sizeof(array));
+  ary = malloc(sizeof(array));
 
   ary->_size = 0;
   ary->_total_size = size;
-  ary->_data = (void **) malloc(sizeof(void *) * size);
+  ary->_data = malloc(sizeof(void *) * size);
 
   return ary;
 }
 
 void
 array_fini(array *ary) {
-  ary->_data = (void **) realloc(ary->_data, sizeof(void *) * ary->_size);
+  ary->_data = realloc(ary->_data, sizeof(void *) * ary->_size);
   ary->_total_size = ary->_size;
 }
 

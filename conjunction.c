@@ -4,7 +4,7 @@ part *
 part_new(int field, char *transform, int size) {
   part *my_part;
 
-  my_part = (part *) malloc(sizeof(part));
+  my_part = malloc(sizeof(part));
   my_part->field = field;
   my_part->transform = transform ? strdup(transform) : NULL;
   my_part->size = size;
@@ -30,7 +30,7 @@ conjunction *
 conjunction_new(size_t size) {
   conjunction *my_conj;
 
-  my_conj = (conjunction *) malloc(sizeof(conjunction));
+  my_conj = malloc(sizeof(conjunction));
   my_conj->parts = array_new_prealloc(size);
 
   return my_conj;
