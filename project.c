@@ -53,7 +53,7 @@ project_add_conjunction(project *my_proj, conjunction *conj) {
 void
 project_parse_datasource(project *my_proj, xmlXPathContextPtr ctx) {
   xmlXPathObjectPtr xpath;
-  xmlChar *filename, *sep;
+  xmlChar *filename, *sep, *rows;
   int i;
 
   xpath = xmlXPathEvalExpression(
@@ -68,13 +68,23 @@ project_parse_datasource(project *my_proj, xmlXPathContextPtr ctx) {
       xpath->nodesetval->nodeTab[0],
       BAD_CAST "field-separator");
 
+  rows = xmlGetProp(
+      xpath->nodesetval->nodeTab[0],
+      BAD_CAST "rows");
+
   xmlXPathFreeObject(xpath);
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/data-sources/data-source[@id=0]/fields/field",
       ctx);
 
-  my_proj->d0 = database_new(xpath->nodesetval->nodeNr);
+  if(rows) {
+    my_proj->d0 = database_new(
+        xpath->nodesetval->nodeNr,
+        strtoull((char *)rows, NULL, 10));
+  } else {
+    handle_error("Missing attribute 'rows'\n");
+  }
 
   my_proj->d0->filename = (char *) filename;
 
@@ -92,6 +102,7 @@ project_parse_datasource(project *my_proj, xmlXPathContextPtr ctx) {
 
   xmlXPathFreeObject(xpath);
   free(sep);
+  free(rows);
 }
 
 void

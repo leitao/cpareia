@@ -1,13 +1,13 @@
 #include "database.h"
 
 database *
-database_new(int num_fields) {
+database_new(int num_fields, size_t num_rows) {
   int i;
   database *db;
 
   db = malloc(sizeof(database));
 
-  db->records = array_new();
+  db->records = array_new_prealloc(num_rows);
   db->num_fields = num_fields;
 
   db->fields = malloc(sizeof(unsigned char *) * num_fields);
