@@ -44,7 +44,9 @@ database_free(database_t *database) {
 }
 
 void
-database_read(database_t *database) {
+database_read_with_callback(
+    database_t *database,
+    database_read_callback callback) {
   size_t i;
   csv_t *csv;
   csv_row_t *csv_row;
@@ -65,6 +67,10 @@ database_read(database_t *database) {
 
     array_append(database->records, record);
 
+    if(callback) {
+      callback(record);
+    }
+
   }
   database_fini(database);
 
@@ -72,6 +78,11 @@ database_read(database_t *database) {
   csv_row_free(csv_row);
 
   csv_free(csv);
+}
+
+void
+database_read(database_t *database) {
+  database_read_with_callback(database, NULL);
 }
 
 void
