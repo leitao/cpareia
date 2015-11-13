@@ -30,11 +30,6 @@ array_free(array_t *array) {
   free(array);
 }
 
-void *
-array_remove_last(array_t *array) {
-  return array->_data[--array->_size];
-}
-
 void
 array_realloc(array_t *array) {
   array->_total_size *= 2;
@@ -59,11 +54,6 @@ array_append(array_t *array, void *el) {
 inline void *
 array_get(array_t *array, size_t i) {
   return i < array->_size ? array->_data[i] : NULL;
-}
-
-inline void *
-array_get_last(array_t *array) {
-  return array->_data[array->_size -1];
 }
 
 inline size_t

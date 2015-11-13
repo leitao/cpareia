@@ -6,6 +6,10 @@ delta(struct timeval a, struct timeval b) {
   return (b.tv_sec - a.tv_sec);/* + (b.tv_usec - a.tv_usec);*/
 }
 
+void callback(record_t *record, void *project) {
+  blocking_generate_keys(project, record);
+}
+
 int
 main(int argc,  char *argv[]) {
   project_t *project;
@@ -17,23 +21,15 @@ main(int argc,  char *argv[]) {
   project = project_new();
 
   project_parse(project, argv[1]);
-  printf("Lendo database\n");
+  printf("Lendo database e gerando blocagem\n");
   gettimeofday(&t0, NULL);
-  database_read(project->d0);
+  database_read(project->d0, callback, project);
   gettimeofday(&t1, NULL);
-  printf("Database lida em %f segundos\n",delta(t0, t1));
+  printf("Feito em %f segundos\n",delta(t0, t1));
   mem_print();
 
-  /*project_print(project);*/
-
-  printf("Gerando chaves de blocagens\n");
-  gettimeofday(&t0, NULL);
-  blocking_generate(project);
-  gettimeofday(&t1, NULL);
-  printf("Chaves geradas em %f segundos\n", delta(t0, t1));
-
-  /*blocking_print(project);*/
-  mem_print();
+  /*project_print(project);
+  blocking_print(project);*/
 
   project_free(project);
 

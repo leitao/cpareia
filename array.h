@@ -16,11 +16,9 @@ array_t * array_new_prealloc(size_t);
 void array_print(array_t *, array_fn_print);
 void array_fini(array_t *);
 void array_free(array_t *);
-void *array_remove_last(array_t *);
 void array_append(array_t *, void *);
 void array_add_at(array_t *, void *, size_t);
 void *array_get(array_t *, size_t);
-void *array_get_last(array_t *);
 size_t array_size(array_t *);
 
 #endif

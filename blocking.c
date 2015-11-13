@@ -31,15 +31,6 @@ blocking_generate_keys(project_t *project, record_t *record) {
 }
 
 void
-blocking_generate(project_t *project) {
-  size_t i;
-
-  for(i = 0; i < array_size(project->d0->records); i++) {
-    blocking_generate_keys(project, array_get(project->d0->records, i));
-  }
-}
-
-void
 blocking_print(project_t *project) {
   hash_print(project->blocks);
 }

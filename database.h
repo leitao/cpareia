@@ -20,12 +20,11 @@ typedef struct database_t {
   char *filename;
 } database_t;
 
-typedef void (*database_read_callback)(record_t *);
+typedef void (*database_cb)(record_t *, void *);
 
 database_t *database_new(int num_fields, size_t num_rows);
 void database_free(database_t *);
-void database_read(database_t *);
-void database_read_with_callback(database_t *, database_read_callback);
+void database_read(database_t *, database_cb, void *);
 void database_print(database_t *);
 void database_fini(database_t *);
 

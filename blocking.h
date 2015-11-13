@@ -7,7 +7,7 @@
 #include "field_comparator.h"
 #include "hash.h"
 
-void blocking_generate(project_t *);
+void blocking_generate_keys(project_t *, record_t *);
 void blocking_print(project_t *);
 
 #endif
