@@ -1,42 +1,42 @@
 #include "record.h"
 #include <assert.h>
 
-record *record_new(int num_fields) {
-  record *rec;
+record_t *
+record_new(int num_fields) {
+  record_t *record;
 
-  rec = malloc(sizeof(record));
-  rec->num_fields = num_fields;
-  rec->_used_fields = 0;
-  rec->fields = malloc(sizeof(char *) * num_fields);
+  record = malloc(sizeof(record_t));
+  record->num_fields = num_fields;
+  record->_used_fields = 0;
+  record->fields = malloc(sizeof(char *) * num_fields);
 
-  return rec;
+  return record;
 }
 
-int record_ok(record *rec) {
-  return(rec->num_fields == rec->_used_fields);
+void
+record_add_field(record_t *record, char *field) {
+  assert(record->_used_fields < record->num_fields);
+  record->fields[record->_used_fields++] = field;
 }
 
-void record_add_field(record *rec, char *field) {
-  assert(rec->_used_fields < rec->num_fields);
-  rec->fields[rec->_used_fields++] = field;
-}
-
-void record_free(record *rec) {
+void
+record_free(record_t *record) {
   int i;
 
-  for(i = 0; i < rec->_used_fields; i++) {
-    free(rec->fields[i]);
+  for(i = 0; i < record->_used_fields; i++) {
+    free(record->fields[i]);
   }
-  free(rec->fields);
-  free(rec);
+  free(record->fields);
+  free(record);
 }
 
-void record_print(record *rec) {
+void
+record_print(record_t *record) {
   int i;
 
   printf("FIELDS:\n");
 
-  for(i = 0; i < rec->_used_fields; i++) {
-    printf("\t%d: %s\n", i, rec->fields[i]);
+  for(i = 0; i < record->_used_fields; i++) {
+    printf("\t%d: %s\n", i, record->fields[i]);
   }
 }

@@ -5,15 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct record {
+typedef struct record_t {
   int num_fields, _used_fields;
   char **fields;
-} record;
+} record_t;
 
-record *record_new(int numb_fields);
-void record_add_field(record *, char *);
-void record_free(record *);
-void record_print(record *);
-int record_ok(record *);
+record_t *record_new(int numb_fields);
+void record_add_field(record_t *, char *);
+void record_free(record_t *);
+void record_print(record_t *);
 
 #endif

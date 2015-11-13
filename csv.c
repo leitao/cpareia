@@ -23,113 +23,114 @@ open_file(char *fname, char **buf) {
   return fs.st_size;
 }
 
-csv_fields *csv_fields_new(size_t num_fields) {
-  csv_fields *my_fields;
+csv_fields_t *
+csv_fields_new(size_t num_fields) {
+  csv_fields_t *csv_fields;
 
-  my_fields = malloc(sizeof(csv_fields));
+  csv_fields = malloc(sizeof(csv_fields_t));
+  csv_fields->fields = malloc(sizeof(char *) * num_fields);
+  csv_fields->size = num_fields;
 
-  my_fields->fields = malloc(sizeof(char *) * num_fields);
-
-  my_fields->size = num_fields;
-
-  return my_fields;
+  return csv_fields;
 }
 
-csv_row *
+csv_row_t *
 csv_row_new(char *begin, char *end) {
-  csv_row *my_row;
+  csv_row_t *csv_row;
 
-  my_row = malloc(sizeof(csv_row));
-  my_row->begin = begin;
-  my_row->end = end;
+  csv_row = malloc(sizeof(csv_row_t));
+  csv_row->begin = begin;
+  csv_row->end = end;
 
-  return my_row;
+  return csv_row;
 }
 
 void
-csv_row_free(csv_row *row) {
-  free(row);
+csv_row_free(csv_row_t *csv_row) {
+  free(csv_row);
 }
 
 void
-csv_free(csv *my_csv) {
-  munmap(my_csv->buf, my_csv->size);
-  free(my_csv);
+csv_free(csv_t *csv) {
+  munmap(csv->buf, csv->size);
+  free(csv);
 }
 
 void
-csv_fields_free(csv_fields *fields) {
-  free(fields->fields);
-  free(fields);
+csv_fields_free(csv_fields_t *csv_fields) {
+  free(csv_fields->fields);
+  free(csv_fields);
 }
 
-csv *
+csv_t *
 csv_new(char *filename) {
-  csv *my_csv;
+  csv_t *csv;
 
-  my_csv = malloc(sizeof(csv));
+  csv = malloc(sizeof(csv_t));
 
-  my_csv->size = open_file(filename, &(my_csv->buf));
-  my_csv->current = my_csv->buf;
-  my_csv->end = my_csv->buf + my_csv->size - 1;
+  csv->size = open_file(filename, &(csv->buf));
+  csv->current = csv->buf;
+  csv->end = csv->buf + csv->size - 1;
 
-  return my_csv;
+  return csv;
 }
 
 void
-csv_row_print(csv_row *my_row) {
+csv_row_print(csv_row_t *csv_row) {
   char *current;
 
-  current = my_row->begin;
+  current = csv_row->begin;
 
-  while(current <= my_row->end) {
+  while(current <= csv_row->end) {
     printf("%c", *current);
     current++;
   }
   printf("\n");
 }
 
-int csv_get_row(csv *my_csv, csv_row *my_row) {
+int
+csv_get_row(csv_t *csv, csv_row_t *csv_row) {
   char *begin, *end;
 
-  if(my_csv->current == my_csv->end)
+  if(csv->current == csv->end)
     return 0;
 
-  begin = end = my_csv->current;
+  begin = end = csv->current;
 
   while(*end != '\n')
     end++;
 
-  my_row->begin = begin;
-  my_row->end = end - 1;
+  csv_row->begin = begin;
+  csv_row->end = end - 1;
 
   /* Skipping multiple \n's */
-  while(*end == '\n' && end != my_csv->end)
+  while(*end == '\n' && end != csv->end)
     end++;
 
-  my_csv->current = end;
+  csv->current = end;
 
   return 1;
 }
 
-void csv_row_get_fields(csv_fields *my_fields, csv_row *row, char sep) {
+void
+csv_get_fields(csv_fields_t *csv_fields,csv_row_t *csv_row, char sep) {
   char *begin, *current;
   size_t i, size;
 
   i = 0;
-  begin = current = row->begin;
+  begin = current = csv_row->begin;
 
-  while(current <= row->end) {
-    if(*current == sep || current == row->end) {
+  while(current <= csv_row->end) {
+    if(*current == sep || current == csv_row->end) {
       if(begin == current) {
-        my_fields->fields[i++] = strdup("\0");
+        csv_fields->fields[i++] = strdup("\0");
       }
       else {
         size = (*current == sep) ? current - begin: current - begin + 1;
-        my_fields->fields[i++] = strndup(begin, size);
+        csv_fields->fields[i++] = strndup(begin, size);
       }
-      if(*current == sep && current == row->end) {
-        my_fields->fields[i++] = strdup("\0");
+      if(*current == sep && current == csv_row->end) {
+        csv_fields->fields[i++] = strdup("\0");
       }
       begin = current + 1;
     }

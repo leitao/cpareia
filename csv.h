@@ -6,30 +6,30 @@
 #include "database.h"
 #include "error.h"
 
-typedef struct csv {
+typedef struct csv_t {
   size_t size, num_fields;
   char *buf;
   char *end;
   char *current;
-} csv;
+} csv_t;
 
-typedef struct csv_row {
+typedef struct csv_row_t {
   char *begin;
   char *end;
-} csv_row;
+} csv_row_t;
 
-typedef struct csv_fields {
+typedef struct csv_fields_t {
   char **fields;
   size_t size;
-} csv_fields;
+} csv_fields_t;
 
-csv *csv_new(char *filename);
-int csv_get_row(csv *my_csv, csv_row *my_row);
-void csv_row_get_fields(csv_fields *, csv_row *, char);
-void csv_free(csv *);
-void csv_row_free(csv_row *);
-void csv_fields_free(csv_fields *);
-csv_row *csv_row_new(char *, char *);
-csv_fields *csv_fields_new(size_t);
+csv_t *csv_new(char *);
+int csv_get_row(csv_t *, csv_row_t *);
+void csv_get_fields(csv_fields_t *, csv_row_t *, char);
+void csv_free(csv_t *);
+void csv_row_free(csv_row_t *);
+void csv_fields_free(csv_fields_t *);
+csv_row_t *csv_row_new(char *, char *);
+csv_fields_t *csv_fields_new(size_t);
 
 #endif

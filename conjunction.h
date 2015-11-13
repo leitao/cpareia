@@ -6,21 +6,21 @@
 #include <stdio.h>
 #include "array.h"
 
-typedef struct part {
+typedef struct part_t {
   int field, size;
   char *transform;
-} part;
+} part_t;
 
-typedef struct conjunction {
-  array *parts;
-} conjunction;
+typedef struct conjunction_t {
+  array_t *parts;
+} conjunction_t;
 
-part *part_new(int, char *, int);
-void part_free(part *);
-void part_print(part *);
-conjunction *conjunction_new(size_t);
-void conjunction_free(conjunction *);
-void conjunction_add_part(conjunction *, int, char *, int);
-void conjunction_print(conjunction *);
+part_t *part_new(int, char *, int);
+void part_free(part_t *);
+void part_print(part_t *);
+conjunction_t *conjunction_new(size_t);
+void conjunction_free(conjunction_t *);
+void conjunction_add_part(conjunction_t *, int, char *, int);
+void conjunction_print(conjunction_t *);
 
 #endif

@@ -4,23 +4,23 @@
 
 #include <stdlib.h>
 
-typedef struct array {
+typedef struct array_t {
   void **_data;
   size_t _size, _total_size;
-} array;
+} array_t;
 
 typedef void (*array_fn_print)(void *);
 
-array * array_new();
-array * array_new_prealloc(size_t);
-void array_print(array *, array_fn_print);
-void array_fini(array *);
-void array_free(array *);
-void *array_remove_last(array *);
-void array_append(array *, void *);
-void array_add_at(array *, void *, size_t);
-void *array_get(array *, size_t);
-void *array_get_last(array *);
-size_t array_size(array *);
+array_t * array_new();
+array_t * array_new_prealloc(size_t);
+void array_print(array_t *, array_fn_print);
+void array_fini(array_t *);
+void array_free(array_t *);
+void *array_remove_last(array_t *);
+void array_append(array_t *, void *);
+void array_add_at(array_t *, void *, size_t);
+void *array_get(array_t *, size_t);
+void *array_get_last(array_t *);
+size_t array_size(array_t *);
 
 #endif

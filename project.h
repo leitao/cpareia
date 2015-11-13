@@ -10,18 +10,18 @@
 #include "conjunction.h"
 #include "hash.h"
 
-typedef struct project {
+typedef struct project_t {
   unsigned char *name;
   unsigned char *task;
-  database *d0;
-  array *conjunctions;
-  hash *blocks;
-} project;
+  database_t *d0;
+  array_t *conjunctions;
+  hash_t *blocks;
+} project_t;
 
-project *project_new();
-void project_print(project *);
-void project_free(project *);
-void project_parse(project *, char *);
-void project_add_conjunction(project *, conjunction *);
+project_t *project_new();
+void project_print(project_t *);
+void project_free(project_t *);
+void project_parse(project_t *, char *);
+void project_add_conjunction(project_t *, conjunction_t *);
 
 #endif

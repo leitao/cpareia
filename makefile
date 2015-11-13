@@ -7,6 +7,7 @@ SRC = .
 DEPS = $(wildcard $(SRC)/*.h)
 CODE = $(wildcard $(SRC)/*.c)
 OBJ = $(patsubst %.c,%.o,$(CODE))
+PROJ = input/project.xml
 
 .PHONY: install clean dist-gzip dist-bzip2 dist-xz dist
 .SILENT: install clean dist-gzip dist-bzip2 dist-xz dist
@@ -18,10 +19,10 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 run: $(NAME)
-	./$(NAME) input/project.xml
+	./$(NAME) $(PROJ)
 
 val: $(NAME)
-	valgrind --leak-check=full ./$(NAME) input/project.xml
+	valgrind --leak-check=full ./$(NAME) $(PROJ)
 
 clean:
 	rm -f $(SRC)/*.o *~ $(SRC)/*~ $(NAME)

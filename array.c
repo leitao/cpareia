@@ -1,83 +1,81 @@
 #include "array.h"
 
-array *
+array_t *
 array_new() {
   return array_new_prealloc(INITIAL_SIZE);
 }
 
-array *
+array_t *
 array_new_prealloc(size_t size) {
-  array *ary;
+  array_t *array;
 
-  ary = malloc(sizeof(array));
+  array = malloc(sizeof(array_t));
 
-  ary->_size = 0;
-  ary->_total_size = size;
-  ary->_data = malloc(sizeof(void *) * size);
+  array->_size = 0;
+  array->_total_size = size;
+  array->_data = malloc(sizeof(void *) * size);
 
-  return ary;
+  return array;
 }
 
 void
-array_fini(array *ary) {
-  ary->_data = realloc(ary->_data, sizeof(void *) * ary->_size);
-  ary->_total_size = ary->_size;
+array_fini(array_t *array) {
+  array->_data = realloc(array->_data, sizeof(void *) * array->_size);
+  array->_total_size = array->_size;
 }
 
 void
-array_free(array *ary) {
-  free(ary->_data);
-  free(ary);
+array_free(array_t *array) {
+  free(array->_data);
+  free(array);
 }
 
 void *
-array_remove_last(array *ary) {
-  ary->_size--;
-
-  return ary->_data[ary->_size];
+array_remove_last(array_t *array) {
+  return array->_data[--array->_size];
 }
 
 void
-array_realloc(array *ary) {
-  ary->_total_size *= 2;
-  ary->_data = (void **)
-    realloc(ary->_data, sizeof(void *) * ary->_total_size);
+array_realloc(array_t *array) {
+  array->_total_size *= 2;
+  array->_data =
+    realloc(array->_data, sizeof(void *) * array->_total_size);
 }
 
 void
-array_add_at(array *ary, void *el, size_t i) {
-  if(ary->_size == ary->_total_size) {
-    array_realloc(ary);
+array_add_at(array_t *array, void *el, size_t i) {
+  if(array->_size == array->_total_size) {
+    array_realloc(array);
   }
-  ary->_data[i] = el;
-  ary->_size++;
+  array->_data[i] = el;
+  array->_size++;
 }
 
 void
-array_append(array *ary, void *el) {
-  array_add_at(ary, el, ary->_size);
+array_append(array_t *array, void *el) {
+  array_add_at(array, el, array->_size);
 }
 
 inline void *
-array_get(array *ary, size_t i) {
-  return i < ary->_size ? ary->_data[i] : NULL;
+array_get(array_t *array, size_t i) {
+  return i < array->_size ? array->_data[i] : NULL;
 }
 
 inline void *
-array_get_last(array *ary) {
-  return ary->_data[ary->_size -1];
+array_get_last(array_t *array) {
+  return array->_data[array->_size -1];
 }
 
 inline size_t
-array_size(array *ary) {
-  return ary->_size;
+array_size(array_t *array) {
+  return array->_size;
 }
 
 void
-array_print(array *ary, array_fn_print fn_print) {
+array_print(array_t *array, array_fn_print fn_print) {
   size_t i;
 
-  for(i = 0; i < array_size(ary); i++) {
-    fn_print(array_get(ary, i));
+  for(i = 0; i < array_size(array); i++) {
+    fn_print(array_get(array, i));
   }
 }

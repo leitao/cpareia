@@ -1,40 +1,40 @@
 #include "hash.h"
 
-hash *
+hash_t *
 hash_new() {
-  hash *my_hash;
+  hash_t *hash;
 
-  my_hash = malloc(sizeof(hash));
-  my_hash->table = g_hash_table_new_full(
+  hash = malloc(sizeof(hash_t));
+  hash->table = g_hash_table_new_full(
       g_str_hash,
       g_str_equal,
       (GDestroyNotify) free,
       (GDestroyNotify) array_free);
 
-  return my_hash;
+  return hash;
 }
 
 void
-hash_free(hash *my_hash) {
-  g_hash_table_destroy(my_hash->table);
-  free(my_hash);
+hash_free(hash_t *hash) {
+  g_hash_table_destroy(hash->table);
+  free(hash);
 }
 
 void
-hash_insert(hash *my_hash, char *key, void *rec) {
-  array *my_array;
+hash_insert(hash_t *hash, char *key, void *record) {
+  array_t *array;
 
-  if(!(my_array = g_hash_table_lookup(my_hash->table, key))) {
-    my_array = array_new_prealloc(1);
-    g_hash_table_insert(my_hash->table, strdup(key), my_array);
+  if(!(array = g_hash_table_lookup(hash->table, key))) {
+    array = array_new_prealloc(1);
+    g_hash_table_insert(hash->table, strdup(key), array);
   }
 
-  array_append(my_array, rec);
+  array_append(array, record);
 }
 
 void
-record_void_print(void *rec) {
-  record_print((record *) rec);
+record_void_print(void *record) {
+  record_print(record);
 }
 
 void
@@ -45,8 +45,8 @@ hash_print_pair(gpointer key, gpointer value, gpointer data) {
 }
 
 void
-hash_print(hash *my_hash) {
+hash_print(hash_t *hash) {
   printf("{\n");
-  g_hash_table_foreach(my_hash->table, (GHFunc) hash_print_pair, NULL);
+  g_hash_table_foreach(hash->table, (GHFunc) hash_print_pair, NULL);
   printf("}\n");
 }

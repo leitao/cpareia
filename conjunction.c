@@ -1,70 +1,70 @@
 #include "conjunction.h"
 
-part *
+part_t *
 part_new(int field, char *transform, int size) {
-  part *my_part;
+  part_t *part;
 
-  my_part = malloc(sizeof(part));
-  my_part->field = field;
-  my_part->transform = transform ? strdup(transform) : NULL;
-  my_part->size = size;
+  part = malloc(sizeof(part_t));
+  part->field = field;
+  part->transform = transform ? strdup(transform) : NULL;
+  part->size = size;
 
-  return my_part;
+  return part;
 }
 
 void
-part_print(part *my_part) {
+part_print(part_t *part) {
   printf("part:\n");
-  printf("field: %d\n", my_part->field);
-  printf("transform: %s\n", my_part->transform);
-  printf("size: %d\n", my_part->size);
+  printf("field: %d\n", part->field);
+  printf("transform: %s\n", part->transform);
+  printf("size: %d\n", part->size);
 }
 
 void
-part_free(part *my_part) {
-  free(my_part->transform);
-  free(my_part);
+part_free(part_t *part) {
+  free(part->transform);
+  free(part);
 }
 
-conjunction *
+conjunction_t *
 conjunction_new(size_t size) {
-  conjunction *my_conj;
+  conjunction_t *conjunction;
 
-  my_conj = malloc(sizeof(conjunction));
-  my_conj->parts = array_new_prealloc(size);
+  conjunction = malloc(sizeof(conjunction_t));
+  conjunction->parts = array_new_prealloc(size);
 
-  return my_conj;
+  return conjunction;
 }
 
 void
 conjunction_add_part(
-    conjunction *my_conj,
+    conjunction_t *conjunction,
     int field,
     char *transform,
     int size) {
-  part *my_part;
-  my_part = part_new(field, transform, size);
+  part_t *part;
+  part = part_new(field, transform, size);
 
-  array_append(my_conj->parts, my_part);
+  array_append(conjunction->parts, part);
 }
 
 void
-conjunction_free(conjunction *my_conj) {
+conjunction_free(conjunction_t *conjunction) {
   size_t i;
 
-  for(i = 0; i < array_size(my_conj->parts); i++) {
-    part_free(array_get(my_conj->parts, i));
+  for(i = 0; i < array_size(conjunction->parts); i++) {
+    part_free(array_get(conjunction->parts, i));
   }
 
-  array_free(my_conj->parts);
-  free(my_conj);
+  array_free(conjunction->parts);
+  free(conjunction);
 }
 
 void
-conjunction_print(conjunction *my_conj) {
+conjunction_print(conjunction_t *conjunction) {
   size_t i;
 
-  for(i = 0; i < array_size(my_conj->parts); i++) {
-    part_print(array_get(my_conj->parts, i));
+  for(i = 0; i < array_size(conjunction->parts); i++) {
+    part_print(array_get(conjunction->parts, i));
   }
 }

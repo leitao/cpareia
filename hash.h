@@ -9,13 +9,13 @@
 #include "array.h"
 #include "record.h"
 
-typedef struct hash {
+typedef struct hash_t{
   GHashTable *table;
-} hash;
+} hash_t;
 
-hash * hash_new();
-void hash_free(hash *);
-void hash_insert(hash *, char *, void *);
-void hash_print(hash *);
+hash_t* hash_new();
+void hash_free(hash_t*);
+void hash_insert(hash_t*, char *, void *);
+void hash_print(hash_t*);
 
 #endif

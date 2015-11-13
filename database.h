@@ -13,17 +13,17 @@
 #include "array.h"
 #include "csv.h"
 
-typedef struct database {
-  array *records;
+typedef struct database_t {
+  array_t *records;
   unsigned char **fields, sep;
   size_t num_fields;
   char *filename;
-} database;
+} database_t;
 
-database *database_new(int num_fields, size_t num_rows);
-void database_free(database *);
-void database_read(database *);
-void database_print(database *);
-void database_fini(database *);
+database_t *database_new(int num_fields, size_t num_rows);
+void database_free(database_t *);
+void database_read(database_t *);
+void database_print(database_t *);
+void database_fini(database_t *);
 
 #endif
