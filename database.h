@@ -20,7 +20,7 @@ typedef struct database_t {
   char *filename;
 } database_t;
 
-typedef void (*database_cb)(record_t *, void *);
+typedef void (*database_cb)(void *, void *);
 
 database_t *database_new(int num_fields, size_t num_rows);
 void database_free(database_t *);

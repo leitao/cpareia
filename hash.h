@@ -11,6 +11,7 @@
 
 typedef struct hash_t{
   GHashTable *table;
+  GMutex mutex;
 } hash_t;
 
 hash_t* hash_new();

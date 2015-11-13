@@ -65,7 +65,7 @@ database_read(database_t *database, database_cb cb, void *cb_data) {
 
     array_append(database->records, record);
 
-    cb(record, cb_data);
+    cb(cb_data, record);
   }
   database_fini(database);
 

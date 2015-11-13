@@ -11,12 +11,15 @@ hash_new() {
       (GDestroyNotify) free,
       (GDestroyNotify) array_free);
 
+  g_mutex_init(&hash->mutex);
+
   return hash;
 }
 
 void
 hash_free(hash_t *hash) {
   g_hash_table_destroy(hash->table);
+  g_mutex_clear(&hash->mutex);
   free(hash);
 }
 
@@ -24,12 +27,15 @@ void
 hash_insert(hash_t *hash, char *key, void *record) {
   array_t *array;
 
+  g_mutex_lock(&hash->mutex);
+
   if(!(array = g_hash_table_lookup(hash->table, key))) {
     array = array_new_prealloc(1);
     g_hash_table_insert(hash->table, strdup(key), array);
   }
 
   array_append(array, record);
+  g_mutex_unlock(&hash->mutex);
 }
 
 void
