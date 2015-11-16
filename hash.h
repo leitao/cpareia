@@ -11,7 +11,9 @@
 
 typedef struct hash_t{
   GHashTable *table;
+#ifndef SINGLE_BLOCKER
   GMutex mutex;
+#endif
 } hash_t;
 
 hash_t* hash_new();

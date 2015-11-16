@@ -25,21 +25,26 @@ main(int argc,  char *argv[]) {
 
   project = project_new();
 
-  pool = pool_new(8, project, generate_keys);
+  pool = pool_new(1, project, generate_keys);
 
   project_parse(project, argv[1]);
   printf("Lendo database e gerando blocagem\n");
   gettimeofday(&t0, NULL);
   database_read(project->d0, callback, pool);
   gettimeofday(&t1, NULL);
-  printf("Feito em %f segundos\n",delta(t0, t1));
+  printf("Leitura finalizada em %f segundos\n",delta(t0, t1));
   mem_print();
 
   /*project_print(project);
   blocking_print(project);*/
 
+  printf("Finalizando blocagem\n");
+  gettimeofday(&t0, NULL);
   pool_free(pool);
+  gettimeofday(&t1, NULL);
+  printf("Resto dos blocos gerados em %f segundos\n", delta(t0, t1));
+  mem_print();
+  return 0;
   project_free(project);
 
-  return 0;
 }
