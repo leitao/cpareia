@@ -57,10 +57,13 @@ project_add_conjunction(project_t *project, conjunction_t *conjunction) {
 void
 project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
   xmlXPathObjectPtr xpath;
-  xmlChar *match_min, *not_match_max;
+  xmlChar *match_min, *not_match_max, *m, *u, *missing, *function;
+  xmlChar *field1;
+  xmlChar *min_value_to_be_match, *use_weight_table, *frequency_table;
   int exact;
-  const xmlChar *child_name;
+  char *child_name;
   xmlNodePtr child;
+  comparator_t *comparator;
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/classifier",
@@ -80,15 +83,52 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
 
   child = xpath->nodesetval->nodeTab[0]->children;
 
-  while(child) {
-    child_name = child->name;
+  /*
+   <approx-string-comparator use-weight-table="true" m="0.9261"
+     u="0.0188" missing="0.94" field1="nomecompleto"
+     frequency-table="tb_freq_nome_paciente" function="winkler"
+     minValueToBeMatch="0.95"/>
+     */
 
-    if(!strcmp((char *) child_name, "exact-string-comparator")) {
+  while(child) {
+    child_name = (char *) child->name;
+
+    m = xmlGetProp(child, BAD_CAST "m");
+    u = xmlGetProp(child, BAD_CAST "u");
+    missing = xmlGetProp(child, BAD_CAST "missing");
+    min_value_to_be_match = xmlGetProp(child, BAD_CAST "minValueToBeMatch");
+    use_weight_table = xmlGetProp(child, BAD_CAST "use-weight-table");
+    frequency_table = xmlGetProp(child, BAD_CAST "frequency-table");
+    function = xmlGetProp(child,BAD_CAST "function");
+    field1 = xmlGetProp(child, BAD_CAST "field1");
+
+    if(!strcmp(child_name, "exact-string-comparator")) {
       exact = 1;
-    } else if(!strcmp((char *) child_name, "approx-string-comparator")) {
+    } else if(!strcmp(child_name, "approx-string-comparator")) {
       exact = 0;
+    } else {
+      exact = -1;
     }
-    printf("%s\n", child_name);
+
+    if(exact != -1) {
+      comparator = comparator_new(
+          exact,
+          use_weight_table ? (!strcmp((char *) use_weight_table, "true") ? 1 : 0) : 0,
+          m ? atof((char *) m) : 0,
+          u ? atof((char *) u) : 0,
+          missing ? atof((char *) missing) : 0,
+          project_get_field_id(project, (char *) field1),
+          (char *) frequency_table,
+          (char *) function,
+          min_value_to_be_match ? atof((char *) min_value_to_be_match) : 0);
+      classifier_add_comparator(project->classifier, comparator);
+    }
+
+    free(m);
+    free(u);
+    free(field1);
+    free(missing);
+    free(min_value_to_be_match);
 
     child = child->next;
   }
@@ -182,7 +222,6 @@ project_parse_conjunctions(project_t *project, xmlXPathContextPtr ctx) {
   xmlChar *field_name, *transform, *size;
   conjunction_t *conjunction;
   int i, field;
-  size_t j;
 
   xpath = xmlXPathEvalExpression(
       BAD_CAST "/project/blocking/conjunction",
@@ -198,19 +237,8 @@ project_parse_conjunctions(project_t *project, xmlXPathContextPtr ctx) {
         field_name = xmlGetProp(part_node, BAD_CAST "field-name");
         transform  = xmlGetProp(part_node, BAD_CAST "transform");
         size = xmlGetProp(part_node, BAD_CAST "size");
-        field = -1;
 
-        /* Finding field_name on fields, so we can save the index
-         * instead of the string. If we don't find it, it's a fatal
-         * error
-         */
-        for(j = 0; j < project->d0->num_fields; j++) {
-          if(!strcmp((char *) field_name, (char *) project->d0->fields[j])) {
-            field = j;
-            break;
-          }
-        }
-
+        field = project_get_field_id(project, (char *) field_name);
         assert(field != -1);
 
         conjunction_add_part(
@@ -254,4 +282,21 @@ project_parse(project_t *project, char *file_name) {
   xmlXPathFreeContext(xpath_ctx);
   xmlFreeDoc(doc);
   xmlCleanupParser();
+}
+
+int
+project_get_field_id(project_t *project, char *field_name) {
+  unsigned int i;
+  int field;
+
+  field = -1;
+
+  for(i = 0; i < project->d0->num_fields; i++) {
+    if(!strcmp((char *) field_name, (char *) project->d0->fields[i])) {
+      field = i;
+      break;
+    }
+  }
+
+  return field;
 }

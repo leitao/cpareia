@@ -21,9 +21,11 @@ typedef struct classifier_t {
 
 comparator_t *
 comparator_new(int, int, double, double, double, int, char *, char *, double);
-void comparator_free(comparator_t *comparator);
+void comparator_free(comparator_t *);
+void comparator_print(comparator_t *);
 classifier_t *classifier_new(int, int);
 void classifier_free(classifier_t *);
 void classifier_print(classifier_t *);
+void classifier_add_comparator(classifier_t *, comparator_t *);
 
 #endif

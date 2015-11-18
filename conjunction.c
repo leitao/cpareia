@@ -15,9 +15,9 @@ part_new(int field, char *transform, int size) {
 void
 part_print(part_t *part) {
   printf("part:\n");
-  printf("field: %d\n", part->field);
-  printf("transform: %s\n", part->transform);
-  printf("size: %d\n", part->size);
+  printf("    field: %d\n", part->field);
+  printf("    transform: %s\n", part->transform);
+  printf("    size: %d\n", part->size);
 }
 
 void

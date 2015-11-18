@@ -26,11 +26,24 @@ comparator_new(
   comparator->u = u;
   comparator->missing = missing;
   comparator->field1 = field1;
-  comparator->frequency_table = strdup(frequency_table);
-  comparator->function = strdup(function);
+  comparator->frequency_table = frequency_table;
+  comparator->function = function;
   comparator->min_value_to_be_match = min_value_to_be_match;
 
   return comparator;
+}
+
+void
+comparator_print(comparator_t *comparator) {
+  printf("  Exact: %d\n", comparator->exact);
+  printf("  Use_weight_table: %d\n", comparator->use_weight_table);
+  printf("  M: %f\n", comparator->m);
+  printf("  U: %f\n", comparator->u);
+  printf("  Missing: %f\n", comparator->missing);
+  printf("  Field1: %d\n", comparator->field1);
+  printf("  Frequency_table: %s\n", comparator->frequency_table);
+  printf("  Function: %s\n", comparator->function);
+  printf("  Min_value_to_be_match: %f\n", comparator->min_value_to_be_match);
 }
 
 void
@@ -48,16 +61,40 @@ classifier_new(int match_min, int not_match_max) {
   classifier->match_min = match_min;
   classifier->not_match_max = not_match_max;
 
+  classifier->comparators = array_new_prealloc(1);
+
   return classifier;
 }
 
 void
+classifier_add_comparator(
+    classifier_t *classifier,
+    comparator_t *comparator) {
+    array_append(classifier->comparators, comparator);
+}
+
+void
 classifier_free(classifier_t *classifier) {
+  size_t i;
+
+  for(i = 0; i < array_size(classifier->comparators); i++) {
+    comparator_free(array_get(classifier->comparators, i));
+  }
+  array_free(classifier->comparators);
+
   free(classifier);
 }
 
 void
 classifier_print(classifier_t *classifier) {
-  printf("match_min: %d\n", classifier->match_min);
-  printf("not_match_max: %d\n", classifier->not_match_max);
+  size_t i;
+
+  printf("    match_min: %d\n", classifier->match_min);
+  printf("    not_match_max: %d\n", classifier->not_match_max);
+
+  printf("\nComparators:");
+  for(i = 0; i < array_size(classifier->comparators); i++) {
+    printf("\n  Comparator %d\n", (int) i);
+    comparator_print(array_get(classifier->comparators, i));
+  }
 }
