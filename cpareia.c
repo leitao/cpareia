@@ -25,9 +25,12 @@ main(int argc,  char *argv[]) {
 
   project = project_new();
 
-  pool = pool_new(1, project, generate_keys);
+  /*pool = pool_new(1, project, generate_keys);*/
 
   project_parse(project, argv[1]);
+  project_print(project);
+  project_free(project);
+  exit(0);
   printf("Lendo database e gerando blocagem\n");
   gettimeofday(&t0, NULL);
   database_read(project->d0, callback, pool);
@@ -45,6 +48,4 @@ main(int argc,  char *argv[]) {
   printf("Resto dos blocos gerados em %f segundos\n", delta(t0, t1));
   mem_print();
   return 0;
-  project_free(project);
-
 }

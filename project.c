@@ -24,7 +24,10 @@ project_print(project_t *project) {
     conjunction_print(array_get(project->conjunctions, i));
   }
 
-  printf("D0:\n");
+  printf("\nClassifier\n");
+  classifier_print(project->classifier);
+
+  printf("\nD0:\n");
   database_print(project->d0);
 }
 
@@ -42,12 +45,58 @@ project_free(project_t *project) {
 
   hash_free(project->blocks);
   array_free(project->conjunctions);
+  classifier_free(project->classifier);
   free(project);
 }
 
 void
 project_add_conjunction(project_t *project, conjunction_t *conjunction) {
   array_append(project->conjunctions, conjunction);
+}
+
+void
+project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
+  xmlXPathObjectPtr xpath;
+  xmlChar *match_min, *not_match_max;
+  int exact;
+  const xmlChar *child_name;
+  xmlNodePtr child;
+
+  xpath = xmlXPathEvalExpression(
+      BAD_CAST "/project/classifier",
+      ctx);
+
+  match_min = xmlGetProp(
+      xpath->nodesetval->nodeTab[0],
+      BAD_CAST "match-min-result");
+
+  not_match_max = xmlGetProp(
+      xpath->nodesetval->nodeTab[0],
+      BAD_CAST "not-match-max-result");
+
+  project->classifier = classifier_new(
+      atoi((char *) match_min),
+      atoi((char *) not_match_max));
+
+  child = xpath->nodesetval->nodeTab[0]->children;
+
+  while(child) {
+    child_name = child->name;
+
+    if(!strcmp((char *) child_name, "exact-string-comparator")) {
+      exact = 1;
+    } else if(!strcmp((char *) child_name, "approx-string-comparator")) {
+      exact = 0;
+    }
+    printf("%s\n", child_name);
+
+    child = child->next;
+  }
+
+  xmlXPathFreeObject(xpath);
+
+  free(match_min);
+  free(not_match_max);
 }
 
 void
@@ -200,6 +249,7 @@ project_parse(project_t *project, char *file_name) {
   project_parse_project(project, xpath_ctx);
   project_parse_datasource(project, xpath_ctx);
   project_parse_conjunctions(project, xpath_ctx);
+  project_parse_classifier(project, xpath_ctx);
 
   xmlXPathFreeContext(xpath_ctx);
   xmlFreeDoc(doc);

@@ -8,6 +8,7 @@
 
 #include "database.h"
 #include "conjunction.h"
+#include "classifier.h"
 #include "hash.h"
 
 typedef struct project_t {
@@ -16,12 +17,12 @@ typedef struct project_t {
   database_t *d0;
   array_t *conjunctions;
   hash_t *blocks;
+  classifier_t *classifier;
 } project_t;
 
 project_t *project_new();
 void project_print(project_t *);
 void project_free(project_t *);
 void project_parse(project_t *, char *);
-void project_add_conjunction(project_t *, conjunction_t *);
 
 #endif
