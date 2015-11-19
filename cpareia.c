@@ -25,17 +25,17 @@ main(int argc,  char *argv[]) {
 
   project = project_new();
 
-  /*pool = pool_new(1, project, generate_keys);*/
+  pool = pool_new(1, project, generate_keys);
 
   project_parse(project, argv[1]);
-  project_print(project);
-  project_free(project);
-  exit(0);
-  printf("Lendo database e gerando blocagem\n");
+
+  printf_green("Lendo database e gerando blocagem\n");
+
   gettimeofday(&t0, NULL);
   database_read(project->d0, callback, pool);
   gettimeofday(&t1, NULL);
-  printf("Leitura finalizada em %f segundos\n",delta(t0, t1));
+
+  printf_green("Leitura finalizada em %f segundos\n",delta(t0, t1));
   mem_print();
 
   /*project_print(project);
@@ -47,5 +47,6 @@ main(int argc,  char *argv[]) {
   gettimeofday(&t1, NULL);
   printf("Resto dos blocos gerados em %f segundos\n", delta(t0, t1));
   mem_print();
+  project_free(project);
   return 0;
 }
