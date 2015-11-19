@@ -83,13 +83,6 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
 
   child = xpath->nodesetval->nodeTab[0]->children;
 
-  /*
-   <approx-string-comparator use-weight-table="true" m="0.9261"
-     u="0.0188" missing="0.94" field1="nomecompleto"
-     frequency-table="tb_freq_nome_paciente" function="winkler"
-     minValueToBeMatch="0.95"/>
-     */
-
   while(child) {
     child_name = (char *) child->name;
 
@@ -297,6 +290,8 @@ project_get_field_id(project_t *project, char *field_name) {
       break;
     }
   }
+
+  assert(field != -1);
 
   return field;
 }
