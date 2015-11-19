@@ -58,7 +58,7 @@ void
 project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
   xmlXPathObjectPtr xpath;
   xmlChar *match_min, *not_match_max, *m, *u, *missing, *function;
-  xmlChar *field1;
+  xmlChar *field1, *default_weight;
   xmlChar *min_value_to_be_match, *use_weight_table, *frequency_table;
   int exact;
   char *child_name;
@@ -94,6 +94,7 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
     frequency_table = xmlGetProp(child, BAD_CAST "frequency-table");
     function = xmlGetProp(child,BAD_CAST "function");
     field1 = xmlGetProp(child, BAD_CAST "field1");
+    default_weight = xmlGetProp(child, BAD_CAST "default-weight");
 
     if(!strcmp(child_name, "exact-string-comparator")) {
       exact = 1;
@@ -113,7 +114,8 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
           project_get_field_id(project, (char *) field1),
           (char *) frequency_table,
           (char *) function,
-          min_value_to_be_match ? atof((char *) min_value_to_be_match) : 0);
+          min_value_to_be_match ? atof((char *) min_value_to_be_match) : 0,
+          default_weight ? atof((char *) default_weight) : 0);
       classifier_add_comparator(project->classifier, comparator);
     }
 
@@ -122,6 +124,7 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
     free(field1);
     free(missing);
     free(min_value_to_be_match);
+    free(default_weight);
 
     child = child->next;
   }

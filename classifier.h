@@ -3,13 +3,15 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "array.h"
 #include "colors.h"
 
 typedef struct comparator_t {
   int exact, use_weight_table, field1;
-  double u, m, missing, min_value_to_be_match;
+  double u, m, missing, min_value_to_be_match, default_weight;
+  double log2_m_u, log2_1m_1u;
   char *frequency_table, *function;
 } comparator_t;
 
@@ -20,7 +22,7 @@ typedef struct classifier_t {
 } classifier_t;
 
 comparator_t *
-comparator_new(int, int, double, double, double, int, char *, char *, double);
+comparator_new(int, int, double, double, double, int, char *, char *, double, double);
 void comparator_free(comparator_t *);
 void comparator_print(comparator_t *);
 classifier_t *classifier_new(int, int);

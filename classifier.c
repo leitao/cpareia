@@ -15,7 +15,8 @@ comparator_new(
     int field1,
     char *frequency_table,
     char *function,
-    double min_value_to_be_match) {
+    double min_value_to_be_match,
+    double default_weight) {
   comparator_t *comparator;
 
   comparator = malloc(sizeof(comparator_t));
@@ -29,6 +30,10 @@ comparator_new(
   comparator->frequency_table = frequency_table;
   comparator->function = function;
   comparator->min_value_to_be_match = min_value_to_be_match;
+  comparator->default_weight = default_weight;
+
+  comparator->log2_m_u = log2(m / u);
+  comparator->log2_1m_1u = log2(1 - m / 1 - u);
 
   return comparator;
 }
@@ -44,6 +49,9 @@ comparator_print(comparator_t *comparator) {
   printf("  Frequency_table: %s\n", comparator->frequency_table);
   printf("  Function: %s\n", comparator->function);
   printf("  Min_value_to_be_match: %f\n", comparator->min_value_to_be_match);
+  printf("  Default_weight: %f\n", comparator->default_weight);
+  printf("  Log2(m, u): %f\n", comparator->log2_m_u);
+  printf("  Log2(1 - m, 1 - u): %f\n", comparator->log2_1m_1u);
 }
 
 void

@@ -1,44 +1,37 @@
 #include "comparator.h"
 
 double
-first_of(double v1, double v2, double v3) {
-  return v1 ? v1 : (v2 ? v2 : v3);
-}
-
-int
-compare_exact(char *field1, char *field2) {
-  return !strcmp(field1, field2);
-}
-
-int
-compare_approx(char *f1, char *f2, compare_fn fn, double min_value) {
-  return fn(f1, f2) >= min_value;
-}
-
-double
-compare(char *f1, char *f2, double inverse_freq_f1, double inverse_freq_f2, double default_weight, int exact, double min_value, double m, double u, int use_weight_table) {
+compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
-  double note;
+  double score;
+  char *f1, *f2;
+
+  f1 = record_get_field(r, field);
+  f2 = record_get_field(s, field);
 
   if(!f1 || !f2) {
     return 0;
   }
 
-  if(exact) {
-    match = compare_exact(f1, f2);
+  if(comparator->exact) {
+    match = !strcmp(f1, f2);
   } else {
-    match = compare_approx(f1, f2, winkler,  min_value);
+    match = winkler(f1, f2) >= comparator->min_value_to_be_match;
   }
 
   if(match) {
-    if(use_weight_table) {
-      note = first_of(inverse_freq_f1, inverse_freq_f2, default_weight);
+    if(comparator->use_weight_table) {
+      /*
+       * Implementar tabela de peso
+       * score = inverse_freq_f1 | inverse_freq_f2 | default_weight
+       */
+      score = comparator->default_weight;
     } else {
-      note = log2(m / u);
+      score = comparator->log2_m_u;
     }
   } else {
-    note = log2(1.0 - m / 1.0 - u);
+    score = comparator->log2_1m_1u;
   }
 
-  return note;
+  return score;
 }
