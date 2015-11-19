@@ -21,9 +21,11 @@ hash_new() {
 void
 hash_free(hash_t *hash) {
   g_hash_table_destroy(hash->table);
+
 #ifndef SINGLE_BLOCKER
   g_mutex_clear(&hash->mutex);
 #endif
+
   free(hash);
 }
 
@@ -60,8 +62,13 @@ hash_print_pair(gpointer key, gpointer value, gpointer data) {
 }
 
 void
+hash_foreach(hash_t *hash, GHFunc fn, void *data) {
+  g_hash_table_foreach(hash->table, fn, data);
+}
+
+void
 hash_print(hash_t *hash) {
   printf("{\n");
-  g_hash_table_foreach(hash->table, (GHFunc) hash_print_pair, NULL);
+  hash_foreach(hash, hash_print_pair, NULL);
   printf("}\n");
 }
