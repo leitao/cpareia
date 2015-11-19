@@ -1,43 +1,74 @@
 #include "colors.h"
 
-void print_color(const char *color, const char *fmt, ...) {
+void printf_red(const char *fmt, ...) {
   va_list ap;
 
-  printf(color);
+  printf(ANSI_COLOR_RED);
 
   va_start(ap, fmt);
   vprintf(fmt, ap);
   va_end(ap);
 
-  printf(ANSI_COLOR_RESET "\n");
+  printf(ANSI_COLOR_RESET);
 }
 
-void printf_red(const char *fmt, ...) {
-  va_list ap;
-  print_color(ANSI_COLOR_RED, fmt, ap);
-}
 
 void printf_green(const char *fmt, ...) {
   va_list ap;
-  print_color(ANSI_COLOR_GREEN, fmt, ap);
+
+  printf(ANSI_COLOR_GREEN);
+
+  va_start(ap, fmt);
+  vprintf(fmt, ap);
+  va_end(ap);
+
+  printf(ANSI_COLOR_RESET);
 }
 
 void printf_yellow(const char *fmt, ...) {
   va_list ap;
-  print_color(ANSI_COLOR_YELLOW, fmt, ap);
+
+  printf(ANSI_COLOR_YELLOW);
+
+  va_start(ap, fmt);
+  vprintf(fmt, ap);
+  va_end(ap);
+
+  printf(ANSI_COLOR_RESET);
 }
 
 void printf_blue(const char *fmt, ...) {
   va_list ap;
-  print_color(ANSI_COLOR_BLUE, fmt, ap);
+
+  printf(ANSI_COLOR_BLUE);
+
+  va_start(ap, fmt);
+  vprintf(fmt, ap);
+  va_end(ap);
+
+  printf(ANSI_COLOR_RESET);
 }
 
 void printf_magenta(const char *fmt, ...) {
   va_list ap;
-  print_color(ANSI_COLOR_MAGENTA, fmt, ap);
+
+  printf(ANSI_COLOR_MAGENTA);
+
+  va_start(ap, fmt);
+  vprintf(fmt, ap);
+  va_end(ap);
+
+  printf(ANSI_COLOR_RESET);
 }
 
 void printf_cyan(const char *fmt, ...) {
   va_list ap;
-  print_color(ANSI_COLOR_CYAN, fmt, ap);
+
+  printf(ANSI_COLOR_CYAN);
+
+  va_start(ap, fmt);
+  vprintf(fmt, ap);
+  va_end(ap);
+
+  printf(ANSI_COLOR_RESET);
 }
