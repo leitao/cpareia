@@ -30,23 +30,26 @@ main(int argc,  char *argv[]) {
   project_parse(project, argv[1]);
 
   printf_green("Lendo database e gerando blocagem\n");
-
   gettimeofday(&t0, NULL);
   database_read(project->d0, callback, pool);
   gettimeofday(&t1, NULL);
-
   printf_green("Leitura finalizada em %f segundos\n",delta(t0, t1));
   mem_print();
 
-  /*project_print(project);
-  blocking_print(project);*/
-
-  printf("Finalizando blocagem\n");
+  printf_green("Finalizando blocagem\n");
   gettimeofday(&t0, NULL);
   pool_free(pool);
   gettimeofday(&t1, NULL);
-  printf("Resto dos blocos gerados em %f segundos\n", delta(t0, t1));
+  printf_green("Resto dos blocos gerados em %f segundos\n", delta(t0, t1));
   mem_print();
+
+  printf_green("Começando comparação\n");
+  gettimeofday(&t0, NULL);
+  comparator_start(project);
+  gettimeofday(&t1, NULL);
+  printf_green("Comparação finalizada em %f segundos\n", delta(t0, t1));
+  mem_print();
+
   project_free(project);
   return 0;
 }

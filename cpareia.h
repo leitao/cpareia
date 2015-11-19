@@ -13,5 +13,6 @@
 #include "blocking.h"
 #include "pool.h"
 #include "mem.h"
+#include "comparator.h"
 
 #endif
