@@ -24,5 +24,5 @@ mem_read(mem *result) {
 void mem_print() {
   mem my_mem;
   mem_read(&my_mem);
-  printf("Memória utilizada: %luMB\n", my_mem.resident / 1024);
+  printf_yellow("Memória utilizada: %luMB\n", my_mem.resident / 1024);
 }
