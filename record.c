@@ -40,3 +40,8 @@ record_print(record_t *record) {
     printf("\t%d: %s\n", i, record->fields[i]);
   }
 }
+
+char *
+record_get_field(record_t *record, int field) {
+  return record->fields[field];
+}

@@ -14,5 +14,6 @@ record_t *record_new(int numb_fields);
 void record_add_field(record_t *, char *);
 void record_free(record_t *);
 void record_print(record_t *);
+char *record_get_field(record_t *, int);
 
 #endif
