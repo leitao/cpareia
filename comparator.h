@@ -1,5 +1,5 @@
 #ifndef _COMPARATOR_H_
-#define _COMPARATOR_H_y
+#define _COMPARATOR_H_
 
 #include "field_comparator.h"
 #include "classifier.h"
