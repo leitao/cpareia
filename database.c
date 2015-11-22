@@ -79,12 +79,12 @@ void
 database_print(database_t *database) {
   size_t i;
 
-  printf("File: %s\n", database->filename);
-  printf("Number of Fields: %d\n", (int) database->num_fields);
-  printf("Fields:\n");
+  printf("  File: %s\n", database->filename);
+  printf("  Number of Fields: %d\n", (int) database->num_fields);
+  printf("  Fields:\n");
 
   for(i = 0; i < database->num_fields; i++) {
-    printf("%s\n", database->fields[i]);
+    printf("    %s\n", database->fields[i]);
   }
 
   for(i = 0; i < array_size(database->records); i++) {
