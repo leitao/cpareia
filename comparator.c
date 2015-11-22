@@ -36,17 +36,23 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   return score;
 }
 
-void
+double
 compare_all(
     classifier_t *classifier,
     record_t *r1,
     record_t *r2,
     double *scores) {
   size_t i;
+  double score;
+
+  score = 0;
 
   for(i = 0; i < array_size(classifier->comparators); i++) {
     scores[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
+    score += scores[i];
   }
+
+  return score;
 }
 
 void
@@ -54,6 +60,8 @@ compare_block(array_t *array, project_t *project) {
   size_t i, j, size;
   record_t *r1, *r2;
   double *scores;
+  double score;
+  char status;
 
   size = array_size(array);
 
@@ -63,9 +71,23 @@ compare_block(array_t *array, project_t *project) {
     r1 = array_get(array, i);
     for(j = i + 1; j < size; j++) {
       r2 = array_get(array, j);
-      compare_all(project->classifier, r1, r2, scores);
+      score = compare_all(project->classifier, r1, r2, scores);
+
+      if(score < project->output->min) {
+        status = 'N';
+      } else if(score > project->output->max) {
+        status = 'Y';
+      } else {
+        status = '?';
+      }
+      printf("%c %f %s %s\n",
+          status,
+          score,
+          record_get_field(r1, 0),
+          record_get_field(r2, 0));
     }
   }
+  free(scores);
 }
 
 void
