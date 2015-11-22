@@ -1,7 +1,5 @@
 #include "comparator.h"
 
-size_t num = 0;
-
 double
 compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
@@ -38,37 +36,34 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   return score;
 }
 
-double *
-compare_all(classifier_t *classifier, record_t *r1, record_t *r2) {
-  double *score;
-  size_t i, size;
+void
+compare_all(
+    classifier_t *classifier,
+    record_t *r1,
+    record_t *r2,
+    double *scores) {
+  size_t i;
 
-  size = array_size(classifier->comparators);
-  score = malloc(sizeof(double) * size);
-
-  record_print(r1);
-  record_print(r2);
-
-  for(i = 0; i < size; i++) {
-    score[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
-    printf("score=%f\n", score[i]);
+  for(i = 0; i < array_size(classifier->comparators); i++) {
+    scores[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
   }
-
-  return score;
 }
 
 void
 compare_block(array_t *array, project_t *project) {
   size_t i, j, size;
   record_t *r1, *r2;
+  double *scores;
 
   size = array_size(array);
+
+  scores = malloc(sizeof(double) * size);
 
   for(i = 0; i < size - 1; i++) {
     r1 = array_get(array, i);
     for(j = i + 1; j < size; j++) {
       r2 = array_get(array, j);
-      free(compare_all(project->classifier, r1, r2));
+      compare_all(project->classifier, r1, r2, scores);
     }
   }
 }
@@ -81,7 +76,6 @@ compare_block_void(void *array, void *project) {
 void
 comparator_get_block(gpointer key, gpointer array, gpointer pool) {
   (void) key;
-  num++;
 
   pool_push((pool_t *) pool, array);
 }
@@ -90,11 +84,9 @@ void
 comparator_start(project_t *project) {
   pool_t *pool;
 
-  pool = pool_new(1, project, compare_block_void);
+  pool = pool_new(8, project, compare_block_void);
 
   hash_foreach(project->blocks, comparator_get_block, pool);
 
   pool_free(pool);
-
-  printf_magenta("acabei com num=%lu\n", num);
 }

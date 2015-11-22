@@ -9,6 +9,6 @@
 
 typedef double (*compare_fn)(char *, char *);
 
-double *compare_all(classifier_t *, record_t *, record_t *);
+void compare_all(classifier_t *, record_t *, record_t *, double *);
 void comparator_start(project_t *);
 #endif
