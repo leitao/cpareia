@@ -29,6 +29,9 @@ project_print(project_t *project) {
 
   printf("\nD0:\n");
   database_print(project->d0);
+
+  printf("\nOutput:\n");
+  output_print(project->output);
 }
 
 void
@@ -46,6 +49,7 @@ project_free(project_t *project) {
   hash_free(project->blocks);
   array_free(project->conjunctions);
   classifier_free(project->classifier);
+  output_free(project->output);
   free(project);
 }
 
@@ -212,6 +216,31 @@ project_parse_project(project_t *project, xmlXPathContextPtr ctx) {
 }
 
 void
+project_parse_output(project_t *project, xmlXPathContextPtr ctx) {
+  xmlXPathObjectPtr xpath;
+  xmlChar *filename, *min, *max;
+
+  xpath = xmlXPathEvalExpression(BAD_CAST "/project/output", ctx);
+
+  filename = xmlGetProp(xpath->nodesetval->nodeTab[0], BAD_CAST "file");
+  min = xmlGetProp(xpath->nodesetval->nodeTab[0], BAD_CAST "min");
+  max = xmlGetProp(xpath->nodesetval->nodeTab[0], BAD_CAST "max");
+
+  assert(xpath != NULL);
+  assert(min != NULL);
+  assert(max != NULL);
+
+  project->output = output_new(
+      (char *) filename,
+      atof( (char *) min),
+      atof( (char *) max));
+
+  free(min);
+  free(max);
+  xmlXPathFreeObject(xpath);
+}
+
+void
 project_parse_conjunctions(project_t *project, xmlXPathContextPtr ctx) {
   xmlXPathObjectPtr xpath;
   xmlNode *part_node;
@@ -274,6 +303,7 @@ project_parse(project_t *project, char *file_name) {
   project_parse_datasource(project, xpath_ctx);
   project_parse_conjunctions(project, xpath_ctx);
   project_parse_classifier(project, xpath_ctx);
+  project_parse_output(project, xpath_ctx);
 
   xmlXPathFreeContext(xpath_ctx);
   xmlFreeDoc(doc);

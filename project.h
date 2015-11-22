@@ -10,6 +10,7 @@
 #include "conjunction.h"
 #include "classifier.h"
 #include "hash.h"
+#include "output.h"
 
 typedef struct project_t {
   unsigned char *name;
@@ -18,7 +19,10 @@ typedef struct project_t {
   array_t *conjunctions;
   hash_t *blocks;
   classifier_t *classifier;
+  output_t *output;
 } project_t;
+
+#include "pool.h"
 
 project_t *project_new();
 void project_print(project_t *);
