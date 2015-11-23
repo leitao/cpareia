@@ -1,22 +1,17 @@
 #include "array.h"
 
 array_t *
-array_new() {
-  return array_new_prealloc(INITIAL_SIZE);
-}
-
-array_t *
-array_new_prealloc_zeroed(size_t size) {
+array_new_zeroed(size_t size) {
   array_t *array;
 
-  array = array_new_prealloc(size);
+  array = array_new(size);
   bzero(array->_data, sizeof(void *) * size);
 
   return array;
 }
 
 array_t *
-array_new_prealloc(size_t size) {
+array_new(size_t size) {
   array_t *array;
 
   array = malloc(sizeof(array_t));
@@ -26,12 +21,6 @@ array_new_prealloc(size_t size) {
   array->_data = malloc(sizeof(void *) * size);
 
   return array;
-}
-
-void
-array_fini(array_t *array) {
-  array->_data = realloc(array->_data, sizeof(void *) * array->_size);
-  array->_total_size = array->_size;
 }
 
 void

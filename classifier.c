@@ -69,7 +69,7 @@ classifier_new(int match_min, int not_match_max) {
   classifier->match_min = match_min;
   classifier->not_match_max = not_match_max;
 
-  classifier->comparators = array_new_prealloc(1);
+  classifier->comparators = array_new(1);
 
   return classifier;
 }

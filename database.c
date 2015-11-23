@@ -7,7 +7,7 @@ database_new(int num_fields, size_t num_rows) {
 
   database = malloc(sizeof(database_t));
 
-  database->records = array_new_prealloc_zeroed(num_rows);
+  database->records = array_new_zeroed(num_rows);
   database->num_fields = num_fields;
 
   database->fields = malloc(sizeof(unsigned char *) * num_fields);
@@ -17,11 +17,6 @@ database_new(int num_fields, size_t num_rows) {
   }
 
   return database;
-}
-
-void
-database_fini(database_t *database) {
-  array_fini(database->records);
 }
 
 void
@@ -86,8 +81,6 @@ database_read(database_t *database, database_cb cb, void *cb_data) {
       cb(cb_data, record);
     }
   }
-  database_fini(database);
-
   csv_fields_free(csv_fields);
   csv_row_free(csv_row);
 

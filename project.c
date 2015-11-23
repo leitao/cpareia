@@ -6,7 +6,7 @@ project_new() {
 
   project = malloc(sizeof(project_t));
 
-  project->conjunctions = array_new_prealloc(1);
+  project->conjunctions = array_new(1);
 
   project->blocks = hash_new();
 
@@ -280,8 +280,6 @@ project_parse_conjunctions(project_t *project, xmlXPathContextPtr ctx) {
     }
     project_add_conjunction(project, conjunction);
   }
-
-  array_fini(project->conjunctions);
 
   xmlXPathFreeObject(xpath);
 }

@@ -1,6 +1,5 @@
 #ifndef _ARRAY_H_
 #define _ARRAY_H_
-#define INITIAL_SIZE 10000
 
 #include <stdlib.h>
 #include <strings.h>
@@ -16,11 +15,9 @@ typedef struct array_t {
 
 typedef void (*array_fn_print)(void *);
 
-array_t *array_new();
-array_t *array_new_prealloc(size_t);
-array_t *array_new_prealloc_zeroed(size_t);
+array_t *array_new(size_t);
+array_t *array_new_zeroed(size_t);
 void array_print(array_t *, array_fn_print);
-void array_fini(array_t *);
 void array_free(array_t *);
 void array_append(array_t *, void *);
 void array_add_at(array_t *, void *, size_t);

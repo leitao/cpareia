@@ -38,7 +38,7 @@ hash_insert(hash_t *hash, char *key, void *record) {
 #endif
 
   if(!(array = g_hash_table_lookup(hash->table, key))) {
-    array = array_new_prealloc(1);
+    array = array_new(1);
     g_hash_table_insert(hash->table, strdup(key), array);
   }
 

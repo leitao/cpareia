@@ -31,7 +31,7 @@ conjunction_new(size_t size) {
   conjunction_t *conjunction;
 
   conjunction = malloc(sizeof(conjunction_t));
-  conjunction->parts = array_new_prealloc(size);
+  conjunction->parts = array_new(size);
 
   return conjunction;
 }
