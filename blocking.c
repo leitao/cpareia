@@ -55,7 +55,7 @@ blocking_generate_all_keys(void *data) {
 }
 
 pthread_t **
-blocking_generate_keys_async(project_t *project, int num_threads) {
+blocking_async(project_t *project, int num_threads) {
   pthread_t **threads;
   blocking_thread_params *param;
   int i;

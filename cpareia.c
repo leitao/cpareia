@@ -26,9 +26,7 @@ main(int argc,  char *argv[]) {
 
   read_thread = database_read_async(project->d0);
 
-  blocking_threads = blocking_generate_keys_async(
-      project,
-      num_blocking_threads);
+  blocking_threads = blocking_async(project, num_blocking_threads);
 
   pthread_join(*read_thread, NULL);
 

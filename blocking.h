@@ -15,7 +15,7 @@ typedef struct blocking_thread_params {
 } blocking_thread_params;
 
 void blocking_generate_keys(project_t *, record_t *);
-pthread_t **blocking_generate_keys_async(project_t *, int);
+pthread_t **blocking_async(project_t *, int);
 void blocking_print(project_t *);
 
 #endif
