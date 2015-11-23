@@ -22,8 +22,6 @@ typedef struct project_t {
   output_t *output;
 } project_t;
 
-#include "pool.h"
-
 project_t *project_new();
 void project_print(project_t *);
 void project_free(project_t *);

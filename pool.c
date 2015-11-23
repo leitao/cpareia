@@ -1,18 +1,17 @@
 #include "pool.h"
 
 pool_t *
-pool_new(int num_threads, project_t *project, GFunc func) {
+pool_new(int num_threads, void *data, GFunc func) {
   pool_t *pool;
 
   pool = malloc(sizeof(pool_t));
-  pool->pool = g_thread_pool_new(func, project, num_threads, TRUE, NULL);
+  pool->pool = g_thread_pool_new(func, data, num_threads, TRUE, NULL);
 
   return pool;
 }
 
 void
 pool_push(pool_t *pool, void *data) {
-
   g_thread_pool_push(pool->pool, data, NULL);
 }
 
