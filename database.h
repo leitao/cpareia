@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 #include "record.h"
 #include "errors.h"
@@ -25,6 +26,7 @@ typedef void (*database_cb)(void *, void *);
 database_t *database_new(int num_fields, size_t num_rows);
 void database_free(database_t *);
 void database_read(database_t *, database_cb, void *);
+pthread_t *database_read_async(database_t *);
 void database_print(database_t *);
 void database_fini(database_t *);
 

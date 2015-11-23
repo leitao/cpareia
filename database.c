@@ -7,7 +7,7 @@ database_new(int num_fields, size_t num_rows) {
 
   database = malloc(sizeof(database_t));
 
-  database->records = array_new_prealloc(num_rows);
+  database->records = array_new_prealloc_zeroed(num_rows);
   database->num_fields = num_fields;
 
   database->fields = malloc(sizeof(unsigned char *) * num_fields);
@@ -42,6 +42,23 @@ database_free(database_t *database) {
 
   free(database);
 }
+void *
+database_read_simple(void *database) {
+  database_read(database, NULL, NULL);
+
+  return NULL;
+}
+
+pthread_t *
+database_read_async(database_t *database) {
+  pthread_t *thread;
+
+  thread = malloc(sizeof(pthread_t));
+
+  pthread_create(thread, NULL, database_read_simple, database);
+
+  return thread;
+}
 
 void
 database_read(database_t *database, database_cb cb, void *cb_data) {
@@ -65,7 +82,9 @@ database_read(database_t *database, database_cb cb, void *cb_data) {
 
     array_append(database->records, record);
 
-    cb(cb_data, record);
+    if(cb) {
+      cb(cb_data, record);
+    }
   }
   database_fini(database);
 
