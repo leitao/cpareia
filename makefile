@@ -1,7 +1,7 @@
 NAME = cpareia
 CC = gcc
-CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0 glib-2.0` -DSINGLE_BLOCKER
-#CFLAGS = -O3 -march=native -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0 glib-2.0` -DSINGLE_BLOCKER
+CFLAGS = -O0 -g -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0 glib-2.0` -DSINGLE_BLOCKER -Wno-variadic-macros
+#CFLAGS = -O3 -march=native -Wall -Wextra -pedantic -fdiagnostics-color=always `pkg-config --cflags libxml-2.0 glib-2.0` -DSINGLE_BLOCKER -Wno-variadic-macros
 LDFLAGS = `pkg-config --libs libxml-2.0 glib-2.0` -lm
 SRC = .
 DEPS = $(wildcard $(SRC)/*.h)
