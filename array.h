@@ -7,7 +7,7 @@
 
 #define array_get(array, i) array->_data[i]
 #define array_size(array) array->_size
-#define array_total_size(array) array->_size
+#define array_total_size(array) array->_total_size
 
 typedef struct array_t {
   void **_data;
