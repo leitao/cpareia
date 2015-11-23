@@ -6,49 +6,49 @@ delta(struct timeval a, struct timeval b) {
   return (int) (b.tv_sec - a.tv_sec);
 }
 
-void callback(void *pool, void *record) {
-  pool_push(pool, record);
-}
-
-void generate_keys(void *record, void *project) {
-  blocking_generate_keys(project, record);
-}
-
 int
 main(int argc,  char *argv[]) {
+  int i, num_blocking_threads;
   project_t *project;
-  struct timeval t0, t1;
-  pool_t *pool;
+  /*struct timeval t0, t1;*/
+  pthread_t *read_thread;
+  pthread_t **blocking_threads;
+  void *data;
 
   if(argc != 2)
     handle_error("Usage: cpareia XML");
 
-  project = project_new();
+  num_blocking_threads = 8;
 
-  pool = pool_new(1, project, generate_keys);
+  project = project_new();
 
   project_parse(project, argv[1]);
 
-  printf_green("Lendo database e gerando blocagem\n");
-  gettimeofday(&t0, NULL);
-  database_read(project->d0, callback, pool);
-  gettimeofday(&t1, NULL);
-  printf_green("Leitura finalizada em %ds\n", delta(t0, t1));
-  mem_print();
+  read_thread = database_read_async(project->d0);
 
-  printf_green("Finalizando blocagem\n");
-  gettimeofday(&t0, NULL);
-  pool_free(pool);
-  gettimeofday(&t1, NULL);
-  printf_green("Resto dos blocos gerados em %ds\n", delta(t0, t1));
-  mem_print();
+  blocking_threads = blocking_generate_keys_async(
+      project,
+      num_blocking_threads);
 
+  /*
   printf_green("Começando comparação\n");
   gettimeofday(&t0, NULL);
   comparator_start(project);
   gettimeofday(&t1, NULL);
   printf_green("Comparação finalizada em %f segundos\n", delta(t0, t1));
   mem_print();
+  */
+
+  pthread_join(*read_thread, NULL);
+
+  for(i = 0; i < num_blocking_threads; i++) {
+    pthread_join(*blocking_threads[i], &data);
+    free(blocking_threads[i]);
+    free(data);
+  }
+
+  free(blocking_threads);
+  free(read_thread);
 
   project_free(project);
   return 0;
