@@ -1,9 +1,9 @@
 #include "cpareia.h"
 #include <sys/time.h>
 
-double
+int
 delta(struct timeval a, struct timeval b) {
-  return (b.tv_sec - a.tv_sec);/* + (b.tv_usec - a.tv_usec);*/
+  return (int) (b.tv_sec - a.tv_sec);
 }
 
 void callback(void *pool, void *record) {
@@ -33,14 +33,14 @@ main(int argc,  char *argv[]) {
   gettimeofday(&t0, NULL);
   database_read(project->d0, callback, pool);
   gettimeofday(&t1, NULL);
-  printf_green("Leitura finalizada em %f segundos\n",delta(t0, t1));
+  printf_green("Leitura finalizada em %ds\n", delta(t0, t1));
   mem_print();
 
   printf_green("Finalizando blocagem\n");
   gettimeofday(&t0, NULL);
   pool_free(pool);
   gettimeofday(&t1, NULL);
-  printf_green("Resto dos blocos gerados em %f segundos\n", delta(t0, t1));
+  printf_green("Resto dos blocos gerados em %ds\n", delta(t0, t1));
   mem_print();
 
   printf_green("Começando comparação\n");
