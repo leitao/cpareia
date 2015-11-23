@@ -80,11 +80,11 @@ compare_block(array_t *array, project_t *project) {
       } else {
         status = '?';
       }
-      printf("%c %f %s %s\n",
+      /*printf("%c %f %s %s\n",
           status,
           score,
           record_get_field(r1, 0),
-          record_get_field(r2, 0));
+          record_get_field(r2, 0));*/
     }
   }
   free(scores);

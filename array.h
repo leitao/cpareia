@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <strings.h>
 
+#define array_get(array, i) array->_data[i]
+#define array_size(array) array->_size
+#define array_total_size(array) array->_size
+
 typedef struct array_t {
   void **_data;
   size_t _size, _total_size;
@@ -20,8 +24,5 @@ void array_fini(array_t *);
 void array_free(array_t *);
 void array_append(array_t *, void *);
 void array_add_at(array_t *, void *, size_t);
-void *array_get(array_t *, size_t);
-size_t array_size(array_t *);
-size_t array_total_size(array_t *);
 
 #endif

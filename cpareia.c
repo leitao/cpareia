@@ -10,7 +10,7 @@ int
 main(int argc,  char *argv[]) {
   int i, num_blocking_threads;
   project_t *project;
-  /*struct timeval t0, t1;*/
+  struct timeval t0, t1;
   pthread_t *read_thread;
   pthread_t **blocking_threads;
   void *data;
@@ -30,15 +30,6 @@ main(int argc,  char *argv[]) {
       project,
       num_blocking_threads);
 
-  /*
-  printf_green("Começando comparação\n");
-  gettimeofday(&t0, NULL);
-  comparator_start(project);
-  gettimeofday(&t1, NULL);
-  printf_green("Comparação finalizada em %f segundos\n", delta(t0, t1));
-  mem_print();
-  */
-
   pthread_join(*read_thread, NULL);
 
   for(i = 0; i < num_blocking_threads; i++) {
@@ -50,6 +41,15 @@ main(int argc,  char *argv[]) {
   free(blocking_threads);
   free(read_thread);
 
+  printf_green("Começando comparação\n");
+  gettimeofday(&t0, NULL);
+  comparator_start(project);
+  gettimeofday(&t1, NULL);
+  printf_green("Comparação finalizada em %f segundos\n", delta(t0, t1));
+  mem_print();
+
+  /*
   project_free(project);
+  */
   return 0;
 }

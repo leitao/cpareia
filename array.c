@@ -61,21 +61,6 @@ array_append(array_t *array, void *el) {
   array_add_at(array, el, array->_size);
 }
 
-inline void *
-array_get(array_t *array, size_t i) {
-  return i < array->_size ? array->_data[i] : NULL;
-}
-
-inline size_t
-array_size(array_t *array) {
-  return array->_size;
-}
-
-inline size_t
-array_total_size(array_t *array) {
-  return array->_total_size;
-}
-
 void
 array_print(array_t *array, array_fn_print fn_print) {
   size_t i;
