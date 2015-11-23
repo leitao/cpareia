@@ -6,6 +6,16 @@ array_new() {
 }
 
 array_t *
+array_new_prealloc_zeroed(size_t size) {
+  array_t *array;
+
+  array = array_new_prealloc(size);
+  bzero(array->_data, sizeof(void *) * size);
+
+  return array;
+}
+
+array_t *
 array_new_prealloc(size_t size) {
   array_t *array;
 
@@ -59,6 +69,11 @@ array_get(array_t *array, size_t i) {
 inline size_t
 array_size(array_t *array) {
   return array->_size;
+}
+
+inline size_t
+array_total_size(array_t *array) {
+  return array->_total_size;
 }
 
 void
