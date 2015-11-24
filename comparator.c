@@ -106,9 +106,9 @@ void
 comparator_start(project_t *project, int num_threads) {
   pool_t *pool;
 
-  pool = pool_new(num_threads, project, compare_pair_void);
+  pool = pool_new(num_threads, project, compare_block_void);
 
-  hash_foreach(project->blocks, comparator_generate_pairs, pool);
+  hash_foreach(project->blocks, comparator_get_block, pool);
 
   pool_free(pool);
 }
