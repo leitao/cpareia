@@ -8,5 +8,5 @@
 #include "project.h"
 #include "output.h"
 
-void comparator_start(project_t *, int);
+void comparator_run(project_t *, int);
 #endif

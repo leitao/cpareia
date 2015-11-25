@@ -100,7 +100,7 @@ comparator_get_block(gpointer key, gpointer array, gpointer pool) {
 }
 
 void
-comparator_start(project_t *project, int num_threads) {
+comparator_run(project_t *project, int num_threads) {
   pool_t *pool;
 
   pool = pool_new(num_threads, project, compare_block_void);
