@@ -9,7 +9,6 @@ int
 main(int argc,  char *argv[]) {
   int i;
   project_t *project;
-  struct timeval t0, t1;
   pthread_t *read_thread;
   pthread_t **blocking_threads;
   long max_threads;
@@ -37,12 +36,7 @@ main(int argc,  char *argv[]) {
   free(blocking_threads);
   free(read_thread);
 
-  printf_green("Começando comparação\n");
-  gettimeofday(&t0, NULL);
-  comparator_start(project, max_threads);
-  gettimeofday(&t1, NULL);
-  printf_green("Comparação finalizada em %f segundos\n", delta(t0, t1));
-  mem_print();
+  comparator_run(project, max_threads);
 
   project_free(project);
   return 0;
