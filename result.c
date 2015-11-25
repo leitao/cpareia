@@ -2,8 +2,8 @@
 
 result_t *
 result_new(
-    record_t *r1,
-    record_t *r2,
+    char *id1,
+    char *id2,
     char status,
     double score,
     double *scores,
@@ -13,8 +13,8 @@ result_new(
 
   result = malloc(sizeof(result_t));
 
-  result->r1 = r1;
-  result->r2 = r2;
+  result->id1 = id1;
+  result->id2 = id2;
   result->status = status;
   result->score = score;
   result->scores = scores;

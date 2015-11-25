@@ -5,12 +5,12 @@
 #include "record.h"
 
 typedef struct result_t {
-  record_t *r1, *r2;
+  char *id1, *id2;
   char status;
   double score, *scores;
   int num_scores;
 } result_t;
 #endif
 
-result_t *result_new(record_t *, record_t *, char, double, double *, int);
+result_t *result_new(char *, char *, char, double, double *, int);
 void result_free(result_t *);
