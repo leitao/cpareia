@@ -3,12 +3,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/resource.h>
 
-#include "errors.h"
-
-typedef struct mem {
-    unsigned long size, resident, share, text, lib, data, dt;
-} mem;
+#include "colors.h"
 
 void mem_print();
 
