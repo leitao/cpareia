@@ -1,17 +1,16 @@
 #include "output.h"
 
 void
-output_write(void *res, void *out) {
+output_write(void *res, void *f) {
   int i;
   result_t *result;
-  output_t *output;
+  FILE *file;
 
   result = (result_t *) res;
-  output = (output_t *) out;
+  file = (FILE *) f;
 
-  /*
   fprintf(
-      output->file,
+      file,
       "%c %c %s %s %f",
       result->status,
       'X',
@@ -20,10 +19,9 @@ output_write(void *res, void *out) {
       result->score);
 
   for(i = 0; i < result->num_scores; i++) {
-    fprintf(output->file, " %f", result->scores[i]);
+    fprintf(file, " %f", result->scores[i]);
   }
-  fprintf(output->file, "\n");
-  */
+  fprintf(file, "\n");
 
   result_free(result);
 }
@@ -42,7 +40,7 @@ output_new(char *filename, double min, double max) {
     handle_error("Erro ao abrir arquivo %s\n", output->filename);
   }
 
-  output->pool = pool_new(1, output, output_write);
+  output->pool = pool_new(1, output->file, output_write);
 
   return output;
 }
