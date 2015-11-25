@@ -6,6 +6,6 @@
 
 #include "colors.h"
 
-void handle_error(char *msg);
+void handle_error(const char *, ...);
 
 #endif

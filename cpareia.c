@@ -16,7 +16,7 @@ main(int argc,  char *argv[]) {
   long max_threads;
 
   if(argc != 2)
-    handle_error("Usage: cpareia XML");
+    handle_error("Usage: cpareia XML\n");
 
   max_threads = sysconf(_SC_NPROCESSORS_ONLN);
 
