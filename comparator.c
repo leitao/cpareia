@@ -41,15 +41,15 @@ compare_all(
     classifier_t *classifier,
     record_t *r1,
     record_t *r2,
-    double *scores) {
+    double **scores) {
   size_t i;
   double score;
 
   score = 0;
 
   for(i = 0; i < array_size(classifier->comparators); i++) {
-    scores[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
-    score += scores[i];
+    *scores[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
+    score += *scores[i];
   }
 
   return score;
@@ -57,21 +57,22 @@ compare_all(
 
 void
 compare_block(array_t *array, project_t *project) {
-  size_t i, j, size;
+  size_t i, j, size, classes;
   record_t *r1, *r2;
+  result_t *result;
   double *scores;
   double score;
   char status;
 
   size = array_size(array);
-
-  scores = malloc(sizeof(double) * size);
+  classes = array_size(project->classifier->comparators);
 
   for(i = 0; i < size - 1; i++) {
     r1 = array_get(array, i);
     for(j = i + 1; j < size; j++) {
       r2 = array_get(array, j);
-      score = compare_all(project->classifier, r1, r2, scores);
+      scores = malloc(sizeof(double) * classes);
+      score = compare_all(project->classifier, r1, r2, &scores);
 
       if(score < project->output->min) {
         status = 'N';
@@ -80,11 +81,8 @@ compare_block(array_t *array, project_t *project) {
       } else {
         status = '?';
       }
-      /*printf("%c %f %s %s\n",
-          status,
-          score,
-          record_get_field(r1, 0),
-          record_get_field(r2, 0));*/
+      result = result_new(r1, r2, status, score, scores, classes);
+      output_push(project->output, result);
     }
   }
   free(scores);
