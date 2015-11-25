@@ -38,6 +38,9 @@ void
 project_free(project_t *project) {
   size_t i;
 
+  /* Output depends on everything else, so we need to lock here first */
+  output_free(project->output);
+
   free(project->task);
   free(project->name);
   database_free(project->d0);
@@ -49,7 +52,6 @@ project_free(project_t *project) {
   hash_free(project->blocks);
   array_free(project->conjunctions);
   classifier_free(project->classifier);
-  output_free(project->output);
   free(project);
 }
 
