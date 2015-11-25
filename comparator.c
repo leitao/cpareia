@@ -81,7 +81,13 @@ compare_block(array_t *array, project_t *project) {
       } else {
         status = '?';
       }
-      result = result_new(r1, r2, status, score, scores, classes);
+      result = result_new(
+          record_get_field(r1, 0),
+          record_get_field(r2, 0),
+          status,
+          score,
+          scores,
+          classes);
       output_push(project->output, result);
     }
   }

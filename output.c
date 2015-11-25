@@ -14,8 +14,8 @@ output_write(void *res, void *f) {
       "%c %c %s %s %f",
       result->status,
       'X',
-      record_get_field(result->r1, 0),
-      record_get_field(result->r2, 0),
+      result->id1,
+      result->id2,
       result->score);
 
   for(i = 0; i < result->num_scores; i++) {
@@ -47,6 +47,9 @@ output_new(char *filename, double min, double max) {
 
 void
 output_push(output_t *output, result_t *result) {
+  /*if(g_thread_pool_unprocessed(output->pool->pool) > 10000000) {
+    sleep(1);
+  }*/
   pool_push(output->pool, result);
 }
 
