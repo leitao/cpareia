@@ -9,6 +9,7 @@ output_write(void *res, void *out) {
   result = (result_t *) res;
   output = (output_t *) out;
 
+  /*
   fprintf(
       output->file,
       "%c %c %s %s %f",
@@ -22,6 +23,9 @@ output_write(void *res, void *out) {
     fprintf(output->file, " %f", result->scores[i]);
   }
   fprintf(output->file, "\n");
+  */
+
+  result_free(result);
 }
 
 output_t *

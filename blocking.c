@@ -1,6 +1,11 @@
 #include "blocking.h"
 
 void
+blocking_thread_params_free(blocking_thread_params_t *params) {
+  free(params);
+}
+
+void
 blocking_generate_keys(project_t *project, record_t *record) {
   size_t i, j;
   conjunction_t *conjunction;
@@ -35,7 +40,7 @@ blocking_generate_all_keys(void *data) {
   size_t i;
   int rank, total_ranks;
   project_t *project;
-  blocking_thread_params *param;
+  blocking_thread_params_t *param;
   record_t *record;
 
   param = data;
@@ -51,20 +56,22 @@ blocking_generate_all_keys(void *data) {
     blocking_generate_keys(project, record);
   }
 
-  return data;
+  blocking_thread_params_free(param);
+
+  return NULL;
 }
 
 pthread_t **
 blocking_async(project_t *project, int num_threads) {
   pthread_t **threads;
-  blocking_thread_params *param;
+  blocking_thread_params_t *param;
   int i;
 
   threads = malloc(sizeof(pthread_t *) * num_threads);
 
   for(i = 0; i < num_threads; i++) {
     threads[i] = malloc(sizeof(pthread_t));
-    param = malloc(sizeof(blocking_thread_params));
+    param = malloc(sizeof(blocking_thread_params_t));
     param->project = project;
     param->rank = i;
     param->total_ranks = num_threads;

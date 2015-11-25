@@ -41,15 +41,15 @@ compare_all(
     classifier_t *classifier,
     record_t *r1,
     record_t *r2,
-    double **scores) {
+    double *scores) {
   size_t i;
   double score;
 
   score = 0;
 
   for(i = 0; i < array_size(classifier->comparators); i++) {
-    *scores[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
-    score += *scores[i];
+    scores[i] = compare(array_get(classifier->comparators, i), r1, r2, i);
+    score += scores[i];
   }
 
   return score;
@@ -72,7 +72,7 @@ compare_block(array_t *array, project_t *project) {
     for(j = i + 1; j < size; j++) {
       r2 = array_get(array, j);
       scores = malloc(sizeof(double) * classes);
-      score = compare_all(project->classifier, r1, r2, &scores);
+      score = compare_all(project->classifier, r1, r2, scores);
 
       if(score < project->output->min) {
         status = 'N';
@@ -85,7 +85,6 @@ compare_block(array_t *array, project_t *project) {
       output_push(project->output, result);
     }
   }
-  free(scores);
 }
 
 void

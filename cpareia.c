@@ -12,7 +12,6 @@ main(int argc,  char *argv[]) {
   struct timeval t0, t1;
   pthread_t *read_thread;
   pthread_t **blocking_threads;
-  void *data;
   long max_threads;
 
   if(argc != 2)
@@ -31,9 +30,8 @@ main(int argc,  char *argv[]) {
   pthread_join(*read_thread, NULL);
 
   for(i = 0; i < max_threads - 1; i++) {
-    pthread_join(*blocking_threads[i], &data);
+    pthread_join(*blocking_threads[i], NULL);
     free(blocking_threads[i]);
-    free(data);
   }
 
   free(blocking_threads);

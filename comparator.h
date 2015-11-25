@@ -8,7 +8,5 @@
 #include "project.h"
 #include "output.h"
 
-typedef double (*compare_fn)(char *, char *);
-
 void comparator_start(project_t *, int);
 #endif
