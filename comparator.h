@@ -8,5 +8,7 @@
 #include "project.h"
 #include "output.h"
 
+#define between(val, min, max) val >= min && val <= max
+
 void comparator_run(project_t *, int);
 #endif
