@@ -13,7 +13,7 @@ typedef struct hash_t{
   GHashTable *table;
 
 #ifndef SINGLE_BLOCKER
-  GMutex mutex;
+  pthread_mutex_t mutex;
 #endif
 
 } hash_t;
