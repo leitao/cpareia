@@ -1,5 +1,23 @@
 #include "comparator.h"
 
+work_t *
+work_new(array_t *array, int start, int step) {
+  work_t *work;
+
+  work = malloc(sizeof(work_t));
+
+  work->array = array;
+  work->start = start;
+  work->step = step;
+
+  return work;
+}
+
+void
+work_free(work_t *work) {
+  free(work);
+}
+
 double
 compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
@@ -56,7 +74,7 @@ compare_all(
 }
 
 void
-compare_block(array_t *array, project_t *project) {
+compare_block(work_t *work, project_t *project) {
   size_t i, j, size, classes;
   record_t *r1, *r2;
   result_t *result;
@@ -64,13 +82,13 @@ compare_block(array_t *array, project_t *project) {
   double score;
   char status;
 
-  size = array_size(array);
+  size = array_size(work->array);
   classes = array_size(project->classifier->comparators);
 
-  for(i = 0; i < size - 1; i++) {
-    r1 = array_get(array, i);
+  for(i = work->start; i < size - 1; i += work->step) {
+    r1 = array_get(work->array, i);
     for(j = i + 1; j < size; j++) {
-      r2 = array_get(array, j);
+      r2 = array_get(work->array, j);
       scores = malloc(sizeof(double) * classes);
       score = compare_all(project->classifier, r1, r2, scores);
 
@@ -98,15 +116,18 @@ compare_block(array_t *array, project_t *project) {
 }
 
 void
-compare_block_void(void *array, void *project) {
-  compare_block(array, project);
+compare_block_void(void *work, void *project) {
+  compare_block(work, project);
 }
 
 void
 comparator_get_block(gpointer key, gpointer array, gpointer pool) {
+  work_t *work;
   (void) key;
 
-  pool_push((pool_t *) pool, array);
+  work = work_new(array, 0, 1);
+
+  pool_push((pool_t *) pool, work);
 }
 
 void

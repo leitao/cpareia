@@ -10,5 +10,13 @@
 
 #define between(val, min, max) val >= min && val <= max
 
+typedef struct work_t {
+  array_t *array;
+  int start, step;
+} work_t;
+
+work_t *work_new(array_t *, int, int);
+void work_free(work_t *);
+
 void comparator_run(project_t *, int);
 #endif

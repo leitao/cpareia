@@ -15,6 +15,11 @@ pool_push(pool_t *pool, void *data) {
   g_thread_pool_push(pool->pool, data, NULL);
 }
 
+void *
+pool_get_user_data(pool_t *pool) {
+  return pool->pool->user_data;
+}
+
 void
 pool_free(pool_t *pool) {
   g_thread_pool_free(pool->pool, FALSE, TRUE);
