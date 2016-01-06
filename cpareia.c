@@ -22,12 +22,13 @@ main(int argc,  char *argv[]) {
 
   project_parse(project, argv[1]);
 
+  printf("Começando leitura e blocagem.\n");
   read_thread = database_read_async(project->d0);
 
   blocking_threads = blocking_async(project, max_threads - 1);
 
   pthread_join(*read_thread, NULL);
-  printf("leitura pronta\n");
+  printf("Leitura pronta.\nContinuando blocagem.\n");
 
   for(i = 0; i < max_threads - 1; i++) {
     pthread_join(*blocking_threads[i], NULL);
@@ -36,9 +37,9 @@ main(int argc,  char *argv[]) {
 
   free(blocking_threads);
   free(read_thread);
-  printf("blocagem pronta\n");
-
+  printf("Blocagem pronta.\nComeçando comparação e escrita.\n");
   comparator_run(project, max_threads);
+  printf("Comparação pronta.\n");
 
   project_free(project);
   return 0;
