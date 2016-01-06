@@ -62,6 +62,11 @@ hash_print_pair(gpointer key, gpointer value, gpointer data) {
 }
 
 void
+hash_foreach_remove(hash_t *hash, GHRFunc fn, void *data) {
+  g_hash_table_foreach_remove(hash->table, fn, data);
+}
+
+void
 hash_foreach(hash_t *hash, GHFunc fn, void *data) {
   g_hash_table_foreach(hash->table, fn, data);
 }
