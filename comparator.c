@@ -122,13 +122,24 @@ compare_block_void(void *work, void *project) {
 }
 
 void
-comparator_get_block(gpointer key, gpointer array, gpointer pool) {
+comparator_get_block(gpointer key, gpointer ary, gpointer pool) {
   work_t *work;
+  project_t *project;
+  float prop;
+  int i;
+  array_t *array;
   (void) key;
 
-  work = work_new(array, 0, 1);
+  array = (array_t *) ary;
+  project = (project_t *) pool_get_user_data(pool);
 
-  pool_push((pool_t *) pool, work);
+  prop = array_size(array) / project->blocks_mean_size;
+  prop = prop > 2 ? prop : 1;
+
+  for(i = 0; i < prop; i++) {
+    work = work_new(array, i, prop);
+    pool_push((pool_t *) pool, work);
+  }
 }
 
 void
@@ -143,17 +154,13 @@ comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
   *acc += array_size(array);
 }
 
-
 void
 comparator_run(project_t *project, int num_threads) {
   pool_t *pool;
   float acc = 0;
-  float mean;
 
   hash_foreach(project->blocks, comparator_calc_sum, &acc);
-
-  mean = acc / hash_size(project->blocks);
-  printf("média=%f", mean);
+  project->blocks_mean_size = acc / hash_size(project->blocks);
 
   pool = pool_new(num_threads, project, compare_block_void);
 
