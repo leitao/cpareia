@@ -20,6 +20,7 @@ typedef struct project_t {
   hash_t *blocks;
   classifier_t *classifier;
   output_t *output;
+  float blocks_mean_size;
 } project_t;
 
 project_t *project_new();
