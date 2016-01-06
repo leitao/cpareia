@@ -132,8 +132,28 @@ comparator_get_block(gpointer key, gpointer array, gpointer pool) {
 }
 
 void
+comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
+  array_t *array;
+  float *acc;
+  (void) key;
+
+  array = (array_t *) ary;
+  acc = (float *) ac;
+
+  *acc += array_size(array);
+}
+
+
+void
 comparator_run(project_t *project, int num_threads) {
   pool_t *pool;
+  float acc = 0;
+  float mean;
+
+  hash_foreach(project->blocks, comparator_calc_sum, &acc);
+
+  mean = acc / hash_size(project->blocks);
+  printf("média=%f", mean);
 
   pool = pool_new(num_threads, project, compare_block_void);
 
