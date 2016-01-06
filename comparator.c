@@ -113,6 +113,7 @@ compare_block(work_t *work, project_t *project) {
       }
     }
   }
+  work_free(work);
 }
 
 void
