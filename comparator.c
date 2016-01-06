@@ -127,13 +127,15 @@ comparator_get_block(gpointer key, gpointer ary, gpointer pool) {
   project_t *project;
   float prop;
   int i;
+  size_t size;
   array_t *array;
   (void) key;
 
   array = (array_t *) ary;
   project = (project_t *) pool_get_user_data(pool);
+  size = array_size(array);
 
-  prop = array_size(array) / project->blocks_mean_size;
+  prop = size / project->blocks_mean_size;
   prop = prop > 2 ? prop : 1;
 
   for(i = 0; i < prop; i++) {
@@ -142,16 +144,24 @@ comparator_get_block(gpointer key, gpointer ary, gpointer pool) {
   }
 }
 
-void
+int
 comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
   array_t *array;
+  size_t size;
   float *acc;
   (void) key;
 
   array = (array_t *) ary;
   acc = (float *) ac;
+  size = array_size(array);
 
-  *acc += array_size(array);
+  if(size == 1) {
+    return 1;
+  }
+
+  *acc += size;
+
+  return 0;
 }
 
 void
@@ -159,7 +169,7 @@ comparator_run(project_t *project, int num_threads) {
   pool_t *pool;
   float acc = 0;
 
-  hash_foreach(project->blocks, comparator_calc_sum, &acc);
+  hash_foreach_remove(project->blocks, comparator_calc_sum, &acc);
   project->blocks_mean_size = acc / hash_size(project->blocks);
 
   pool = pool_new(num_threads, project, compare_block_void);
