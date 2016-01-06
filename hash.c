@@ -66,6 +66,11 @@ hash_foreach(hash_t *hash, GHFunc fn, void *data) {
   g_hash_table_foreach(hash->table, fn, data);
 }
 
+size_t
+hash_size(hash_t *hash) {
+  return g_hash_table_size(hash->table);
+}
+
 void
 hash_print(hash_t *hash) {
   printf("{\n");
