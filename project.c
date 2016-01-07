@@ -49,6 +49,8 @@ project_free(project_t *project) {
     conjunction_free(array_get(project->conjunctions, i));
   }
 
+  array_free(project->works);
+
   hash_free(project->blocks);
   array_free(project->conjunctions);
   classifier_free(project->classifier);

@@ -21,6 +21,7 @@ typedef struct project_t {
   classifier_t *classifier;
   output_t *output;
   float blocks_mean_size;
+  array_t *works;
 } project_t;
 
 project_t *project_new();
