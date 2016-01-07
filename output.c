@@ -1,20 +1,19 @@
 #include "output.h"
 
-void
-output_write(void *res, void *f) {
-  int i;
-  result_t *result;
-  FILE *file;
+FILE *
+output_get_file(output_t *output, int file) {
+  return output->files[file];
+}
 
-  result = (result_t *) res;
-  file = (FILE *) f;
+void
+output_write(result_t *result, FILE *file) {
+  int i;
 
   fprintf(
       file,
       "%c %c %s %s %f",
       result->status,
-      'X',
-      result->id1,
+      'X', result->id1,
       result->id2,
       result->score);
 
@@ -36,34 +35,49 @@ output_new(char *filename, double min, double max) {
   output->min = min;
   output->max = max;
 
-  if(!(output->file = fopen(output->filename, "w"))) {
-    handle_error("Erro ao abrir arquivo %s\n", output->filename);
-  }
-
-  output->pool = pool_new(1, output->file, output_write);
-
   return output;
 }
 
 void
-output_push(output_t *output, result_t *result) {
-  /*if(g_thread_pool_unprocessed(output->pool->pool) > 10000000) {
-    sleep(1);
-  }*/
-  pool_push(output->pool, result);
+output_open_files(output_t *output, int num_files) {
+  int i;
+  size_t size;
+  char *name;
+
+  size = strlen(output->filename);
+
+  name = malloc(sizeof(char) * (size + 10));
+
+  output->num_files = num_files;
+  output->files = malloc(sizeof(FILE *) * num_files);
+
+  for(i = 0; i < num_files; i++) {
+    sprintf(name, "%s%d", output->filename, i);
+
+    if(!(output->files[i] = fopen(name, "w"))) {
+      handle_error("Erro ao abrir arquivo %s\n", name);
+    }
+  }
+
+  free(name);
 }
 
 void
 output_print(output_t *output) {
   printf("  Filename: %s\n", output->filename);
+  printf("  Num files: %d\n", output->num_files);
   printf("  Min: %f\n", output->min);
   printf("  Max: %f\n", output->max);
 }
 
 void
 output_free(output_t *output) {
-  pool_free(output->pool);
-  fclose(output->file);
+  int i;
+
+  for(i = 0; i < output->num_files; i++) {
+    fclose(output->files[i]);
+  }
+  free(output->files);
 
   free(output->filename);
   free(output);

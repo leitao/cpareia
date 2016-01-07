@@ -48,7 +48,6 @@ main(int argc, char *argv[]) {
 
   free(comparator_threads);
 
-
   printf("Comparação pronta\n");
 
   project_free(project);

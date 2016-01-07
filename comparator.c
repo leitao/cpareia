@@ -74,7 +74,7 @@ compare_all(
 }
 
 void
-compare_block(work_t *work, project_t *project) {
+compare_block(work_t *work, project_t *project, int id) {
   size_t i, j, size, classes;
   record_t *r1, *r2;
   result_t *result;
@@ -100,7 +100,6 @@ compare_block(work_t *work, project_t *project) {
         status = '?';
       }
       if(between(score, project->output->min, project->output->max)) {
-        /*
         result = result_new(
             record_get_field(r1, 0),
             record_get_field(r2, 0),
@@ -108,8 +107,7 @@ compare_block(work_t *work, project_t *project) {
             score,
             scores,
             classes);
-        output_push(project->output, result); */
-        free(scores);
+        output_write(result, output_get_file(project->output, id));
       } else {
         free(scores);
       }
@@ -120,21 +118,18 @@ compare_block(work_t *work, project_t *project) {
 
 void *
 compare_block_void(void *data) {
-  size_t i, size;
-  int is_last_thread;
-  comparator_pthread_params_t *param;
+  unsigned long int i, size;
+  comparator_pthread_params_t *par;
 
-  param = data;
+  par = data;
 
-  size = array_size(param->project->works);
+  size = (unsigned long int) array_size(par->project->works);
 
-  is_last_thread = param->id == param->num_threads - 1;
-
-  for(i = param->id; i < size; i += param->num_threads) {
-    if(is_last_thread && (!(i % 1000000))) {
-      printf("Blocos processados: %zd/%zd\n", i, size);
+  for(i = par->id; i < size; i += par->num_threads) {
+    if(!(i % 1000000)) {
+      printf("Blocos processados: %lu de %lu (%2.2f%%)\n", i, size, 100.0 * i / size);
     }
-    compare_block(array_get(param->project->works, i), param->project);
+    compare_block(array_get(par->project->works, i), par->project, par->id);
   }
 
   return NULL;
@@ -207,6 +202,8 @@ comparator_run_async(project_t *project, int num_threads) {
   hash_foreach(project->blocks, comparator_get_block, project);
   printf("Todos os blocos já foram alocados\n");
   printf("Começando comparação em si\n");
+
+  output_open_files(project->output, num_threads);
 
   for(i = 0; i < num_threads; i++) {
     threads[i] = malloc(sizeof(pthread_t));
