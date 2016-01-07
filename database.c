@@ -57,7 +57,7 @@ database_read_async(database_t *database) {
 
 void
 database_read(database_t *database, database_cb cb, void *cb_data) {
-  size_t i;
+  size_t i, total;
   csv_t *csv;
   csv_row_t *csv_row;
   csv_fields_t *csv_fields;
@@ -66,6 +66,8 @@ database_read(database_t *database, database_cb cb, void *cb_data) {
   csv = csv_new(database->filename);
   csv_row = csv_row_new(NULL, NULL);
   csv_fields = csv_fields_new(database->num_fields);
+
+  total = 0;
 
   while(csv_get_row(csv, csv_row)) {
     csv_get_fields(csv_fields, csv_row, database->sep);
@@ -76,11 +78,29 @@ database_read(database_t *database, database_cb cb, void *cb_data) {
     }
 
     array_append(database->records, record);
+    total++;
+
+    if(!(total % 1000000)) {
+      printf(
+          "Registros lidos: %d de %d (%2.2f%%)\n",
+          (int) total,
+          (int) array_total_size(database->records),
+          100.0 * total / array_total_size(database->records)
+          );
+    }
 
     if(cb) {
       cb(cb_data, record);
     }
   }
+
+  printf(
+      "Registros lidos: %d de %d (%2.2f%%)\n",
+      (int) total,
+      (int) array_total_size(database->records),
+      100.0 * total / array_total_size(database->records)
+      );
+
   csv_fields_free(csv_fields);
   csv_row_free(csv_row);
 

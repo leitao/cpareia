@@ -100,6 +100,7 @@ compare_block(work_t *work, project_t *project) {
         status = '?';
       }
       if(between(score, project->output->min, project->output->max)) {
+        /*
         result = result_new(
             record_get_field(r1, 0),
             record_get_field(r2, 0),
@@ -107,7 +108,8 @@ compare_block(work_t *work, project_t *project) {
             score,
             scores,
             classes);
-        output_push(project->output, result);
+        output_push(project->output, result); */
+        free(scores);
       } else {
         free(scores);
       }
@@ -167,14 +169,30 @@ comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
 void
 comparator_run(project_t *project, int num_threads) {
   pool_t *pool;
+  size_t size;
   float acc = 0;
+
+  printf("Calculando trabalho médio e removendo blocos com um elemento\n");
+  printf("Quantidade de blocos: %d\n", (int) hash_size(project->blocks));
 
   hash_foreach_remove(project->blocks, comparator_calc_sum, &acc);
   project->blocks_mean_size = acc / hash_size(project->blocks);
 
+  printf("Trabalho médio calculado: %.0f registros\n", project->blocks_mean_size);
+  printf("Nova quantidade de blocos: %d\n", (int) hash_size(project->blocks));
+
   pool = pool_new(num_threads, project, compare_block_void);
 
+  printf("Dividindo e compartilhando blocos para a comparação\n");
   hash_foreach(project->blocks, comparator_get_block, pool);
+  printf("Todos os blocos já foram alocados\n");
+  printf("Começando comparação em si\n");
+
+  while((size = g_thread_pool_unprocessed(pool->pool))) {
+    printf("Blocos restantes: %d\n", (int) size);
+    sleep(5);
+  }
+  printf("Nenhum bloco restante. Aguardando trabalhos em andamento\n");
 
   pool_free(pool);
 }
