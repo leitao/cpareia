@@ -118,13 +118,30 @@ compare_block(work_t *work, project_t *project) {
   work_free(work);
 }
 
-void
-compare_block_void(void *work, void *project) {
-  compare_block(work, project);
+void *
+compare_block_void(void *data) {
+  size_t i, size;
+  int is_last_thread;
+  comparator_pthread_params_t *param;
+
+  param = data;
+
+  size = array_size(param->project->works);
+
+  is_last_thread = param->id == param->num_threads - 1;
+
+  for(i = param->id; i < size; i += param->num_threads) {
+    if(is_last_thread && (!(i % 1000000))) {
+      printf("Blocos processados: %zd/%zd\n", i, size);
+    }
+    compare_block(array_get(param->project->works, i), param->project);
+  }
+
+  return NULL;
 }
 
 void
-comparator_get_block(gpointer key, gpointer ary, gpointer pool) {
+comparator_get_block(gpointer key, gpointer ary, gpointer proj) {
   work_t *work;
   project_t *project;
   float prop;
@@ -134,7 +151,7 @@ comparator_get_block(gpointer key, gpointer ary, gpointer pool) {
   (void) key;
 
   array = (array_t *) ary;
-  project = (project_t *) pool_get_user_data(pool);
+  project = (project_t *) proj;
   size = array_size(array);
 
   prop = size / project->blocks_mean_size;
@@ -142,7 +159,7 @@ comparator_get_block(gpointer key, gpointer ary, gpointer pool) {
 
   for(i = 0; i < prop; i++) {
     work = work_new(array, i, prop);
-    pool_push((pool_t *) pool, work);
+    array_append(project->works, work);
   }
 }
 
@@ -166,11 +183,14 @@ comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
   return 0;
 }
 
-void
-comparator_run(project_t *project, int num_threads) {
-  pool_t *pool;
-  size_t size;
+pthread_t **
+comparator_run_async(project_t *project, int num_threads) {
+  pthread_t **threads;
+  comparator_pthread_params_t *param;
+  int i;
   float acc = 0;
+
+  threads = malloc(sizeof(pthread_t *) * num_threads);
 
   printf("Calculando trabalho médio e removendo blocos com um elemento\n");
   printf("Quantidade de blocos: %d\n", (int) hash_size(project->blocks));
@@ -181,18 +201,23 @@ comparator_run(project_t *project, int num_threads) {
   printf("Trabalho médio calculado: %.0f registros\n", project->blocks_mean_size);
   printf("Nova quantidade de blocos: %d\n", (int) hash_size(project->blocks));
 
-  pool = pool_new(num_threads, project, compare_block_void);
+  project->works = array_new(hash_size(project->blocks));
 
   printf("Dividindo e compartilhando blocos para a comparação\n");
-  hash_foreach(project->blocks, comparator_get_block, pool);
+  hash_foreach(project->blocks, comparator_get_block, project);
   printf("Todos os blocos já foram alocados\n");
   printf("Começando comparação em si\n");
 
-  while((size = g_thread_pool_unprocessed(pool->pool))) {
-    printf("Blocos restantes: %d\n", (int) size);
-    sleep(5);
+  for(i = 0; i < num_threads; i++) {
+    threads[i] = malloc(sizeof(pthread_t));
+    param = malloc(sizeof(comparator_pthread_params_t));
+    param->project = project;
+    param->id = i;
+    param->num_threads = num_threads;
+    pthread_create(threads[i], NULL, compare_block_void, param);
   }
+
   printf("Nenhum bloco restante. Aguardando trabalhos em andamento\n");
 
-  pool_free(pool);
+  return threads;
 }

@@ -11,6 +11,7 @@ main(int argc, char *argv[]) {
   project_t *project;
   pthread_t *read_thread;
   pthread_t **blocking_threads;
+  pthread_t **comparator_threads;
   long max_threads;
 
   if(argc != 2)
@@ -38,7 +39,16 @@ main(int argc, char *argv[]) {
   free(blocking_threads);
   free(read_thread);
   printf("Blocagem pronta\n\nComeçando comparação e escrita\n");
-  comparator_run(project, max_threads);
+  comparator_threads = comparator_run_async(project, max_threads);
+
+  for(i = 0; i < max_threads - 1; i++) {
+    pthread_join(*comparator_threads[i], NULL);
+    free(comparator_threads[i]);
+  }
+
+  free(comparator_threads);
+
+
   printf("Comparação pronta\n");
 
   project_free(project);

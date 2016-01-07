@@ -15,8 +15,14 @@ typedef struct work_t {
   int start, step;
 } work_t;
 
+typedef struct comparator_pthread_params_t {
+  project_t *project;
+  int id;
+  int num_threads;
+} comparator_pthread_params_t;
+
 work_t *work_new(array_t *, int, int);
 void work_free(work_t *);
 
-void comparator_run(project_t *, int);
+pthread_t **comparator_run_async(project_t *, int);
 #endif
