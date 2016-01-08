@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <zlib.h>
 #include "record.h"
 #include "errors.h"
 #include "result.h"
@@ -11,14 +12,14 @@ typedef struct output_t {
   double min, max;
   char *filename;
   int num_files;
-  FILE **files;
+  gzFile *files;
 } output_t;
 
 output_t *output_new(char *, double, double);
 void output_open_files(output_t *, int);
 void output_free(output_t *);
 void output_print(output_t *);
-FILE *output_get_file(output_t *, int);
-void output_write(result_t *, FILE *);
+gzFile output_get_file(output_t *, int);
+void output_write(result_t *, gzFile);
 
 #endif
