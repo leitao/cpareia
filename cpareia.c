@@ -29,7 +29,6 @@ main(int argc, char *argv[]) {
   blocking_threads = blocking_async(project, max_threads - 1);
 
   pthread_join(*read_thread, NULL);
-  printf("Continuando blocagem\n");
 
   for(i = 0; i < max_threads - 1; i++) {
     pthread_join(*blocking_threads[i], NULL);

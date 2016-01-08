@@ -6,7 +6,6 @@
 #include <zlib.h>
 #include "record.h"
 #include "errors.h"
-#include "result.h"
 
 typedef struct output_t {
   double min, max;
@@ -20,6 +19,6 @@ void output_open_files(output_t *, int);
 void output_free(output_t *);
 void output_print(output_t *);
 gzFile output_get_file(output_t *, int);
-void output_write(result_t *, gzFile);
+void output_write(char *, char *, char, double, double *, int, gzFile);
 
 #endif

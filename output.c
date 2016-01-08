@@ -6,23 +6,22 @@ output_get_file(output_t *output, int file) {
 }
 
 void
-output_write(result_t *result, gzFile file) {
+output_write(
+    char *id1,
+    char *id2,
+    char status,
+    double score,
+    double *scores,
+    int num_scores,
+    gzFile file) {
   int i;
 
-  gzprintf(
-      file,
-      "%c %c %s %s %f",
-      result->status,
-      'X', result->id1,
-      result->id2,
-      result->score);
+  gzprintf(file, "%c %c %s %s %f", status, 'X', id1, id2, score);
 
-  for(i = 0; i < result->num_scores; i++) {
-    gzprintf(file, " %f", result->scores[i]);
+  for(i = 0; i < num_scores; i++) {
+    gzprintf(file, " %f", scores[i]);
   }
   gzprintf(file, "\n");
-
-  result_free(result);
 }
 
 output_t *
