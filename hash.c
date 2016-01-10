@@ -11,9 +11,7 @@ hash_new() {
       (GDestroyNotify) free,
       (GDestroyNotify) array_free);
 
-#ifndef SINGLE_BLOCKER
   pthread_mutex_init(&hash->mutex, NULL);
-#endif
 
   return hash;
 }
@@ -22,9 +20,7 @@ void
 hash_free(hash_t *hash) {
   g_hash_table_destroy(hash->table);
 
-#ifndef SINGLE_BLOCKER
   pthread_mutex_destroy(&hash->mutex);
-#endif
 
   free(hash);
 }
@@ -33,9 +29,7 @@ void
 hash_insert(hash_t *hash, char *key, void *record) {
   array_t *array;
 
-#ifndef SINGLE_BLOCKER
   pthread_mutex_lock(&hash->mutex);
-#endif
 
   if(!(array = g_hash_table_lookup(hash->table, key))) {
     array = array_new(1);
@@ -44,9 +38,12 @@ hash_insert(hash_t *hash, char *key, void *record) {
 
   array_append(array, record);
 
-#ifndef SINGLE_BLOCKER
   pthread_mutex_unlock(&hash->mutex);
-#endif
+}
+
+void *
+hash_get(hash_t *hash, char *key) {
+  return g_hash_table_lookup(hash->table, key);
 }
 
 void
