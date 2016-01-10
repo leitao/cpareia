@@ -11,6 +11,7 @@
 #include "classifier.h"
 #include "hash.h"
 #include "output.h"
+#include "args.h"
 
 typedef struct project_t {
   unsigned char *name;
@@ -22,6 +23,7 @@ typedef struct project_t {
   output_t *output;
   float blocks_mean_size;
   array_t *works;
+  args_t *args;
 } project_t;
 
 project_t *project_new();
