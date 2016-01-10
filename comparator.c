@@ -184,13 +184,13 @@ comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
 }
 
 pthread_t **
-comparator_run_async(project_t *project, int num_threads) {
+comparator_run_async(project_t *project) {
   pthread_t **threads;
   comparator_pthread_params_t *param;
   int i, size;
   float acc = 0;
 
-  threads = malloc(sizeof(pthread_t *) * num_threads);
+  threads = malloc(sizeof(pthread_t *) * project->args->max_threads);
 
   size = hash_size(project->blocks);
   printf("Calculando trabalho médio e removendo blocos únicos\n");
@@ -211,14 +211,14 @@ comparator_run_async(project_t *project, int num_threads) {
   printf("Todos os blocos já foram alocados\n");
   printf("Começando comparação em si\n");
 
-  output_open_files(project->output, num_threads);
+  output_open_files(project->output, project->args->max_threads);
 
-  for(i = 0; i < num_threads; i++) {
+  for(i = 0; i < project->args->max_threads; i++) {
     threads[i] = malloc(sizeof(pthread_t));
     param = malloc(sizeof(comparator_pthread_params_t));
     param->project = project;
     param->id = i;
-    param->num_threads = num_threads;
+    param->num_threads = project->args->max_threads;
     pthread_create(threads[i], NULL, compare_block_void, param);
   }
 
