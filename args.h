@@ -17,6 +17,7 @@ typedef struct args_t {
 } args_t;
 
 args_t *args_new();
+void args_free(args_t *);
 void args_parse(args_t *, int, char **);
 
 #endif

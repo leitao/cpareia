@@ -15,6 +15,13 @@ args_new() {
 }
 
 void
+args_free(args_t *args) {
+  free(args->project_file);
+  free(args->blocking_file);
+  free(args);
+}
+
+void
 args_check_file(char *file) {
   if(access(file, R_OK) == -1) {
     printf("File '%s' does not exist\n", file);
