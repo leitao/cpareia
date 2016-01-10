@@ -22,7 +22,7 @@ run: $(NAME)
 	./$(NAME) -p $(PROJ)
 
 val: $(NAME)
-	valgrind --suppressions=glib.supp --leak-check=full ./$(NAME) $(PROJ)
+	valgrind --suppressions=glib.supp --leak-check=full ./$(NAME) -p $(PROJ)
 
 clean:
 	rm -f $(SRC)/*.o *~ $(SRC)/*~ $(NAME)
