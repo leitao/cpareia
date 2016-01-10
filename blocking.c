@@ -65,29 +65,68 @@ blocking_generate_all_keys(void *data) {
   return NULL;
 }
 
+void *
+blocking_read_blocks(void *proj) {
+  char *k, *p, *key;
+  FILE *fh;
+  int i, id, total;
+  record_t *record;
+  project_t *project;
+  char line[300];
+
+  project = (project_t *) proj;
+
+  fh = fopen(project->args->blocking_file, "r");
+
+  while (fgets(line, sizeof(line), fh))  {
+    p = strtok(line, ":");
+    key = p;
+
+    p = strtok(NULL, ":");
+    total = atoi(p);
+
+    p = strtok(NULL, ":");
+
+    for (i = 0; i < total; i++) {
+      k = strtok(p, " ");
+      while(k) {
+          id = atoi(k+1);
+          record = array_get(project->d0->records, id);
+          hash_insert(project->blocks, key, record);
+          k = strtok(NULL, " ");
+      }
+    }
+  }
+
+  return NULL;
+}
+
 pthread_t **
 blocking_read_file_async(project_t *project) {
   pthread_t **threads;
 
   threads = malloc(sizeof(pthread_t *) * 1);
 
+  threads[0] = malloc(sizeof(pthread_t));
+  pthread_create(threads[0], NULL, blocking_read_blocks, project);
+
   return threads;
 }
 
 pthread_t **
-blocking_async(project_t *project, int num_threads) {
+blocking_async(project_t *project) {
   pthread_t **threads;
   blocking_thread_params_t *param;
   int i;
 
-  threads = malloc(sizeof(pthread_t *) * num_threads);
+  threads = malloc(sizeof(pthread_t *) * project->args->max_threads);
 
-  for(i = 0; i < num_threads; i++) {
+  for(i = 0; i < project->args->max_threads; i++) {
     threads[i] = malloc(sizeof(pthread_t));
     param = malloc(sizeof(blocking_thread_params_t));
     param->project = project;
     param->rank = i;
-    param->total_ranks = num_threads;
+    param->total_ranks = project->args->max_threads;
 
     pthread_create(threads[i], NULL, blocking_generate_all_keys, param);
   }
