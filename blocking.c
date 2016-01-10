@@ -66,6 +66,15 @@ blocking_generate_all_keys(void *data) {
 }
 
 pthread_t **
+blocking_read_file_async(project_t *project) {
+  pthread_t **threads;
+
+  threads = malloc(sizeof(pthread_t *) * 1);
+
+  return threads;
+}
+
+pthread_t **
 blocking_async(project_t *project, int num_threads) {
   pthread_t **threads;
   blocking_thread_params_t *param;

@@ -25,7 +25,11 @@ main(int argc, char *argv[]) {
   printf("Começando leitura e blocagem\n");
   read_thread = database_read_async(project->d0);
 
-  blocking_threads = blocking_async(project, args->max_threads - 1);
+  if(args->blocking_file) {
+    blocking_threads = blocking_read_file_async(project);
+  } else {
+    blocking_threads = blocking_async(project, args->max_threads - 1);
+  }
 
   pthread_join(*read_thread, NULL);
 
