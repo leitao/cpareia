@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <assert.h>
 #include <sys/time.h>
 
+#include "args.h"
 #include "project.h"
 #include "error.h"
 #include "database.h"

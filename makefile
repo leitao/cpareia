@@ -19,7 +19,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 run: $(NAME)
-	./$(NAME) $(PROJ)
+	./$(NAME) -p $(PROJ)
 
 val: $(NAME)
 	valgrind --suppressions=glib.supp --leak-check=full ./$(NAME) $(PROJ)

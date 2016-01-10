@@ -12,25 +12,24 @@ main(int argc, char *argv[]) {
   pthread_t *read_thread;
   pthread_t **blocking_threads;
   pthread_t **comparator_threads;
-  long max_threads;
+  args_t *args;
 
-  if(argc != 2)
-    handle_error("Usage: cpareia XML\n");
+  args = args_new();
 
-  max_threads = sysconf(_SC_NPROCESSORS_ONLN);
+  args_parse(args, argc, argv);
 
   project = project_new();
 
-  project_parse(project, argv[1]);
+  project_parse(project, args->project_file);
 
   printf("Começando leitura e blocagem\n");
   read_thread = database_read_async(project->d0);
 
-  blocking_threads = blocking_async(project, max_threads - 1);
+  blocking_threads = blocking_async(project, args->max_threads - 1);
 
   pthread_join(*read_thread, NULL);
 
-  for(i = 0; i < max_threads - 1; i++) {
+  for(i = 0; i < args->max_threads - 1; i++) {
     pthread_join(*blocking_threads[i], NULL);
     free(blocking_threads[i]);
   }
@@ -38,9 +37,9 @@ main(int argc, char *argv[]) {
   free(blocking_threads);
   free(read_thread);
   printf("Blocagem pronta\n\nComeçando comparação e escrita\n");
-  comparator_threads = comparator_run_async(project, max_threads);
+  comparator_threads = comparator_run_async(project, args->max_threads);
 
-  for(i = 0; i < max_threads - 1; i++) {
+  for(i = 0; i < args->max_threads - 1; i++) {
     pthread_join(*comparator_threads[i], NULL);
     free(comparator_threads[i]);
   }

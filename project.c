@@ -296,10 +296,10 @@ project_parse(project_t *project, char *file_name) {
   xmlInitParser();
 
   if((doc = xmlParseFile(file_name)) == NULL)
-    handle_error("Unable to parse XML");
+    handle_error("Unable to parse XML\n");
 
   if((xpath_ctx = xmlXPathNewContext(doc)) == NULL)
-    handle_error("Unable to create XPath");
+    handle_error("Unable to create XPath\n");
 
   project_parse_project(project, xpath_ctx);
   project_parse_datasource(project, xpath_ctx);
