@@ -23,5 +23,6 @@ void hash_print(hash_t*);
 void hash_foreach(hash_t *, GHFunc, void *);
 void hash_foreach_remove(hash_t *, GHRFunc, void *);
 size_t hash_size(hash_t *);
+void *hash_get(hash_t *, char *);
 
 #endif

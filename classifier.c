@@ -48,8 +48,8 @@ comparator_print(comparator_t *comparator) {
   printf("  Field1: %d\n", comparator->field1);
 
   /*
-   *How to Get a "Name" for the Hash. Is it needed? 
-   *printf("  Frequency_table: %s\n", comparator->frequency_table); 
+   *How to Get a "Name" for the Hash. Is it needed?
+   *printf("  Frequency_table: %s\n", comparator->frequency_table);
   */
   printf("  Function: %s\n", comparator->function);
   printf("  Min_value_to_be_match: %f\n", comparator->min_value_to_be_match);
@@ -61,7 +61,7 @@ comparator_print(comparator_t *comparator) {
 void
 comparator_free(comparator_t *comparator) {
   free(comparator->function);
-  free(comparator->frequency_table);
+  hash_free(comparator->frequency_table);
   free(comparator);
 }
 
