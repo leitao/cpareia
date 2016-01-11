@@ -12,7 +12,15 @@ project_new() {
 
   project->args = args_new();
 
+  project->frequency = hash_new();
+
   return project;
+}
+
+int 
+file_exist (char *filename) {
+  struct stat   buffer;   
+  return (stat (filename, &buffer) == 0);
 }
 
 void
@@ -54,6 +62,7 @@ project_free(project_t *project) {
   array_free(project->works);
 
   hash_free(project->blocks);
+  hash_free(project->frequency);
   array_free(project->conjunctions);
   classifier_free(project->classifier);
   args_free(project->args);
@@ -115,6 +124,31 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
       exact = -1;
     }
 
+    //New Function to Create Table Frequency
+    if (strlen((char *) frequency_table) != 0 ) {
+        char *fieldvalue, *p, *key;
+        FILE *fh;
+        char line[200];
+
+        if (file_exist ((char *) frequency_table)) {
+          fh = fopen((char *) frequency_table, "r");
+
+          while (fgets(line, sizeof(line), fh))  {
+             p = strtok(line, " ");
+             key = p;
+
+             p = strtok(NULL, " ");
+             fieldvalue = p;
+
+             hash_insert(project->frequency, key, fieldvalue);
+          }
+      }
+      else {
+        handle_error("Frequency table %s does not existis", (char *) frequency_table);
+      }
+
+    }
+
     if(exact != -1) {
       comparator = comparator_new(
           exact,
@@ -123,7 +157,9 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
           u ? atof((char *) u) : 0,
           missing ? atof((char *) missing) : 0,
           project_get_field_id(project, (char *) field1),
-          (char *) frequency_table,
+          
+          //Passar o Hash do Campo para o Comparator 
+          project->frequency,
           (char *) function,
           min_value_to_be_match ? atof((char *) min_value_to_be_match) : 0,
           default_weight ? atof((char *) default_weight) : 0);

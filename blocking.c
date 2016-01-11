@@ -72,7 +72,7 @@ blocking_read_blocks(void *proj) {
   int i, id, total;
   record_t *record;
   project_t *project;
-  char line[300];
+  char line[200000];
 
   project = (project_t *) proj;
 
@@ -97,7 +97,6 @@ blocking_read_blocks(void *proj) {
       }
     }
   }
-
   return NULL;
 }
 

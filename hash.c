@@ -16,6 +16,7 @@ hash_new() {
   return hash;
 }
 
+
 void
 hash_free(hash_t *hash) {
   g_hash_table_destroy(hash->table);
@@ -41,14 +42,14 @@ hash_insert(hash_t *hash, char *key, void *record) {
   pthread_mutex_unlock(&hash->mutex);
 }
 
-void *
-hash_get(hash_t *hash, char *key) {
-  return g_hash_table_lookup(hash->table, key);
-}
-
 void
 record_void_print(void *record) {
   record_print(record);
+}
+
+void *
+hash_get(hash_t *hash, char *key) {
+  return g_hash_table_lookup(hash->table, key);
 }
 
 void

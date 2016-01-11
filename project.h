@@ -19,6 +19,7 @@ typedef struct project_t {
   database_t *d0;
   array_t *conjunctions;
   hash_t *blocks;
+  hash_t *frequency;
   classifier_t *classifier;
   output_t *output;
   float blocks_mean_size;

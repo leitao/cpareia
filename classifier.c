@@ -13,7 +13,7 @@ comparator_new(
     double u,
     double missing,
     int field1,
-    char *frequency_table,
+    hash_t *frequency_table,
     char *function,
     double min_value_to_be_match,
     double default_weight) {
@@ -46,7 +46,11 @@ comparator_print(comparator_t *comparator) {
   printf("  U: %f\n", comparator->u);
   printf("  Missing: %f\n", comparator->missing);
   printf("  Field1: %d\n", comparator->field1);
-  printf("  Frequency_table: %s\n", comparator->frequency_table);
+
+  /*
+   *How to Get a "Name" for the Hash. Is it needed? 
+   *printf("  Frequency_table: %s\n", comparator->frequency_table); 
+  */
   printf("  Function: %s\n", comparator->function);
   printf("  Min_value_to_be_match: %f\n", comparator->min_value_to_be_match);
   printf("  Default_weight: %f\n", comparator->default_weight);
