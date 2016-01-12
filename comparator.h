@@ -4,11 +4,11 @@
 #include "field_comparator.h"
 #include "classifier.h"
 #include "record.h"
-#include "pool.h"
 #include "project.h"
 #include "output.h"
 
 #define between(val, min, max) val >= min && val <= max
+#define MIN(a, b) a < b ? a : b
 
 typedef struct work_t {
   array_t *array;

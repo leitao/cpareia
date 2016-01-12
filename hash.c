@@ -15,6 +15,15 @@ hash_new() {
 
 void
 hash_free(hash_t *hash) {
+  array_t *array;
+  const char *key;
+
+  kh_foreach(
+      hash->table,
+      key,
+      array,
+      array_free(array);free((void *) key));
+
   kh_destroy(str, hash->table);
 
   pthread_mutex_destroy(&hash->mutex);
@@ -27,20 +36,21 @@ hash_insert(hash_t *hash, char *key, void *record) {
   int absent;
   array_t *array;
   khint_t k;
+  char *keydup;
 
   pthread_mutex_lock(&hash->mutex);
 
-  k = kh_put(str, hash->table, key, &absent);
+  keydup = strdup(key);
 
-  if (absent) {
-    kh_key(hash->table, k) = strdup(key);
-  }
-
-  if(k == kh_end(hash->table)) {
+  if((k = kh_get(str, hash->table, keydup)) == kh_end(hash->table)) {
+    k = kh_put(str, hash->table, keydup, &absent);
     kh_value(hash->table, k) = array_new(1);
+  } else {
+    free(keydup);
+    keydup = key;
   }
 
-  k = kh_get(str, hash->table, key);
+  k = kh_get(str, hash->table, keydup);
 
   array = kh_val(hash->table, k);
 
@@ -48,13 +58,11 @@ hash_insert(hash_t *hash, char *key, void *record) {
 
   pthread_mutex_unlock(&hash->mutex);
 }
-/*
 
 void
 record_void_print(void *record) {
   record_print(record);
 }
-*/
 
 array_t *
 hash_get(hash_t *hash, char *key) {
@@ -64,30 +72,33 @@ hash_get(hash_t *hash, char *key) {
   return kh_val(hash->table, k);
 }
 
-/*
-
 void
-hash_print_pair(gpointer key, gpointer value, gpointer data) {
+hash_print_pair(const char *key, array_t *array, void *data) {
   (void) data;
-  printf("  %s =>\n",(gchar *) key);
-  array_print(value, record_void_print);
+  printf("  %s =>\n", key);
+  array_print(array, record_void_print);
 }
 
 void
-hash_foreach_remove(hash_t *hash, GHRFunc fn, void *data) {
-  g_hash_table_foreach_remove(hash->table, fn, data);
+hash_foreach_remove(hash_t *hash, hash_foreach_rm_fn fn, void *data) {
+  array_t *array;
+  const char *key;
+
+  kh_foreach(hash->table, key, array, fn(key, array, data));
 }
 
 void
-hash_foreach(hash_t *hash, GHFunc fn, void *data) {
-  g_hash_table_foreach(hash->table, fn, data);
+hash_foreach(hash_t *hash, hash_foreach_fn fn, void *data) {
+  array_t *array;
+  const char *key;
+
+  kh_foreach(hash->table, key, array, fn(key, array, data));
 }
-*/
+
 size_t
 hash_size(hash_t *hash) {
   return kh_size(hash->table);
 }
-/*
 
 void
 hash_print(hash_t *hash) {
@@ -95,4 +106,3 @@ hash_print(hash_t *hash) {
   hash_foreach(hash, hash_print_pair, NULL);
   printf("}\n");
 }
-*/

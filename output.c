@@ -33,6 +33,8 @@ output_new(char *filename, double min, double max) {
   output->filename = filename;
   output->min = min;
   output->max = max;
+  output->files = NULL;
+  output->num_files = 0;
 
   return output;
 }

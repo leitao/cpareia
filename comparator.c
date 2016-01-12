@@ -156,16 +156,14 @@ compare_block_void(void *data) {
 }
 
 void
-comparator_get_block(gpointer key, gpointer ary, gpointer proj) {
+comparator_get_block(const char *key, array_t *array, void *proj) {
   work_t *work;
   project_t *project;
   float prop;
   int i;
   size_t size;
-  array_t *array;
   (void) key;
 
-  array = (array_t *) ary;
   project = (project_t *) proj;
   size = array_size(array);
 
@@ -179,13 +177,11 @@ comparator_get_block(gpointer key, gpointer ary, gpointer proj) {
 }
 
 int
-comparator_calc_sum(gpointer key, gpointer ary, gpointer ac) {
-  array_t *array;
+comparator_calc_sum(const char *key, array_t *array, void *ac) {
   size_t size;
   float *acc;
   (void) key;
 
-  array = (array_t *) ary;
   acc = (float *) ac;
   size = array_size(array);
 
