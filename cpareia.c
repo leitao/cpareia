@@ -42,7 +42,7 @@ main(int argc, char *argv[]) {
   printf("Blocagem pronta\n\nComeçando comparação e escrita\n");
   comparator_threads = comparator_run_async(project);
 
-  for(i = 0; i < project->args->max_threads - 1; i++) {
+  for(i = 0; i < project->args->max_threads; i++) {
     pthread_join(*comparator_threads[i], NULL);
     free(comparator_threads[i]);
   }
