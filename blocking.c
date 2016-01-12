@@ -118,9 +118,9 @@ blocking_async(project_t *project) {
   blocking_thread_params_t *param;
   int i;
 
-  threads = malloc(sizeof(pthread_t *) * project->args->max_threads);
+  threads = malloc(sizeof(pthread_t *) * project->args->max_threads - 1);
 
-  for(i = 0; i < project->args->max_threads; i++) {
+  for(i = 0; i < project->args->max_threads - 1; i++) {
     threads[i] = malloc(sizeof(pthread_t));
     param = malloc(sizeof(blocking_thread_params_t));
     param->project = project;
