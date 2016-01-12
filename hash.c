@@ -80,11 +80,26 @@ hash_print_pair(const char *key, array_t *array, void *data) {
 }
 
 void
+hash_internal_remove(hash_t *hash, const char *key, array_t *array) {
+  khint_t k;
+
+  k = kh_get(str, hash->table, key);
+  kh_del(str, hash->table, k);
+  array_free(array);
+}
+
+void
 hash_foreach_remove(hash_t *hash, hash_foreach_rm_fn fn, void *data) {
   array_t *array;
   const char *key;
 
-  kh_foreach(hash->table, key, array, fn(key, array, data));
+  kh_foreach(
+      hash->table,
+      key,
+      array,
+      if(fn(key, array, data))
+      hash_internal_remove(hash, key, array)
+      );
 }
 
 void
