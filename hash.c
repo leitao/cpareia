@@ -5,21 +5,17 @@ hash_new() {
   hash_t *hash;
 
   hash = malloc(sizeof(hash_t));
-  hash->table = g_hash_table_new_full(
-      g_str_hash,
-      g_str_equal,
-      (GDestroyNotify) free,
-      (GDestroyNotify) array_free);
+
+  hash->table = kh_init(str);
 
   pthread_mutex_init(&hash->mutex, NULL);
 
   return hash;
 }
 
-
 void
 hash_free(hash_t *hash) {
-  g_hash_table_destroy(hash->table);
+  kh_destroy(str, hash->table);
 
   pthread_mutex_destroy(&hash->mutex);
 
@@ -28,29 +24,47 @@ hash_free(hash_t *hash) {
 
 void
 hash_insert(hash_t *hash, char *key, void *record) {
+  int absent;
   array_t *array;
+  khint_t k;
 
   pthread_mutex_lock(&hash->mutex);
 
-  if(!(array = g_hash_table_lookup(hash->table, key))) {
-    array = array_new(1);
-    g_hash_table_insert(hash->table, strdup(key), array);
+  k = kh_put(str, hash->table, key, &absent);
+
+  if (absent) {
+    kh_key(hash->table, k) = strdup(key);
   }
+
+  if(k == kh_end(hash->table)) {
+    kh_value(hash->table, k) = array_new(1);
+  }
+
+  k = kh_get(str, hash->table, key);
+
+  array = kh_val(hash->table, k);
 
   array_append(array, record);
 
   pthread_mutex_unlock(&hash->mutex);
 }
+/*
 
 void
 record_void_print(void *record) {
   record_print(record);
 }
+*/
 
-void *
+array_t *
 hash_get(hash_t *hash, char *key) {
-  return g_hash_table_lookup(hash->table, key);
+  khint_t k;
+
+  k = kh_get(str, hash->table, key);
+  return kh_val(hash->table, k);
 }
+
+/*
 
 void
 hash_print_pair(gpointer key, gpointer value, gpointer data) {
@@ -68,11 +82,12 @@ void
 hash_foreach(hash_t *hash, GHFunc fn, void *data) {
   g_hash_table_foreach(hash->table, fn, data);
 }
-
+*/
 size_t
 hash_size(hash_t *hash) {
-  return g_hash_table_size(hash->table);
+  return kh_size(hash->table);
 }
+/*
 
 void
 hash_print(hash_t *hash) {
@@ -80,3 +95,4 @@ hash_print(hash_t *hash) {
   hash_foreach(hash, hash_print_pair, NULL);
   printf("}\n");
 }
+*/
