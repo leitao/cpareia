@@ -115,13 +115,14 @@ compare_block(work_t *work, project_t *project, int id) {
       }
       if(between(score, project->output->min, project->output->max)) {
         output_write(
+            project->output,
             record_get_field(r1, 0),
             record_get_field(r2, 0),
             status,
             score,
             scores,
             classes,
-            output_get_file(project->output, id));
+            id);
       }
     }
   }

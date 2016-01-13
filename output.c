@@ -7,14 +7,22 @@ output_get_file(output_t *output, int file) {
 
 void
 output_write(
+    output_t *output,
     char *id1,
     char *id2,
     char status,
     double score,
     double *scores,
     int num_scores,
-    gzFile file) {
+    int file_id) {
   int i;
+  gzFile file;
+
+  if(score < output->min || score > output->max) {
+    return;
+  }
+
+  file = output_get_file(output, file_id);
 
   gzprintf(file, "%c %c %s %s %f", status, 'X', id1, id2, score);
 

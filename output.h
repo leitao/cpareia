@@ -19,6 +19,6 @@ void output_open_files(output_t *, int);
 void output_free(output_t *);
 void output_print(output_t *);
 gzFile output_get_file(output_t *, int);
-void output_write(char *, char *, char, double, double *, int, gzFile);
+void output_write(output_t *, char *, char *, char, double, double *, int, int);
 
 #endif
