@@ -152,6 +152,8 @@ compare_block_void(void *data) {
         par->id);
   }
 
+  free(data);
+
   return NULL;
 }
 

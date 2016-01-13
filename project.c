@@ -12,15 +12,7 @@ project_new() {
 
   project->args = args_new();
 
-  project->frequency = hash_new();
-
   return project;
-}
-
-int
-file_exist (char *filename) {
-  struct stat   buffer;
-  return (stat (filename, &buffer) == 0);
 }
 
 void
@@ -62,7 +54,6 @@ project_free(project_t *project) {
   array_free(project->works);
 
   hash_free(project->blocks);
-  hash_free(project->frequency);
   array_free(project->conjunctions);
   classifier_free(project->classifier);
   args_free(project->args);
@@ -75,41 +66,13 @@ project_add_conjunction(project_t *project, conjunction_t *conjunction) {
 }
 
 void
-project_read_frequency_table(project_t *project, char *frequency_table) {
-  char *p, *key, line[200];
-  double *field_value;
-  FILE *fh;
-
-  if (strlen(frequency_table)) {
-    if (file_exist(frequency_table)) {
-      fh = fopen(frequency_table, "r");
-
-      while (fgets(line, sizeof(line), fh))  {
-        p = strtok(line, " ");
-        key = p;
-
-        p = strtok(NULL, " ");
-        field_value = malloc(sizeof(double));
-        *field_value = atof(p);
-
-        hash_insert(project->frequency, key, field_value);
-      }
-    }
-    else {
-      handle_error("Frequency table '%s' does not exist", frequency_table);
-    }
-
-  }
-}
-
-void
 project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
   xmlXPathObjectPtr xpath;
   xmlChar *match_min, *not_match_max, *m, *u, *missing, *function;
   xmlChar *field1, *default_weight;
-  xmlChar *min_value_to_be_match, *use_weight_table;
+  xmlChar *min_value_to_be_match, *use_weight_table, *frequency_table;
   int exact;
-  char *child_name, *frequency_table;
+  char *child_name;
   xmlNodePtr child;
   comparator_t *comparator;
 
@@ -139,7 +102,7 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
     missing = xmlGetProp(child, BAD_CAST "missing");
     min_value_to_be_match = xmlGetProp(child, BAD_CAST "minValueToBeMatch");
     use_weight_table = xmlGetProp(child, BAD_CAST "use-weight-table");
-    frequency_table = (char *) xmlGetProp(child, BAD_CAST "frequency-table");
+    frequency_table = xmlGetProp(child, BAD_CAST "frequency-table");
     function = xmlGetProp(child,BAD_CAST "function");
     field1 = xmlGetProp(child, BAD_CAST "field1");
     default_weight = xmlGetProp(child, BAD_CAST "default-weight");
@@ -152,10 +115,6 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
       exact = -1;
     }
 
-    if(frequency_table) {
-      project_read_frequency_table(project, frequency_table);
-    }
-
     if(exact != -1) {
       comparator = comparator_new(
           exact,
@@ -164,7 +123,7 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
           u ? atof((char *) u) : 0,
           missing ? atof((char *) missing) : 0,
           project_get_field_id(project, (char *) field1),
-          project->frequency,
+          (char *) frequency_table,
           (char *) function,
           min_value_to_be_match ? atof((char *) min_value_to_be_match) : 0,
           default_weight ? atof((char *) default_weight) : 0);

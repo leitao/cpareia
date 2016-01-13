@@ -13,20 +13,19 @@ hash_new() {
   return hash;
 }
 
+int
+hash_internal_free(const char *key, array_t *array, void *data) {
+  (void) key;
+  (void) array;
+  (void) data;
+  return 1;
+}
+
 void
 hash_free(hash_t *hash) {
-  array_t *array;
-  const char *key;
-
-  kh_foreach(
-      hash->table,
-      key,
-      array,
-      array_free(array);free((void *) key));
+  hash_foreach_remove(hash, hash_internal_free, NULL);
 
   kh_destroy(str, hash->table);
-
-  pthread_mutex_destroy(&hash->mutex);
 
   free(hash);
 }
@@ -36,21 +35,17 @@ hash_insert(hash_t *hash, char *key, void *record) {
   int absent;
   array_t *array;
   khint_t k;
-  char *keydup;
 
   pthread_mutex_lock(&hash->mutex);
 
-  keydup = strdup(key);
+  k = kh_put(str, hash->table, key, &absent);
 
-  if((k = kh_get(str, hash->table, keydup)) == kh_end(hash->table)) {
-    k = kh_put(str, hash->table, keydup, &absent);
+  if(absent) {
+    kh_key(hash->table, k) = strdup(key);
     kh_value(hash->table, k) = array_new(1);
-  } else {
-    free(keydup);
-    keydup = key;
   }
 
-  k = kh_get(str, hash->table, keydup);
+  k = kh_get(str, hash->table, key);
 
   array = kh_val(hash->table, k);
 
@@ -85,6 +80,7 @@ hash_internal_remove(hash_t *hash, const char *key, array_t *array) {
 
   k = kh_get(str, hash->table, key);
   kh_del(str, hash->table, k);
+  free((char *) key);
   array_free(array);
 }
 

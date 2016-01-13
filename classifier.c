@@ -1,9 +1,32 @@
 #include "classifier.h"
 
-/*<approx-string-comparator use-weight-table="true" m="0.9261" u="0.0188"
-missing="0.94" field1="nomecompleto" frequency-table="tb_freq_nome_paciente"
-function="winkler" minValueToBeMatch="0.95"/>
-*/
+void
+comparator_read_frequency_table(comparator_t *comparator) {
+  char *p, *key, *name, line[200];
+  double *field_value;
+  FILE *fh;
+
+  name = comparator->frequency_table_name;
+
+  comparator->frequency_table = hash_new();
+
+  if (name && strlen(name)) {
+    check_file(name);
+
+    fh = fopen(name, "r");
+
+    while (fgets(line, sizeof(line), fh))  {
+      p = strtok(line, " ");
+      key = p;
+
+      p = strtok(NULL, " ");
+      field_value = malloc(sizeof(double));
+      *field_value = atof(p);
+
+      hash_insert(comparator->frequency_table, key, field_value);
+    }
+  }
+}
 
 comparator_t *
 comparator_new(
@@ -13,7 +36,7 @@ comparator_new(
     double u,
     double missing,
     int field1,
-    hash_t *frequency_table,
+    char *frequency_table_name,
     char *function,
     double min_value_to_be_match,
     double default_weight) {
@@ -27,13 +50,15 @@ comparator_new(
   comparator->u = u;
   comparator->missing = missing;
   comparator->field1 = field1;
-  comparator->frequency_table = frequency_table;
   comparator->function = function;
   comparator->min_value_to_be_match = min_value_to_be_match;
   comparator->default_weight = default_weight;
+  comparator->frequency_table_name = frequency_table_name;
 
   comparator->log2_m_u = log2(m / u);
   comparator->log2_1m_1u = log2(1 - m / 1 - u);
+
+  comparator_read_frequency_table(comparator);
 
   return comparator;
 }
@@ -61,6 +86,7 @@ comparator_print(comparator_t *comparator) {
 void
 comparator_free(comparator_t *comparator) {
   free(comparator->function);
+  free(comparator->frequency_table_name);
   hash_free(comparator->frequency_table);
   free(comparator);
 }

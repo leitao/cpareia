@@ -22,14 +22,6 @@ args_free(args_t *args) {
 }
 
 void
-args_check_file(char *file) {
-  if(access(file, R_OK) == -1) {
-    printf("File '%s' does not exist\n", file);
-    exit(-1);
-  }
-}
-
-void
 args_print_usage() {
   printf("Usage: ./cpareia -p project_file [-t max_threads] ");
   printf("[-b blocking_file]\n");
@@ -51,7 +43,7 @@ args_parse(args_t *args, int argc, char *argv[]) {
     switch(c) {
       case 'p':
         args->project_file = strdup(optarg);
-        args_check_file(args->project_file);
+        check_file(args->project_file);
         break;
       case 't':
         if((max_threads = atoi(optarg)) > 1) {
@@ -63,7 +55,7 @@ args_parse(args_t *args, int argc, char *argv[]) {
         break;
       case 'b':
         args->blocking_file = strdup(optarg);
-        args_check_file(args->blocking_file);
+        check_file(args->blocking_file);
         break;
       case '?':
       default:
