@@ -17,7 +17,6 @@ void handle_error(const char *fmt, ...) {
 void
 check_file(char *file) {
   if(access(file, R_OK) == -1) {
-    printf("File '%s' does not exist\n", file);
-    exit(-1);
+    handle_error("File '%s' does not exist\n", file);
   }
 }
