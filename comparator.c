@@ -211,9 +211,9 @@ comparator_run_async(project_t *project) {
   printf("Quantidade de blocos: %d\n", size);
 
   hash_foreach_remove(project->blocks, comparator_calc_sum, &acc);
-  size = hash_size(project->blocks);
+  size = MAX((int)hash_size(project->blocks), project->args->max_threads);
 
-  project->blocks_mean_size = acc / MAX(acc, project->args->max_threads);
+  project->blocks_mean_size = acc / size;
 
   if(!size) {
     handle_error("Erro. Nenhum bloco restou para ser comparado\n");
