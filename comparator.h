@@ -8,6 +8,7 @@
 #include "output.h"
 
 #define between(val, min, max) val >= min && val <= max
+#define MAX(a, b) a > b ? a : b
 #define MIN(a, b) a < b ? a : b
 
 typedef struct work_t {

@@ -213,7 +213,11 @@ comparator_run_async(project_t *project) {
   hash_foreach_remove(project->blocks, comparator_calc_sum, &acc);
   size = hash_size(project->blocks);
 
-  project->blocks_mean_size = acc / size;
+  project->blocks_mean_size = acc / MAX(acc, project->args->max_threads);
+
+  if(!size) {
+    handle_error("Erro. Nenhum bloco restou para ser comparado\n");
+  }
 
   printf("Trabalho médio: %.0f registros\n", project->blocks_mean_size);
   printf("Novos blocos: %d\n", size);
