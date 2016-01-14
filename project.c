@@ -329,7 +329,9 @@ project_get_field_id(project_t *project, char *field_name) {
     }
   }
 
-  assert(field != -1);
+  if(field == -1) {
+    handle_error("Field '%s' not found\n", field_name);
+  }
 
   return field;
 }
