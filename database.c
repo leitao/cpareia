@@ -39,7 +39,7 @@ database_free(database_t *database) {
 }
 void *
 database_read_simple(void *database) {
-  database_read(database, NULL, NULL);
+  database_read(database);
 
   return NULL;
 }
@@ -56,7 +56,7 @@ database_read_async(database_t *database) {
 }
 
 void
-database_read(database_t *database, database_cb cb, void *cb_data) {
+database_read(database_t *database) {
   size_t i, total;
   csv_t *csv;
   csv_row_t *csv_row;
@@ -87,10 +87,6 @@ database_read(database_t *database, database_cb cb, void *cb_data) {
           (int) array_total_size(database->records),
           100.0 * total / array_total_size(database->records)
           );
-    }
-
-    if(cb) {
-      cb(cb_data, record);
     }
   }
 
