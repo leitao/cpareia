@@ -8,6 +8,7 @@
 #include "array.h"
 #include "colors.h"
 #include "errors.h"
+#include "csv.h"
 
 typedef struct comparator_t {
   int exact, use_weight_table, field1;

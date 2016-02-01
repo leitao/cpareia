@@ -27,6 +27,7 @@ csv_t *csv_new(char *);
 int csv_get_row(csv_t *, csv_row_t *);
 void csv_get_fields(csv_fields_t *, csv_row_t *, char);
 void csv_free(csv_t *);
+void csv_fields_deep_free(csv_fields_t *);
 void csv_row_free(csv_row_t *);
 void csv_fields_free(csv_fields_t *);
 csv_row_t *csv_row_new(char *, char *);

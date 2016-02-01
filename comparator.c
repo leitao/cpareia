@@ -22,7 +22,7 @@ double
 compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
   double score, freqf1, freqf2;
-  array_t *array;
+  array_t *array1, *array2;
   char *f1, *f2;
 
   f1 = record_get_field(r, field);
@@ -44,11 +44,11 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
        * Implementar tabela de peso
        * score = inverse_freq_f1 | inverse_freq_f2 | default_weight
        */
-      array = (array_t *) hash_get(comparator->frequency_table, f1);
-      freqf1 = *(double *)array_get(array, 0);
+      array1 = hash_get(comparator->frequency_table, f1);
+      array2 = hash_get(comparator->frequency_table, f2);
 
-      array = (array_t *) hash_get(comparator->frequency_table, f2);
-      freqf2 = *(double *)array_get(array, 0);
+      freqf1 = array1 ? *(double *)array_get(array1, 0) : 0;
+      freqf2 = array2 ? *(double *)array_get(array2, 0) : 0;
 
       /* We need to get the smalest inverse frequency, since it means
        * this element is more frequent.

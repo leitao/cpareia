@@ -136,6 +136,7 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
     free(missing);
     free(min_value_to_be_match);
     free(default_weight);
+    free(use_weight_table);
 
     child = child->next;
   }

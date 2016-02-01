@@ -2,30 +2,35 @@
 
 void
 comparator_read_frequency_table(comparator_t *comparator) {
-  char *p, *key, *name, line[200];
+  char *key, *name;
   double *field_value;
-  FILE *fh;
+  csv_t *csv;
+  csv_row_t *csv_row;
+  csv_fields_t *csv_fields;
 
   name = comparator->frequency_table_name;
 
+  csv = csv_new(name);
+  csv_row = csv_row_new(NULL, NULL);
+
   comparator->frequency_table = hash_new();
 
-  if (name && strlen(name)) {
-    check_file(name);
+  while(csv_get_row(csv, csv_row)) {
+    csv_fields = csv_fields_new(4);
 
-    fh = fopen(name, "r");
+    csv_get_fields(csv_fields, csv_row, '\t');
 
-    while (fgets(line, sizeof(line), fh))  {
-      p = strtok(line, " ");
-      key = p;
+    field_value = malloc(sizeof(double));
 
-      p = strtok(NULL, " ");
-      field_value = malloc(sizeof(double));
-      *field_value = atof(p);
+    key = csv_fields->fields[3];
+    *field_value = atof(csv_fields->fields[2]);
 
-      hash_insert(comparator->frequency_table, key, field_value);
-    }
+    hash_insert(comparator->frequency_table, key, field_value);
+    csv_fields_deep_free(csv_fields);
   }
+
+  csv_row_free(csv_row);
+  csv_free(csv);
 }
 
 comparator_t *
@@ -58,7 +63,13 @@ comparator_new(
   comparator->log2_m_u = log2(m / u);
   comparator->log2_1m_1u = log2(1 - m / 1 - u);
 
-  comparator_read_frequency_table(comparator);
+  if(use_weight_table) {
+    if(frequency_table_name && strlen(frequency_table_name)) {
+      comparator_read_frequency_table(comparator);
+    } else {
+      handle_error("use-weight-table is true but no table name given\n");
+    }
+  }
 
   return comparator;
 }
@@ -84,10 +95,28 @@ comparator_print(comparator_t *comparator) {
 }
 
 void
+comparator_array_free(const char *key, array_t *array, void *data) {
+  size_t i, total;
+  (void) key;
+  (void) data;
+
+  total = array_size(array);
+
+  for(i = 0; i < total; i++) {
+    free(array_get(array, i));
+  }
+}
+
+void
 comparator_free(comparator_t *comparator) {
   free(comparator->function);
   free(comparator->frequency_table_name);
-  hash_free(comparator->frequency_table);
+
+  if(comparator->use_weight_table) {
+    hash_foreach(comparator->frequency_table, comparator_array_free, 0);
+    hash_free(comparator->frequency_table);
+  }
+
   free(comparator);
 }
 

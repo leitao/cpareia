@@ -8,7 +8,7 @@ open_file(char *fname, char **buf) {
 	fd = open(fname, O_RDONLY);
 
 	if (fd == -1)
-		handle_error("open");
+		handle_error("Unable to open file %s\n", fname);
 
   if (fstat(fd, &fs) == -1)
     handle_error("fstat");
@@ -60,6 +60,17 @@ void
 csv_fields_free(csv_fields_t *csv_fields) {
   free(csv_fields->fields);
   free(csv_fields);
+}
+
+void
+csv_fields_deep_free(csv_fields_t *csv_fields) {
+  size_t i, total;
+  total = csv_fields->size;
+
+  for(i = 0; i < total; i++) {
+    free(csv_fields->fields[i]);
+  }
+  csv_fields_free(csv_fields);
 }
 
 csv_t *

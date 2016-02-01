@@ -64,7 +64,7 @@ hash_get(hash_t *hash, char *key) {
   khint_t k;
 
   k = kh_get(str, hash->table, key);
-  return kh_val(hash->table, k);
+  return (k == kh_end(hash->table) ? NULL : kh_val(hash->table, k));
 }
 
 void
