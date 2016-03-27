@@ -16,7 +16,7 @@
 typedef struct project_t {
   unsigned char *name;
   unsigned char *task;
-  database_t *d0;
+  database_t *d0, *d1;
   array_t *conjunctions;
   hash_t *blocks;
   classifier_t *classifier;

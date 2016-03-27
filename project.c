@@ -12,6 +12,9 @@ project_new() {
 
   project->args = args_new();
 
+  project->d0 = NULL;
+  project->d1 = NULL;
+
   return project;
 }
 
@@ -32,6 +35,11 @@ project_print(project_t *project) {
   printf("\nD0:\n");
   database_print(project->d0);
 
+  if(project->d1) {
+    printf("\nD1:\n");
+    database_print(project->d1);
+  }
+
   printf("\nOutput:\n");
   output_print(project->output);
 }
@@ -46,6 +54,7 @@ project_free(project_t *project) {
   free(project->task);
   free(project->name);
   database_free(project->d0);
+  database_free(project->d1);
 
   for(i = 0; i < array_size(project->conjunctions); i++) {
     conjunction_free(array_get(project->conjunctions, i));
@@ -148,14 +157,18 @@ project_parse_classifier(project_t *project, xmlXPathContextPtr ctx) {
 }
 
 void
-project_parse_datasource(project_t *project, xmlXPathContextPtr ctx) {
+project_parse_datasource(
+    project_t *project,
+    xmlXPathContextPtr ctx,
+    int id) {
   xmlXPathObjectPtr xpath;
   xmlChar *filename, *sep, *rows;
+  database_t *d;
   int i;
+  char buffer[100];
 
-  xpath = xmlXPathEvalExpression(
-      BAD_CAST "/project/data-sources/data-source[@id=0]",
-      ctx);
+  snprintf(buffer, 100, "/project/data-sources/data-source[@id=%d]", id);
+  xpath = xmlXPathEvalExpression(BAD_CAST buffer, ctx);
 
   filename = xmlGetProp(
       xpath->nodesetval->nodeTab[0],
@@ -171,35 +184,52 @@ project_parse_datasource(project_t *project, xmlXPathContextPtr ctx) {
 
   xmlXPathFreeObject(xpath);
 
-  xpath = xmlXPathEvalExpression(
-      BAD_CAST "/project/data-sources/data-source[@id=0]/fields/field",
-      ctx);
+  snprintf(
+      buffer,
+      100,
+      "/project/data-sources/data-source[@id=%d]/fields/field",
+      id);
+  xpath = xmlXPathEvalExpression(BAD_CAST buffer, ctx);
 
-  if(rows) {
-    project->d0 = database_new(
-        xpath->nodesetval->nodeNr,
-        strtoull((char *)rows, NULL, 10));
-  } else {
+  if(!rows) {
     handle_error("Missing attribute 'rows'\n");
   }
 
-  project->d0->filename = (char *) filename;
+  d = database_new(
+      xpath->nodesetval->nodeNr,
+      strtoull((char *)rows, NULL, 10));
+
+  d->filename = (char *) filename;
 
   if(!strcmp((char *) sep, "\\t")) {
-    project->d0->sep = '\t';
+    d->sep = '\t';
   } else {
-    project->d0->sep = *sep;
+    d->sep = *sep;
   }
 
   for(i = 0; i < xpath->nodesetval->nodeNr; i++) {
-    project->d0->fields[i] = xmlGetProp(
+    d->fields[i] = xmlGetProp(
         xpath->nodesetval->nodeTab[i],
         BAD_CAST "name");
+  }
+
+  if(id == 0) {
+    project->d0 = d;
+  } else {
+    project->d1 = d;
   }
 
   xmlXPathFreeObject(xpath);
   free(sep);
   free(rows);
+}
+
+void
+project_parse_datasources(project_t *project, xmlXPathContextPtr ctx) {
+  project_parse_datasource(project, ctx, 0);
+  if(strcmp((char *)project->task, "deduplication")) {
+    project_parse_datasource(project, ctx, 1);
+  }
 }
 
 void
@@ -215,10 +245,6 @@ project_parse_project(project_t *project, xmlXPathContextPtr ctx) {
   project->task = xmlGetProp(
       xpath->nodesetval->nodeTab[0],
       BAD_CAST "task");
-
-  if(strcmp((char *)project->task, "deduplication")) {
-    handle_error("We only support 'deduplication' right now");
-  }
 
   xmlXPathFreeObject(xpath);
 }
@@ -306,7 +332,7 @@ project_parse(project_t *project, char *file_name) {
     handle_error("Unable to create XPath\n");
 
   project_parse_project(project, xpath_ctx);
-  project_parse_datasource(project, xpath_ctx);
+  project_parse_datasources(project, xpath_ctx);
   project_parse_conjunctions(project, xpath_ctx);
   project_parse_classifier(project, xpath_ctx);
   project_parse_output(project, xpath_ctx);
