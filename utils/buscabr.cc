@@ -140,16 +140,6 @@ void left_midword_trim(std::string &str, const std::string &from)
     }
 }
 
-void first_and_last(std::string &str)
-{
-    int start = str.find_first_of(" ");
-    int end = str.find_last_of(" ");
-
-    if(start == end) return;
-
-    str.replace(start, end - start, "");
-}
-
 void tira_particulas(std::string &str)
 {
     // p := regexp_replace(p, ' d[aeiour][slr]* ', ' ', modifier => 'i'); -- da/das, do/dos, de/del etc
@@ -220,7 +210,7 @@ void tira_particulas(std::string &str)
     replace(str, "bisneta", "");
 }
 
-std::string buscabr(std::string &str, bool firstAndLast) {
+std::string buscabr(std::string &str) {
     // trim_reduce
     str = trim_reduce(str);
 
@@ -357,9 +347,7 @@ std::string buscabr(std::string &str, bool firstAndLast) {
     // e vogais e agás exceto a vogal inicial, quando o é, precedida ou não de h - mas o h é eliminado
     left_midword_trim(str, "aeiouh");
 
-    if(firstAndLast) first_and_last(str);
-
-    remove_if(str.begin(), str.end(), isspace);
+    str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
 
     return str;
 }
@@ -385,7 +373,7 @@ int main(int argc, char *argv[]) {
 
   str = join(all_args);
 
-	std::cout << buscabr(str, false) << std::endl;
+	std::cout << buscabr(str) << std::endl;
 
   return 0;
 }
