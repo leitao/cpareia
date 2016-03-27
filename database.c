@@ -23,6 +23,10 @@ void
 database_free(database_t *database) {
   size_t i;
 
+  if(!database) {
+    return;
+  }
+
   for(i = 0; i < array_size(database->records); i++) {
     record_free((record_t *) array_get(database->records, i));
   }
