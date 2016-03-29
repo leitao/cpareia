@@ -20,9 +20,9 @@ blocking_generate_keys(project_t *project, record_t *record) {
       part = array_get(conjunction->parts, j);
 
       if(!part->transform) {
-        strcat(key, record->fields[part->field]);
+        strcat(key, record_get_field(record, part->field));
       } else if(!strcmp(part->transform, "brsoundex")) {
-        brsoundex(record->fields[part->field], buffer, 5);
+        brsoundex(record_get_field(record, part->field), buffer, 5);
         strcat(key, buffer);
       }
       else {
