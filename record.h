@@ -12,7 +12,7 @@ typedef struct record_t {
   char **fields;
 } record_t;
 
-record_t *record_new(int numb_fields);
+record_t *record_new(int num_fields);
 void record_add_field(record_t *, char *);
 void record_free(record_t *);
 void record_print(record_t *);
