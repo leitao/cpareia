@@ -11,12 +11,12 @@
 
 #include "record.h"
 #include "errors.h"
-#include "array.h"
 #include "csv.h"
 
 typedef struct database_t {
-  array_t *records;
+  record_t *records;
   unsigned char **fields, sep;
+  size_t num_rows;
   size_t num_fields;
   char *filename;
 } database_t;

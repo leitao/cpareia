@@ -7,7 +7,8 @@ database_new(int num_fields, size_t num_rows) {
 
   database = malloc(sizeof(database_t));
 
-  database->records = array_new_zeroed(num_rows);
+  database->records = calloc(sizeof(record_t), num_rows);
+  database->num_rows = num_rows;
   database->num_fields = num_fields;
 
   database->fields = malloc(sizeof(unsigned char *) * num_fields);
@@ -26,9 +27,8 @@ database_free(database_t *database) {
   if(!database) {
     return;
   }
-
-  for(i = 0; i < array_size(database->records); i++) {
-    record_free((record_t *) array_get(database->records, i));
+  for(i = 0; i < database->num_rows; i++) {
+    record_shallow_free(&database->records[i]);
   }
 
   for(i = 0; i < database->num_fields; i++) {
@@ -37,7 +37,7 @@ database_free(database_t *database) {
 
   free(database->filename);
   free(database->fields);
-  array_free(database->records);
+  free(database->records);
 
   free(database);
 }
@@ -73,9 +73,11 @@ database_read(database_t *database) {
   total = 0;
 
   while(csv_get_row(csv, csv_row)) {
+    record = &database->records[total];
+    record_init(record, database->num_fields);
+
     csv_fields = csv_fields_new(database->num_fields);
     csv_get_fields(csv_fields, csv_row, database->sep);
-    record = record_new(database->num_fields);
 
     for(i = 0; i < database->num_fields; i++) {
       record_add_field(record, csv_fields->fields[i]);
@@ -83,15 +85,14 @@ database_read(database_t *database) {
 
     csv_fields_deep_free(csv_fields);
 
-    array_append(database->records, record);
     total++;
 
     if(!(total % 1000000)) {
       printf(
           "Registros lidos: %d de %d (%2.2f%%)\n",
           (int) total,
-          (int) array_total_size(database->records),
-          100.0 * total / array_total_size(database->records)
+          (int) database->num_rows,
+          100.0 * total / database->num_rows
           );
     }
   }
@@ -99,8 +100,8 @@ database_read(database_t *database) {
   printf(
       "Registros lidos: %d de %d (%2.2f%%)\n",
       (int) total,
-      (int) array_total_size(database->records),
-      100.0 * total / array_total_size(database->records)
+      (int) database->num_rows,
+      100.0 * total / database->num_rows
       );
 
   csv_row_free(csv_row);
@@ -120,7 +121,7 @@ database_print(database_t *database) {
     printf("    %s\n", database->fields[i]);
   }
 
-  for(i = 0; i < array_size(database->records); i++) {
-    record_print(array_get(database->records, i));
+  for(i = 0; i < database->num_rows; i++) {
+    record_print(&database->records[i]);
   }
 }

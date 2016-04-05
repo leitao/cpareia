@@ -48,10 +48,11 @@ blocking_generate_all_keys(void *data) {
   rank = param->rank;
   project = param->project;
   total_ranks = param->total_ranks;
-  size =  array_total_size(project->d0->records);
+  size =  project->d0->num_rows;
 
   for(i = rank; i < size; i += total_ranks) {
-    while(!(record = array_get(project->d0->records, i))) {
+    record = &project->d0->records[i];
+    while(! record->done ) {
       sleep(0.2);
     }
     if(!(i % 1000000)) {
@@ -70,7 +71,6 @@ blocking_read_blocks(void *proj) {
   char *k, *p, *key;
   FILE *fh;
   int i, id, total;
-  record_t *record;
   project_t *project;
   char line[200000];
 
@@ -91,8 +91,7 @@ blocking_read_blocks(void *proj) {
       k = strtok(p, " ");
       while(k) {
           id = atoi(k+1);
-          record = array_get(project->d0->records, id);
-          hash_insert(project->blocks, key, record);
+          hash_insert(project->blocks, key, &project->d0->records[id]);
           k = strtok(NULL, " ");
       }
     }
