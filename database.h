@@ -21,7 +21,7 @@ typedef struct database_t {
   char *filename;
 } database_t;
 
-database_t *database_new(int num_fields, size_t num_rows);
+database_t *database_new(int, size_t);
 void database_free(database_t *);
 void database_read(database_t *);
 pthread_t *database_read_async(database_t *);
