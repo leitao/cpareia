@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "database.h"
-#include "error.h"
+#include "errors.h"
 
 typedef struct csv_t {
   size_t size, num_fields;

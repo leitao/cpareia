@@ -9,7 +9,7 @@
 
 #include "args.h"
 #include "project.h"
-#include "error.h"
+#include "errors.h"
 #include "database.h"
 #include "blocking.h"
 #include "mem.h"
