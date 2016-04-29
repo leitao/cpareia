@@ -8,15 +8,13 @@
 #include <stdint.h>
 
 typedef struct record_t {
-  uint8_t num_fields, _used_fields, *_indexes, done;
+  uint8_t num_fields, _used_fields, *_indexes;
   size_t _size;
   char *_fields;
 } record_t;
 
 record_t *record_new(uint8_t);
-void record_init(record_t *record, uint8_t);
 void record_free(record_t *);
-void record_shallow_free(record_t *);
 void record_add_field(record_t *, char *);
 char *record_get_field(record_t *, uint8_t);
 void record_print(record_t *);
