@@ -8,7 +8,7 @@ project_new() {
 
   project->conjunctions = array_new(1);
 
-  project->blocks = hash_new();
+  project->block = block_new();
 
   project->args = args_new();
 
@@ -62,7 +62,7 @@ project_free(project_t *project) {
 
   array_free(project->works);
 
-  hash_free(project->blocks);
+  block_free(project->block);
   array_free(project->conjunctions);
   classifier_free(project->classifier);
   args_free(project->args);

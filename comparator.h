@@ -12,7 +12,7 @@
 #define MIN(a, b) a < b ? a : b
 
 typedef struct work_t {
-  array_t *array;
+  uint_array_t *array;
   int start, step;
 } work_t;
 
@@ -22,7 +22,7 @@ typedef struct comparator_pthread_params_t {
   int num_threads;
 } comparator_pthread_params_t;
 
-work_t *work_new(array_t *, int, int);
+work_t *work_new(uint_array_t *, int, int);
 void work_free(work_t *);
 
 pthread_t **comparator_run_async(project_t *);

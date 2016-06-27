@@ -1,12 +1,12 @@
 #include "comparator.h"
 
 work_t *
-work_new(array_t *array, int start, int step) {
+work_new(uint_array_t *uint_array, int start, int step) {
   work_t *work;
 
   work = malloc(sizeof(work_t));
 
-  work->array = array;
+  work->array = uint_array;
   work->start = start;
   work->step = step;
 
@@ -101,9 +101,9 @@ compare_block(work_t *work, project_t *project, int id) {
   scores = malloc(sizeof(double) * classes);
 
   for(i = work->start; i < size - 1; i += work->step) {
-    r1 = array_get(work->array, i);
+    r1 = array_get(project->d0->records, array_get(work->array, i));
     for(j = i + 1; j < size; j++) {
-      r2 = array_get(work->array, j);
+      r2 = array_get(project->d0->records, array_get(work->array, j));
       score = compare_all(project->classifier, r1, r2, scores);
 
       if(score < project->output->min) {
@@ -159,7 +159,7 @@ compare_block_void(void *data) {
 }
 
 void
-comparator_get_block(const char *key, array_t *array, void *proj) {
+comparator_get_block(const char *key, uint_array_t *uint_array, void *proj) {
   work_t *work;
   project_t *project;
   float prop;
@@ -168,25 +168,25 @@ comparator_get_block(const char *key, array_t *array, void *proj) {
   (void) key;
 
   project = (project_t *) proj;
-  size = array_size(array);
+  size = uint_array_size(uint_array);
 
   prop = size / project->blocks_mean_size;
   prop = prop > 2 ? prop : 1;
 
   for(i = 0; i < prop; i++) {
-    work = work_new(array, i, prop);
+    work = work_new(uint_array, i, prop);
     array_push(project->works, work);
   }
 }
 
 int
-comparator_calc_sum(const char *key, array_t *array, void *ac) {
+comparator_calc_sum(const char *key, uint_array_t *uint_array, void *ac) {
   size_t size;
   float *acc;
   (void) key;
 
   acc = (float *) ac;
-  size = array_size(array);
+  size = uint_array_size(uint_array);
 
   if(size == 1) {
     return 1;
@@ -206,12 +206,12 @@ comparator_run_async(project_t *project) {
 
   threads = malloc(sizeof(pthread_t *) * project->args->max_threads);
 
-  size = hash_size(project->blocks);
+  size = block_size(project->block);
   printf("Calculando trabalho médio e removendo blocos únicos\n");
   printf("Quantidade de blocos: %d\n", size);
 
-  hash_foreach_remove(project->blocks, comparator_calc_sum, &acc);
-  size = MAX((int)hash_size(project->blocks), project->args->max_threads);
+  block_foreach_remove(project->block, comparator_calc_sum, &acc);
+  size = MAX((int)block_size(project->block), project->args->max_threads);
 
   project->blocks_mean_size = acc / size;
 
@@ -225,7 +225,7 @@ comparator_run_async(project_t *project) {
   project->works = array_new(size);
 
   printf("Dividindo e compartilhando blocos para a comparação\n");
-  hash_foreach(project->blocks, comparator_get_block, project);
+  block_foreach(project->block, comparator_get_block, project);
   printf("Todos os blocos já foram alocados\n");
   printf("Começando comparação em si\n");
 

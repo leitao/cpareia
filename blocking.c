@@ -6,11 +6,14 @@ blocking_thread_params_free(blocking_thread_params_t *params) {
 }
 
 void
-blocking_generate_keys(project_t *project, record_t *record) {
+blocking_generate_keys(project_t *project, uint32_t id) {
   size_t i, j;
   conjunction_t *conjunction;
   part_t *part;
+  record_t *record;
   char buffer[5], key[1024];
+
+  record = array_get(project->d0->records, id);
 
   for(i = 0; i < array_size(project->conjunctions); i++) {
     conjunction = array_get(project->conjunctions, i);
@@ -30,7 +33,7 @@ blocking_generate_keys(project_t *project, record_t *record) {
       }
     }
     if(strlen(key)) {
-      hash_insert(project->blocks, key, record);
+      block_insert(project->block, key, id);
     }
   }
 }
@@ -57,7 +60,7 @@ blocking_generate_all_keys(void *data) {
     if(!(i % 1000000)) {
       printf("Registros blocados: %lu de %lu (%2.2f%%)\n", i, size, 100.0 * i / size);
     }
-    blocking_generate_keys(project, record);
+    blocking_generate_keys(project, i);
   }
 
   blocking_thread_params_free(param);
@@ -70,7 +73,6 @@ blocking_read_blocks(void *proj) {
   char *k, *p, *key;
   FILE *fh;
   int i, id, total;
-  record_t *record;
   project_t *project;
   char line[200000];
 
@@ -90,9 +92,8 @@ blocking_read_blocks(void *proj) {
     for (i = 0; i < total; i++) {
       k = strtok(p, " ");
       while(k) {
-          id = atoi(k+1);
-          record = array_get(project->d0->records, id);
-          hash_insert(project->blocks, key, record);
+          id = atoi(k + 1);
+          block_insert(project->block, key, id);
           k = strtok(NULL, " ");
       }
     }
@@ -131,9 +132,4 @@ blocking_async(project_t *project) {
   }
 
   return threads;
-}
-
-void
-blocking_print(project_t *project) {
-  hash_print(project->blocks);
 }
