@@ -175,7 +175,7 @@ comparator_get_block(const char *key, array_t *array, void *proj) {
 
   for(i = 0; i < prop; i++) {
     work = work_new(array, i, prop);
-    array_append(project->works, work);
+    array_push(project->works, work);
   }
 }
 

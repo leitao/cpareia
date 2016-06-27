@@ -137,7 +137,7 @@ void
 classifier_add_comparator(
     classifier_t *classifier,
     comparator_t *comparator) {
-    array_append(classifier->comparators, comparator);
+    array_push(classifier->comparators, comparator);
 }
 
 void

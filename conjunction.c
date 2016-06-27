@@ -45,7 +45,7 @@ conjunction_add_part(
   part_t *part;
   part = part_new(field, transform, size);
 
-  array_append(conjunction->parts, part);
+  array_push(conjunction->parts, part);
 }
 
 void

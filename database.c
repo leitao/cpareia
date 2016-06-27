@@ -9,6 +9,7 @@ database_new(int num_fields, size_t num_rows) {
 
   database->records = array_new_zeroed(num_rows);
   database->num_fields = num_fields;
+  database->num_rows = num_rows;
 
   database->fields = malloc(sizeof(unsigned char *) * num_fields);
 
@@ -83,15 +84,15 @@ database_read(database_t *database) {
 
     csv_fields_deep_free(csv_fields);
 
-    array_append(database->records, record);
+    array_push(database->records, record);
     total++;
 
     if(!(total % 1000000)) {
       printf(
           "Registros lidos: %d de %d (%2.2f%%)\n",
           (int) total,
-          (int) array_total_size(database->records),
-          100.0 * total / array_total_size(database->records)
+          (int) database->num_rows,
+          100.0 * total / database->num_rows
           );
     }
   }
@@ -99,8 +100,8 @@ database_read(database_t *database) {
   printf(
       "Registros lidos: %d de %d (%2.2f%%)\n",
       (int) total,
-      (int) array_total_size(database->records),
-      100.0 * total / array_total_size(database->records)
+      (int) database->num_rows,
+      100.0 * total / database->num_rows
       );
 
   csv_row_free(csv_row);

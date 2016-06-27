@@ -49,14 +49,9 @@ hash_insert(hash_t *hash, char *key, void *record) {
 
   array = kh_val(hash->table, k);
 
-  array_append(array, record);
+  array_push(array, record);
 
   pthread_mutex_unlock(&hash->mutex);
-}
-
-void
-record_void_print(void *record) {
-  record_print(record);
 }
 
 array_t *
@@ -70,8 +65,12 @@ hash_get(hash_t *hash, char *key) {
 void
 hash_print_pair(const char *key, array_t *array, void *data) {
   (void) data;
+  size_t i;
   printf("  %s =>\n", key);
-  array_print(array, record_void_print);
+
+  for(i = 0; i < array_size(array); i++) {
+    record_print(array_get(array, i));
+  }
 }
 
 void

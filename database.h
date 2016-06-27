@@ -17,7 +17,7 @@
 typedef struct database_t {
   array_t *records;
   unsigned char **fields, sep;
-  size_t num_fields;
+  size_t num_fields, num_rows;
   char *filename;
 } database_t;
 
