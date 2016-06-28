@@ -133,6 +133,7 @@ compare_block(work_t *work, project_t *project, int id) {
 void *
 compare_block_void(void *data) {
   unsigned long int i, size, step;
+  double prop;
   comparator_pthread_params_t *par;
 
   par = data;
@@ -143,11 +144,8 @@ compare_block_void(void *data) {
 
   for(i = par->id; i < size; i += par->num_threads) {
     if(!(i % step)) {
-      printf(
-          "Blocos processados: %lu de %lu (%2.2f%%)\n",
-          i,
-          size,
-          100.0 * i / size);
+      prop = 100.0 * i / size;
+      printf("Blocos processados: %lu/%lu (%2.2f%%)\n", i, size, prop);
     }
     compare_block(
         array_get(par->project->works, i),
@@ -161,7 +159,7 @@ compare_block_void(void *data) {
 }
 
 void
-comparator_get_block(const char *key, uint_array_t *uint_array, void *proj) {
+comparator_get_block(const char *key, uint_array_t *array, void *proj) {
   work_t *work;
   project_t *project;
   float prop;
@@ -170,25 +168,25 @@ comparator_get_block(const char *key, uint_array_t *uint_array, void *proj) {
   (void) key;
 
   project = (project_t *) proj;
-  size = uint_array_size(uint_array);
+  size = uint_array_size(array);
 
   prop = size / project->blocks_mean_size;
   prop = prop > 2 ? prop : 1;
 
   for(i = 0; i < prop; i++) {
-    work = work_new(uint_array, i, prop);
+    work = work_new(array, i, prop);
     array_push(project->works, work);
   }
 }
 
 int
-comparator_calc_sum(const char *key, uint_array_t *uint_array, void *ac) {
+comparator_calc_sum(const char *key, uint_array_t *array, void *ac) {
   size_t size;
   float *acc;
   (void) key;
 
   acc = (float *) ac;
-  size = uint_array_size(uint_array);
+  size = uint_array_size(array);
 
   if(size == 1) {
     return 1;
