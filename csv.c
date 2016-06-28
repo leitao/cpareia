@@ -18,6 +18,9 @@ open_file(char *fname, char **buf) {
   if (*buf == MAP_FAILED)
     handle_error("mmap");
 
+  if(madvise(*buf, fs.st_size, MADV_SEQUENTIAL) == -1)
+    handle_error("madvise");
+
   close(fd);
 
   return fs.st_size;

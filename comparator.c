@@ -132,15 +132,17 @@ compare_block(work_t *work, project_t *project, int id) {
 
 void *
 compare_block_void(void *data) {
-  unsigned long int i, size;
+  unsigned long int i, size, step;
   comparator_pthread_params_t *par;
 
   par = data;
 
   size = (unsigned long int) array_size(par->project->works);
 
+  step = size * 0.01;
+
   for(i = par->id; i < size; i += par->num_threads) {
-    if(!(i % 10000)) {
+    if(!(i % step)) {
       printf(
           "Blocos processados: %lu de %lu (%2.2f%%)\n",
           i,
