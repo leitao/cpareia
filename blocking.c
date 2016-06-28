@@ -44,7 +44,6 @@ blocking_generate_all_keys(void *data) {
   int rank, total_ranks;
   project_t *project;
   blocking_thread_params_t *param;
-  record_t *record;
 
   param = data;
 
@@ -54,8 +53,8 @@ blocking_generate_all_keys(void *data) {
   size = project->d0->num_rows;
 
   for(i = rank; i < size; i += total_ranks) {
-    while(!(record = array_get(project->d0->records, i))) {
-      sleep(0.2);
+    while(!array_get(project->d0->records, i)) {
+      sleep(1);
     }
     if(!(i % 1000000)) {
       printf("Registros blocados: %lu de %lu (%2.2f%%)\n", i, size, 100.0 * i / size);
