@@ -140,7 +140,7 @@ compare_block_void(void *data) {
 
   size = (unsigned long int) array_size(par->project->works);
 
-  step = size * 0.01;
+  step = size * 0.01 || size;
 
   for(i = par->id; i < size; i += par->num_threads) {
     if(!(i % step)) {
