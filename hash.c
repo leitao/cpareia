@@ -64,8 +64,8 @@ hash_get(hash_t *hash, char *key) {
 
 void
 hash_print_pair(const char *key, array_t *array, void *data) {
-  (void) data;
   size_t i;
+  (void) data;
   printf("  %s =>\n", key);
 
   for(i = 0; i < array_size(array); i++) {
