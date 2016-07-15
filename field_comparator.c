@@ -2,8 +2,8 @@
 
 char *
 common_chars(char *s, char *t, int ss, int st, int halflen, float *size){
-  char common[1000], copy[1000];
-  int i, j, common_size, min;
+  char common[1000], copy[1000], *out;
+  int i, j, common_size, min, tot;
   short found;
 
   found = 0;
@@ -24,7 +24,10 @@ common_chars(char *s, char *t, int ss, int st, int halflen, float *size){
     }
   }
   *size = common_size;
-  return strdup(common);
+  tot = sizeof(char) * (common_size + 1);
+  out = malloc(tot);
+  strncpy(out, common, tot);
+  return out;
 }
 
 int
