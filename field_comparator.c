@@ -18,13 +18,12 @@ common_chars(char *s, char *t, int ss, int st, int halflen, float *size){
     for(j = i - halflen > 0 ? i - halflen : 0; ! found && j < min; j++){
       if(copy[j] == s[i]){
         found = 1;
-        common[common_size] = s[i];
-        common_size++;
-        (*size)++;
+        common[common_size++] = s[i];
         copy[j] = '*';
       }
     }
   }
+  *size = common_size;
   return strdup(common);
 }
 
