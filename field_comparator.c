@@ -1,38 +1,35 @@
 #include "field_comparator.h"
 
-static char *
-common_chars(char *s, char *t, int ss, int st, int halflen, int *size){
+char *
+common_chars(char *s, char *t, int ss, int st, int halflen, float *size){
   char common[1000], copy[1000];
-  int i, j, min, sz;
-  char ch, *ret;
+  int i, j, common_size, min;
   short found;
 
   found = 0;
-  *size = 0;
+  common_size = 0;
 
   strcpy(copy, t);
   memset(common, 0, 1000);
 
   for(i = 0; i < ss; i++){
-    ch = s[i];
     found = 0;
     min = i + halflen > st ? st : i + halflen;
     for(j = i - halflen > 0 ? i - halflen : 0; ! found && j < min; j++){
-      if(copy[j] == ch){
+      if(copy[j] == s[i]){
         found = 1;
-        common[*size] = ch;
+        common[common_size] = s[i];
+        common_size++;
         (*size)++;
         copy[j] = '*';
       }
     }
   }
-  sz = sizeof(char) * (*size + 1);
-  ret = malloc(sz);
-  strncpy(ret, common, sz);
-  return ret;
+  return strdup(common);
 }
 
-int transpositions(char *s, char *t, int ss){
+int
+transpositions(char *s, char *t, int ss) {
   int transpositions, i;
 
   transpositions = 0;
@@ -45,11 +42,11 @@ int transpositions(char *s, char *t, int ss){
   return transpositions / 2;
 }
 
-float jaro(char *s,  char *t, size_t ss, size_t st){
+float
+jaro(char *s,  char *t, size_t ss, size_t st) {
   int halflen, transpos;
   char *common1, *common2;
-  float retval;
-  int sc1, sc2;
+  float retval, sc1, sc2;
 
   halflen = (ss > st) ? ss / 2 + 1 : st / 2 + 1;
 
@@ -67,25 +64,20 @@ float jaro(char *s,  char *t, size_t ss, size_t st){
 }
 
 int
-common_prefix_length(int max, char *c1, char *c2, int s1, int s2) {
+common_prefix_length(int max, char *s, char *t, int ss, int st) {
   int i, n;
-  n = MIN3(max, s1, s2);
+  n = MIN3(max, ss, st);
 
   for (i = 0; i < n; i++) {
-    if (c1[i] != c2[i]) return i;
+    if (s[i] != t[i]) return i;
   }
   return n;
 }
 
-float
-winkler_score(char *s,  char *t, int ss, int st, int max) {
-  return common_prefix_length(max, s, t, ss, st);
-}
-
 double
-winkler(char *s, char * t){
+winkler(char *s, char *t) {
   float dist, pref_length;
-  size_t ss, st;
+  int ss, st;
 
   if (!strcmp(s, t))
     return 1.0;
@@ -94,7 +86,7 @@ winkler(char *s, char * t){
   st = strlen(t);
 
   dist = jaro(s, t, ss, st);
-  pref_length = winkler_score(s, t, ss, st, 4);
+  pref_length = common_prefix_length(4, s, t, ss, st);
   dist = dist + pref_length * 0.1 * (1 - dist);
 
   return dist;
