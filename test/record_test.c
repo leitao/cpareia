@@ -11,7 +11,7 @@ void test_record() {
   assert_int_equal(record->num_fields, tam);
 
   for(i = 0; i < tam; i++) {
-    record_add_field(record, fields[i]);
+    record_add_field(record, strdup(fields[i]));
   }
 
   for(i = 0; i < tam; i++) {
