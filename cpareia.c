@@ -19,7 +19,7 @@ main(int argc, char *argv[]) {
 
   project_parse(project, project->args->project_file);
 
-  printf("Começando leitura e blocagem\n");
+  printf("Começando leitura e blocagem\n\n");
   read_thread = database_read_async(project->d0);
 
   if(project->args->blocking_file) {
@@ -39,7 +39,7 @@ main(int argc, char *argv[]) {
 
   free(blocking_threads);
   free(read_thread);
-  printf("Blocagem pronta\n\nComeçando comparação e escrita\n");
+  printf("\nComeçando comparação e escrita\n");
   comparator_threads = comparator_run_async(project);
 
   for(i = 0; i < project->args->max_threads; i++) {

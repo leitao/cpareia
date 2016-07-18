@@ -133,25 +133,32 @@ compare_block(work_t *work, project_t *project, int id) {
 void *
 compare_block_void(void *data) {
   unsigned long int i, size, step;
+  int id, last_thread;
   double prop;
   comparator_pthread_params_t *par;
+  project_t *project;
 
   par = data;
 
-  size = (unsigned long int) array_size(par->project->works);
+  project = par->project;
+  id = par->id;
 
-  step = size * 0.01 || size;
+  size = (unsigned long int) array_size(project->works);
 
-  for(i = par->id; i < size; i += par->num_threads) {
-    if(!(i % step)) {
+  last_thread = id == par->num_threads - 1;
+
+  step = size < 100 ? size : size * 0.01;
+
+  for(i = id; i < size; i += par->num_threads) {
+    if(last_thread && !(i % step)) {
       prop = 100.0 * i / size;
       printf("Blocos processados: %lu/%lu (%2.2f%%)\n", i, size, prop);
     }
-    compare_block(
-        array_get(par->project->works, i),
-        par->project,
-        par->id);
+    compare_block(array_get(project->works, i), project, id);
   }
+
+  if(last_thread)
+    printf("Blocos processados: %lu/%lu (%2.2f%%)\n", size, size, 100.0);
 
   free(data);
 
@@ -226,8 +233,7 @@ comparator_run_async(project_t *project) {
 
   printf("Dividindo e compartilhando blocos para a comparação\n");
   block_foreach(project->block, comparator_get_block, project);
-  printf("Todos os blocos já foram alocados\n");
-  printf("Começando comparação em si\n");
+  printf("Todos os blocos foram alocados\nComeçando comparação em si\n");
 
   output_open_files(project->output, project->args->max_threads);
 

@@ -62,7 +62,8 @@ database_read_async(database_t *database) {
 
 void
 database_read(database_t *database) {
-  size_t i, total;
+  size_t i, total, rows;
+  double prop;
   csv_t *csv;
   csv_row_t *csv_row;
   csv_fields_t *csv_fields;
@@ -73,6 +74,8 @@ database_read(database_t *database) {
   csv_fields = csv_fields_new(database->num_fields);
 
   total = 0;
+
+  rows = database->num_rows;
 
   while(csv_get_row(csv, csv_row)) {
     csv_get_fields(csv_fields, csv_row, database->sep);
@@ -85,22 +88,14 @@ database_read(database_t *database) {
     array_push(database->records, record);
     total++;
 
+    prop = 100.0 * total / rows;
+
     if(!(total % 1000000)) {
-      printf(
-          "Registros lidos: %d de %d (%2.2f%%)\n",
-          (int) total,
-          (int) database->num_rows,
-          100.0 * total / database->num_rows
-          );
+      printf("Registros lidos: %lu/%lu (%2.2f%%)\n", total, rows, prop);
     }
   }
 
-  printf(
-      "Registros lidos: %d de %d (%2.2f%%)\n",
-      (int) total,
-      (int) database->num_rows,
-      100.0 * total / database->num_rows
-      );
+  printf("Registros lidos: %lu/%lu (%2.2f%%)\n", rows, rows, 100.0);
 
   csv_fields_free(csv_fields);
   csv_row_free(csv_row);

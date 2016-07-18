@@ -41,7 +41,8 @@ blocking_generate_keys(project_t *project, uint32_t id) {
 void *
 blocking_generate_all_keys(void *data) {
   size_t i, size;
-  int rank, total_ranks;
+  int rank, total_ranks, last_thread;
+  double prop;
   project_t *project;
   blocking_thread_params_t *param;
 
@@ -52,15 +53,19 @@ blocking_generate_all_keys(void *data) {
   total_ranks = param->total_ranks;
   size = project->d0->num_rows;
 
+  last_thread = rank == total_ranks - 2;
+
   for(i = rank; i < size; i += total_ranks) {
-    while(!array_get(project->d0->records, i)) {
-      sleep(1);
-    }
-    if(!(i % 1000000)) {
-      printf("Registros blocados: %lu de %lu (%2.2f%%)\n", i, size, 100.0 * i / size);
+    while(!array_get(project->d0->records, i)) usleep(0.1);
+    if(last_thread && !(i % 1000000)) {
+      prop = 100.0 * i / size;
+      printf("Registros blocados: %lu/%lu (%2.2f%%)\n", i, size, prop);
     }
     blocking_generate_keys(project, i);
   }
+
+  if(last_thread)
+    printf("Registros blocados: %lu/%lu (%2.2f%%)\n", size, size, 100.0);
 
   blocking_thread_params_free(param);
 
