@@ -1,9 +1,9 @@
 #include "field_comparator.h"
 
-static char *common_chars(const char * s, const char * t, int halflen){
-  char common[1000], copy[1000];
-  int i, j, len_t, common_size, min;
-  char ch, *ret;
+char *
+common_chars(char *s, char *t, int ss, int st, int halflen, float *size){
+  char common[1000], copy[1000], *out;
+  int i, j, common_size, min, tot;
   short found;
 
   found = 0;
@@ -11,92 +11,84 @@ static char *common_chars(const char * s, const char * t, int halflen){
 
   strcpy(copy, t);
   memset(common, 0, 1000);
-  len_t = strlen(t);
 
-  for(i = 0; i < (int) strlen(s); i++){
-    ch = s[i];
+  for(i = 0; i < ss; i++){
     found = 0;
-    min = i + halflen > len_t ? len_t : i + halflen;
+    min = i + halflen > st ? st : i + halflen;
     for(j = i - halflen > 0 ? i - halflen : 0; ! found && j < min; j++){
-      if(copy[j] == ch){
+      if(copy[j] == s[i]){
         found = 1;
-        common[common_size] = ch;
-        common_size ++;
+        common[common_size++] = s[i];
         copy[j] = '*';
       }
     }
   }
-  ret = malloc(sizeof(char) * common_size + 1);
-  strncpy(ret, common, sizeof(char) * common_size + 1);
-  return ret;
+  *size = common_size;
+  tot = sizeof(char) * (common_size + 1);
+  out = malloc(tot);
+  strncpy(out, common, tot);
+  return out;
 }
 
-int transpositions(char *a, char *b){
+int
+transpositions(char *s, char *t, int ss) {
   int transpositions, i;
 
   transpositions = 0;
 
-  for (i = 0; i < (int) strlen(a); i++) {
-    if (a[i] != b[i]){
+  for (i = 0; i < ss; i++) {
+    if (s[i] != t[i]){
       transpositions++;
     }
   }
   return transpositions / 2;
 }
 
-float jaro(char *s,  char * t){
-  size_t ss1, ss2;
+float
+jaro(char *s,  char *t, size_t ss, size_t st) {
   int halflen, transpos;
   char *common1, *common2;
   float retval, sc1, sc2;
 
-  if (strcmp(s, t) == 0) {
-    return 1.0f;
-  }
-  ss1 = strlen(s);
-  ss2 = strlen(t);
+  halflen = (ss > st) ? ss / 2 + 1 : st / 2 + 1;
 
-  halflen = (ss1 > ss2) ? ss1 / 2 + 1 : ss2 / 2 + 1;
-
-  common1 = common_chars(s, t, halflen);
-  common2 = common_chars(t, s, halflen);
+  common1 = common_chars(s, t, ss, st, halflen, &sc1);
+  common2 = common_chars(t, s, st, ss, halflen, &sc2);
   retval = 0.0F;
 
-  sc1 = (float) strlen(common1);
-  sc2 = (float) strlen(common2);
-
   if(sc1 == sc2 && sc1 != 0){
-    transpos = transpositions(common1,common2);
-    retval = (sc1 / ss1 + sc2 / ss2 + (sc1 - transpos) / sc1) / 3.0F;
+    transpos = transpositions(common1, common2, sc1);
+    retval = (sc1 / ss + sc2 / st + (sc1 - transpos) / sc1) / 3.0F;
   }
   free(common1);
   free(common2);
   return retval;
 }
 
-int common_prefix_length(int max,  char *c1,  char *c2){
+int
+common_prefix_length(int max, char *s, char *t, int ss, int st) {
   int i, n;
-  n = MIN3(max, (int) strlen(c1), (int) strlen(c2));
+  n = MIN3(max, ss, st);
 
   for (i = 0; i < n; i++) {
-    if (c1[i] != c2[i]) return i;
+    if (s[i] != t[i]) return i;
   }
   return n;
 }
 
-float winkler_score(char *s,  char * t, int max) {
-  return common_prefix_length(max, s, t);
-}
-
-double winkler(char *s, char * t){
+double
+winkler(char *s, char *t) {
   float dist, pref_length;
+  int ss, st;
 
-  if (!strcmp(s, t)){
+  if (!strcmp(s, t))
     return 1.0;
-  }
 
-  dist = jaro(s,t);
-  pref_length = winkler_score(s, t, 4);
+  ss = strlen(s);
+  st = strlen(t);
+
+  dist = jaro(s, t, ss, st);
+  pref_length = common_prefix_length(4, s, t, ss, st);
   dist = dist + pref_length * 0.1 * (1 - dist);
 
   return dist;
