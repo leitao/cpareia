@@ -24,6 +24,7 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   double score, freqf1, freqf2;
   array_t *array1, *array2;
   char *f1, *f2;
+  int s1, s2;
 
   f1 = record_get_field(r, field);
   f2 = record_get_field(s, field);
@@ -35,7 +36,9 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   if(comparator->exact) {
     match = !strcmp(f1, f2);
   } else {
-    match = winkler(f1, f2) >= comparator->min_value_to_be_match;
+    s1 = record_get_field_size(r, field);
+    s2 = record_get_field_size(s, field);
+    match = winkler(f1, f2, s1, s2) >= comparator->min_value_to_be_match;
   }
 
   if(match) {

@@ -77,15 +77,11 @@ common_prefix_length(int max, char *s, char *t, int ss, int st) {
 }
 
 double
-winkler(char *s, char *t) {
+winkler(char *s, char *t, int ss, int st) {
   float dist, pref_length;
-  int ss, st;
 
   if (!strcmp(s, t))
     return 1.0;
-
-  ss = strlen(s);
-  st = strlen(t);
 
   dist = jaro(s, t, ss, st);
   pref_length = common_prefix_length(4, s, t, ss, st);
