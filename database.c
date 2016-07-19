@@ -71,19 +71,21 @@ database_read(database_t *database) {
 
   csv = csv_new(database->filename);
   csv_row = csv_row_new(NULL, NULL);
-  csv_fields = csv_fields_new(database->num_fields);
 
   total = 0;
 
   rows = database->num_rows;
 
   while(csv_get_row(csv, csv_row)) {
+    csv_fields = csv_fields_new(database->num_fields);
     csv_get_fields(csv_fields, csv_row, database->sep);
     record = record_new(database->num_fields);
 
     for(i = 0; i < database->num_fields; i++) {
       record_add_field(record, csv_fields->fields[i]);
     }
+
+    csv_fields_deep_free(csv_fields);
 
     array_push(database->records, record);
     total++;
@@ -97,7 +99,6 @@ database_read(database_t *database) {
 
   printf("Registros lidos: %lu/%lu (%2.2f%%)\n", rows, rows, 100.0);
 
-  csv_fields_free(csv_fields);
   csv_row_free(csv_row);
 
   csv_free(csv);

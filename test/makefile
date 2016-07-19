@@ -17,6 +17,9 @@ all: record_test
 run: all
 	./record_test
 
+val: all
+	valgrind --leak-check=full --show-leak-kinds=all ./record_test
+
 record_test: ../record.o record_test.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
