@@ -1,6 +1,6 @@
 NAME = cpareia
 CC = gcc
-CFLAGS = -Wall -Wextra -Wpedantic -flto
+CFLAGS = -Wall -Wextra -Wpedantic
 CFLAGS += `pkg-config --cflags libxml-2.0`
 LDFLAGS = `pkg-config --libs libxml-2.0` -lm -pthread -lz
 SRC = .
@@ -9,7 +9,7 @@ CODE = $(wildcard $(SRC)/*.c)
 OBJ = $(patsubst %.c,%.o,$(CODE))
 PROJ = input/project.xml
 OPT = -O0 -g
-OPT = -O3 -march=native
+OPT = -O3 -march=native -flto
 
 .PHONY: install clean dist-gzip dist-bzip2 dist-xz dist
 .SILENT: install clean dist-gzip dist-bzip2 dist-xz dist
