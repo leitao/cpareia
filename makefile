@@ -1,22 +1,24 @@
 NAME = cpareia
 CC = gcc
-#CFLAGS = -O0 -g -Wall -Wextra -pedantic `pkg-config --cflags libxml-2.0`
-CFLAGS = -O3 -march=native -Wall -Wextra -pedantic `pkg-config --cflags libxml-2.0`
+CFLAGS = -Wall -Wextra -Wpedantic -flto
+CFLAGS += `pkg-config --cflags libxml-2.0`
 LDFLAGS = `pkg-config --libs libxml-2.0` -lm -pthread -lz
 SRC = .
 DEPS = $(wildcard $(SRC)/*.h)
 CODE = $(wildcard $(SRC)/*.c)
 OBJ = $(patsubst %.c,%.o,$(CODE))
 PROJ = input/project.xml
+OPT = -O0 -g
+OPT = -O3 -march=native
 
 .PHONY: install clean dist-gzip dist-bzip2 dist-xz dist
 .SILENT: install clean dist-gzip dist-bzip2 dist-xz dist
 
 %.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(OPT) -c -o $@ $<
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OPT) -o $@ $^ $(LDFLAGS)
 
 run: $(NAME)
 	./$(NAME) -p $(PROJ)
