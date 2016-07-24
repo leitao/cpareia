@@ -25,17 +25,14 @@ void
 database_free(database_t *database) {
   size_t i;
 
-  if(!database) {
+  if(!database)
     return;
-  }
 
-  for(i = 0; i < array_size(database->records); i++) {
+  for(i = 0; i < array_size(database->records); i++)
     record_free((record_t *) array_get(database->records, i));
-  }
 
-  for(i = 0; i < database->num_fields; i++) {
+  for(i = 0; i < database->num_fields; i++)
     free(database->fields[i]);
-  }
 
   free(database->filename);
   free(database->fields);
@@ -43,6 +40,7 @@ database_free(database_t *database) {
 
   free(database);
 }
+
 void *
 database_read_simple(void *database) {
   database_read(database);
@@ -82,9 +80,8 @@ database_read(database_t *database) {
     csv_get_fields(csv_fields, csv_row, database->sep);
     record = record_new(database->num_fields);
 
-    for(i = 0; i < database->num_fields; i++) {
+    for(i = 0; i < database->num_fields; i++)
       record_add_field(record, csv_fields->fields[i]);
-    }
 
     csv_fields_deep_free(csv_fields);
 
@@ -93,15 +90,13 @@ database_read(database_t *database) {
 
     prop = 100.0 * total / rows;
 
-    if(!(total % 1000000)) {
+    if(!(total % 1000000))
       printf("Registros lidos: %lu/%lu (%2.2f%%)\n", total, rows, prop);
-    }
   }
 
   printf("Registros lidos: %lu/%lu (%2.2f%%)\n", rows, rows, 100.0);
 
   csv_row_free(csv_row);
-
   csv_free(csv);
 }
 
@@ -113,11 +108,9 @@ database_print(database_t *database) {
   printf("  Number of Fields: %d\n", (int) database->num_fields);
   printf("  Fields:\n");
 
-  for(i = 0; i < database->num_fields; i++) {
+  for(i = 0; i < database->num_fields; i++)
     printf("    %s\n", database->fields[i]);
-  }
 
-  for(i = 0; i < array_size(database->records); i++) {
+  for(i = 0; i < array_size(database->records); i++)
     record_print(array_get(database->records, i));
-  }
 }
