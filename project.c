@@ -197,9 +197,8 @@ project_parse_datasource(
 
   d = database_new(
       xpath->nodesetval->nodeNr,
-      strtoull((char *)rows, NULL, 10));
-
-  d->filename = (char *) filename;
+      strtoull((char *)rows, NULL, 10),
+      (char *) filename);
 
   if(!strcmp((char *) sep, "\\t")) {
     d->sep = '\t';

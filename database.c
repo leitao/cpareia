@@ -1,7 +1,7 @@
 #include "database.h"
 
 database_t *
-database_new(int num_fields, size_t num_rows) {
+database_new(int num_fields, size_t num_rows, char *filename) {
   int i;
   database_t *database;
 
@@ -10,6 +10,7 @@ database_new(int num_fields, size_t num_rows) {
   database->records = array_new_zeroed(num_rows);
   database->num_fields = num_fields;
   database->num_rows = num_rows;
+  database->filename = filename;
 
   database->fields = malloc(sizeof(unsigned char *) * num_fields);
 
