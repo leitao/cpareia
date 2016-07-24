@@ -1,5 +1,5 @@
-#ifndef _TEST_RECORD_H_
-#define _TEST_RECORD_H_
+#ifndef _RECORD_TEST_H_
+#define _RECORD_TEST_H_
 
 #include <stdarg.h>
 #include <stddef.h>

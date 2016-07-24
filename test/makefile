@@ -1,11 +1,16 @@
 CC = gcc
-CFLAGS = -O0 -g -Wall -Wextra -pedantic `pkg-config --cflags libxml-2.0` -I..
-LDFLAGS = `pkg-config --libs libxml-2.0` -lm -pthread -lz -lcmocka
+CFLAGS = -O0 -g -Wall -Wextra -Wpedantic -I..
+LDFLAGS = -lm -pthread -lz -lcmocka
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all -q
+CODE = $(wildcard *_test.c)
+OBJS = $(CODE:_test.c=)
+VALS = $(OBJS:=_val)
+TEST = $(OBJS:=_test)
 
 .PHONY: clean
 .SILENT: clean
 
-all: record_test
+all: $(TEST)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -15,13 +20,17 @@ all: record_test
 	make $@
 
 run: all
-	./record_test
+	for NAME in $(TEST); do \
+		./$$NAME; \
+	done
 
-val: all
-	valgrind --leak-check=full --show-leak-kinds=all ./record_test
+val: $(VALS)
 
-record_test: ../record.o record_test.o
+%_val: %_test
+	$(VALGRIND) ./$<
+
+%_test: ../%.o %_test.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -f *.o record_test
+	rm -f *.o $(TEST) $(VALS)
