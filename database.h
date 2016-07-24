@@ -17,11 +17,11 @@
 typedef struct database_t {
   array_t *records;
   unsigned char **fields, sep;
-  size_t num_fields, num_rows;
+  size_t nfields, nrows;
   char *filename;
 } database_t;
 
-database_t *database_new(int, size_t, char *);
+database_t *database_new(char *, int, size_t, char);
 void database_free(database_t *);
 void database_read(database_t *);
 pthread_t *database_read_async(database_t *);

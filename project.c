@@ -162,10 +162,11 @@ project_parse_datasource(
     xmlXPathContextPtr ctx,
     int id) {
   xmlXPathObjectPtr xpath;
-  xmlChar *filename, *sep, *rows;
-  database_t *d;
-  int i;
-  char buffer[100];
+  xmlChar *filename, *separator, *rows;
+  database_t *database;
+  int i, nfields;
+  char sep, buffer[100];
+  size_t nrows;
 
   snprintf(buffer, 100, "/project/data-sources/data-source[@id=%d]", id);
   xpath = xmlXPathEvalExpression(BAD_CAST buffer, ctx);
@@ -174,7 +175,7 @@ project_parse_datasource(
       xpath->nodesetval->nodeTab[0],
       BAD_CAST "file");
 
-  sep = xmlGetProp(
+  separator = xmlGetProp(
       xpath->nodesetval->nodeTab[0],
       BAD_CAST "field-separator");
 
@@ -191,35 +192,29 @@ project_parse_datasource(
       id);
   xpath = xmlXPathEvalExpression(BAD_CAST buffer, ctx);
 
-  if(!rows) {
+  if(!rows)
     handle_error("Missing attribute 'rows'\n");
-  }
 
-  d = database_new(
-      xpath->nodesetval->nodeNr,
-      strtoull((char *)rows, NULL, 10),
-      (char *) filename);
+  sep = !strcmp((char *) separator, "\\t") ? '\t' : *separator;
+  nfields = xpath->nodesetval->nodeNr;
+  nrows = strtoull((char *) rows, NULL, 10);
 
-  if(!strcmp((char *) sep, "\\t")) {
-    d->sep = '\t';
-  } else {
-    d->sep = *sep;
-  }
+  database = database_new((char *) filename, nfields, nrows, sep);
 
   for(i = 0; i < xpath->nodesetval->nodeNr; i++) {
-    d->fields[i] = xmlGetProp(
+    database->fields[i] = xmlGetProp(
         xpath->nodesetval->nodeTab[i],
         BAD_CAST "name");
   }
 
   if(id == 0) {
-    project->d0 = d;
+    project->d0 = database;
   } else {
-    project->d1 = d;
+    project->d1 = database;
   }
 
   xmlXPathFreeObject(xpath);
-  free(sep);
+  free(separator);
   free(rows);
 }
 
@@ -348,7 +343,7 @@ project_get_field_id(project_t *project, char *field_name) {
 
   field = -1;
 
-  for(i = 0; i < project->d0->num_fields; i++) {
+  for(i = 0; i < project->d0->nfields; i++) {
     if(!strcmp((char *) field_name, (char *) project->d0->fields[i])) {
       field = i;
       break;

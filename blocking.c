@@ -51,7 +51,7 @@ blocking_generate_all_keys(void *data) {
   rank = param->rank;
   project = param->project;
   total_ranks = param->total_ranks;
-  size = project->d0->num_rows;
+  size = project->d0->nrows;
 
   for(i = rank; i < size; i += total_ranks) {
     while(!array_get(project->d0->records, i)) usleep(0.1);

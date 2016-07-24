@@ -1,20 +1,21 @@
 #include "database.h"
 
 database_t *
-database_new(int num_fields, size_t num_rows, char *filename) {
+database_new(char *filename, int nfields, size_t nrows, char sep) {
   int i;
   database_t *database;
 
   database = malloc(sizeof(database_t));
 
-  database->records = array_new_zeroed(num_rows);
-  database->num_fields = num_fields;
-  database->num_rows = num_rows;
+  database->records = array_new_zeroed(nrows);
+  database->nfields = nfields;
+  database->nrows = nrows;
   database->filename = filename;
+  database->sep = sep;
 
-  database->fields = malloc(sizeof(unsigned char *) * num_fields);
+  database->fields = malloc(sizeof(unsigned char *) * nfields);
 
-  for(i = 0; i < num_fields; i++) {
+  for(i = 0; i < nfields; i++) {
     database->fields[i] = NULL;
   }
 
@@ -31,7 +32,7 @@ database_free(database_t *database) {
   for(i = 0; i < array_size(database->records); i++)
     record_free((record_t *) array_get(database->records, i));
 
-  for(i = 0; i < database->num_fields; i++)
+  for(i = 0; i < database->nfields; i++)
     free(database->fields[i]);
 
   free(database->filename);
@@ -73,14 +74,14 @@ database_read(database_t *database) {
 
   total = 0;
 
-  rows = database->num_rows;
+  rows = database->nrows;
 
   while(csv_get_row(csv, csv_row)) {
-    csv_fields = csv_fields_new(database->num_fields);
+    csv_fields = csv_fields_new(database->nfields);
     csv_get_fields(csv_fields, csv_row, database->sep);
-    record = record_new(database->num_fields);
+    record = record_new(database->nfields);
 
-    for(i = 0; i < database->num_fields; i++)
+    for(i = 0; i < database->nfields; i++)
       record_add_field(record, csv_fields->fields[i]);
 
     csv_fields_deep_free(csv_fields);
@@ -105,10 +106,10 @@ database_print(database_t *database) {
   size_t i;
 
   printf("  File: %s\n", database->filename);
-  printf("  Number of Fields: %d\n", (int) database->num_fields);
+  printf("  Number of Fields: %d\n", (int) database->nfields);
   printf("  Fields:\n");
 
-  for(i = 0; i < database->num_fields; i++)
+  for(i = 0; i < database->nfields; i++)
     printf("    %s\n", database->fields[i]);
 
   for(i = 0; i < array_size(database->records); i++)

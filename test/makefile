@@ -34,3 +34,7 @@ val: $(VALS)
 
 clean:
 	rm -f *.o $(TEST) $(VALS)
+
+#Special cases
+database_test: ../csv.o ../errors.o ../record.o ../array.o ../database.o database_test.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)

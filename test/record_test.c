@@ -1,6 +1,7 @@
 #include "record_test.h"
 
-void record_test() {
+void
+record_test() {
   record_t *record;
   int i, size, field_size;
   char *fields[] = {"ab", "abc", "abcd", "abcde", "ab", "c"};
