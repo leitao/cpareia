@@ -11,15 +11,12 @@ open_file(char *fname, char **buf) {
 		handle_error("Unable to open file %s\n", fname);
 
   if (fstat(fd, &fs) == -1)
-    handle_error("fstat");
+    handle_error("fstat\n");
 
 	*buf = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
   if (*buf == MAP_FAILED)
-    handle_error("mmap");
-
-  if(madvise(*buf, fs.st_size, MADV_SEQUENTIAL) == -1)
-    handle_error("madvise");
+    handle_error("mmap\n");
 
   close(fd);
 
