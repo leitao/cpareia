@@ -35,12 +35,12 @@ csv_fields_new(size_t num_fields) {
 }
 
 csv_row_t *
-csv_row_new(char *begin, char *end) {
+csv_row_new(void) {
   csv_row_t *csv_row;
 
   csv_row = malloc(sizeof(csv_row_t));
-  csv_row->begin = begin;
-  csv_row->end = end;
+  csv_row->begin = NULL;
+  csv_row->end = NULL;
 
   return csv_row;
 }
@@ -64,12 +64,11 @@ csv_fields_free(csv_fields_t *csv_fields) {
 
 void
 csv_fields_deep_free(csv_fields_t *csv_fields) {
-  size_t i, total;
-  total = csv_fields->size;
+  size_t i;
 
-  for(i = 0; i < total; i++) {
+  for(i = 0; i < csv_fields->size; i++)
     free(csv_fields->fields[i]);
-  }
+
   csv_fields_free(csv_fields);
 }
 
@@ -137,7 +136,7 @@ csv_get_fields(csv_fields_t *csv_fields,csv_row_t *csv_row, char sep) {
         csv_fields->fields[i++] = strdup("\0");
       }
       else {
-        size = (*current == sep) ? current - begin: current - begin + 1;
+        size = (*current == sep) ? current - begin : current - begin + 1;
         csv_fields->fields[i++] = strndup(begin, size);
       }
       if(*current == sep && current == csv_row->end) {

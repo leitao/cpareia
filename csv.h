@@ -8,14 +8,11 @@
 
 typedef struct csv_t {
   size_t size, num_fields;
-  char *buf;
-  char *end;
-  char *current;
+  char *buf, *end, *current;
 } csv_t;
 
 typedef struct csv_row_t {
-  char *begin;
-  char *end;
+  char *begin, *end;
 } csv_row_t;
 
 typedef struct csv_fields_t {
@@ -30,7 +27,7 @@ void csv_free(csv_t *);
 void csv_fields_deep_free(csv_fields_t *);
 void csv_row_free(csv_row_t *);
 void csv_fields_free(csv_fields_t *);
-csv_row_t *csv_row_new(char *, char *);
+csv_row_t *csv_row_new(void);
 csv_fields_t *csv_fields_new(size_t);
 
 #endif

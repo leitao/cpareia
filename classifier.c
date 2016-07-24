@@ -11,7 +11,7 @@ comparator_read_frequency_table(comparator_t *comparator) {
   name = comparator->frequency_table_name;
 
   csv = csv_new(name);
-  csv_row = csv_row_new(NULL, NULL);
+  csv_row = csv_row_new();
 
   comparator->frequency_table = hash_new();
 

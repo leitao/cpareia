@@ -70,7 +70,7 @@ database_read(database_t *database) {
   record_t *record;
 
   csv = csv_new(database->filename);
-  csv_row = csv_row_new(NULL, NULL);
+  csv_row = csv_row_new();
 
   total = 0;
 
