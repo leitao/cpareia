@@ -14,15 +14,13 @@
 #include "args.h"
 
 typedef struct project_t {
-  unsigned char *name;
-  unsigned char *task;
-  database_t *d0, *d1;
-  array_t *conjunctions;
+  unsigned char *name, *task;
+  database_t *d0;
+  array_t *conjunctions, *works;
   block_t *block;
   classifier_t *classifier;
   output_t *output;
   float blocks_mean_size;
-  array_t *works;
   args_t *args;
 } project_t;
 
