@@ -14,7 +14,9 @@ typedef struct record_t {
 } record_t;
 
 record_t *record_new(uint8_t);
+record_t *record_new_full(size_t, char *, uint8_t *);
 void record_free(record_t *);
+void record_shallow_free(record_t *);
 void record_add_field(record_t *, char *);
 char *record_get_field(record_t *, uint8_t);
 void record_print(record_t *);

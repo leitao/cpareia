@@ -1,6 +1,21 @@
 #include "record.h"
 
 record_t *
+record_new_full(size_t num_fields, char *fields, uint8_t *sizes) {
+  record_t *record;
+
+  record = malloc(sizeof(record_t));
+
+  record->num_fields = num_fields;
+  record->_used_fields = num_fields;
+  record->_size = 0;
+  record->_indexes = sizes;
+  record->_fields = fields;
+
+  return record;
+}
+
+record_t *
 record_new(uint8_t num_fields) {
   record_t *record;
 
@@ -43,10 +58,15 @@ record_get_field(record_t *record, uint8_t field) {
 }
 
 void
+record_shallow_free(record_t *record) {
+  free(record);
+}
+
+void
 record_free(record_t *record) {
   free(record->_fields);
   free(record->_indexes);
-  free(record);
+  record_shallow_free(record);
 }
 
 void
