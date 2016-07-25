@@ -1,5 +1,28 @@
 #include "database.h"
 
+void
+database_open_file(database_t *database) {
+  int fd;
+  struct stat fs;
+
+  fd = open(database->filename, O_RDONLY);
+
+  if (fd == -1)
+    handle_error("Unable to open file %s\n", database->filename);
+
+  if (fstat(fd, &fs) == -1)
+    handle_error("fstat\n");
+
+  database->buf = mmap(NULL, fs.st_size, PROT_WRITE | PROT_READ, MAP_PRIVATE, fd, 0);
+
+  if (database->buf == MAP_FAILED)
+    handle_error("mmap\n");
+
+  close(fd);
+
+  database->filesize = fs.st_size;
+}
+
 database_t *
 database_new(char *filename, int nfields, size_t nrows, char sep) {
   int i;
@@ -15,9 +38,10 @@ database_new(char *filename, int nfields, size_t nrows, char sep) {
 
   database->fields = malloc(sizeof(unsigned char *) * nfields);
 
-  for(i = 0; i < nfields; i++) {
+  for(i = 0; i < nfields; i++)
     database->fields[i] = NULL;
-  }
+
+  database_open_file(database);
 
   return database;
 }
@@ -30,7 +54,7 @@ database_free(database_t *database) {
     return;
 
   for(i = 0; i < array_size(database->records); i++)
-    record_free((record_t *) array_get(database->records, i));
+    record_shallow_free((record_t *) array_get(database->records, i));
 
   for(i = 0; i < database->nfields; i++)
     free(database->fields[i]);
@@ -38,6 +62,8 @@ database_free(database_t *database) {
   free(database->filename);
   free(database->fields);
   array_free(database->records);
+
+  munmap(database->buf, database->filesize);
 
   free(database);
 }
@@ -62,33 +88,48 @@ database_read_async(database_t *database) {
 
 void
 database_read(database_t *database) {
-  size_t i, total, rows;
+  size_t i, total, rows, size;
+  uint8_t *indexes;
+  char sep, *record_begin, *begin, *end, *bend;
   double prop;
-  csv_t *csv;
-  csv_row_t *csv_row;
-  csv_fields_t *csv_fields;
   record_t *record;
 
-  csv = csv_new(database->filename);
-  csv_row = csv_row_new();
-
   total = 0;
-
   rows = database->nrows;
+  sep = database->sep;
 
-  while(csv_get_row(csv, csv_row)) {
-    csv_fields = csv_fields_new(database->nfields);
-    csv_get_fields(csv_fields, csv_row, database->sep);
-    record = record_new(database->nfields);
+  end = database->buf;
+  bend = database->buf + database->filesize / sizeof(*database->buf) - 1;
 
-    for(i = 0; i < database->nfields; i++)
-      record_add_field(record, csv_fields->fields[i]);
+  while(end < bend) {
+    record_begin = begin = end;
+    i = 0;
 
-    csv_fields_deep_free(csv_fields);
+    indexes = malloc(sizeof(uint8_t) * database->nfields);
 
+    while(*end != '\n') {
+      if(*end == sep) {
+        if(begin == end) {
+          indexes[i++] = 1;
+        } else {
+          size = end - begin + 1;
+          indexes[i++] = size;
+        }
+        *end = '\0';
+        begin = end + 1;
+      }
+      end++;
+    }
+    *(end++) = '\0';
+
+    /* Skipping multiple \n's */
+    while(*end == '\n' && end != bend)
+      end++;
+
+    record = record_new_full(database->nfields, record_begin, indexes);
     array_push(database->records, record);
-    total++;
 
+    total++;
     prop = 100.0 * total / rows;
 
     if(!(total % 1000000))
@@ -96,9 +137,6 @@ database_read(database_t *database) {
   }
 
   printf("Registros lidos: %lu/%lu (%2.2f%%)\n", rows, rows, 100.0);
-
-  csv_row_free(csv_row);
-  csv_free(csv);
 }
 
 void

@@ -59,13 +59,13 @@ record_get_field(record_t *record, uint8_t field) {
 
 void
 record_shallow_free(record_t *record) {
+  free(record->_indexes);
   free(record);
 }
 
 void
 record_free(record_t *record) {
   free(record->_fields);
-  free(record->_indexes);
   record_shallow_free(record);
 }
 

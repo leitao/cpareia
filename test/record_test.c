@@ -30,8 +30,17 @@ void
 record_test_new_full() {
   record_t *record;
   char fields[] = "ab\0abc\0abcd\0abcde\0ab\0c";
-  uint8_t sizes[] = {3, 4, 5, 6, 3, 2};
+  uint8_t *sizes;
   size_t num_fields = 6;
+
+  sizes = malloc(sizeof(uint8_t) * 6);
+
+  sizes[0] = 3;
+  sizes[1] = 4;
+  sizes[2] = 5;
+  sizes[3] = 6;
+  sizes[4] = 3;
+  sizes[5] = 2;
 
   record = record_new_full(num_fields, fields, sizes);
 
