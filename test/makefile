@@ -38,3 +38,6 @@ clean:
 #Special cases
 database_test: ../csv.o ../errors.o ../record.o ../array.o ../database.o database_test.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+block_test: ../uint_array.o ../block.o block_test.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
