@@ -88,7 +88,7 @@ database_read_async(database_t *database) {
 
 void
 database_read(database_t *database) {
-  size_t i, total, rows, size;
+  size_t i, total, rows;
   uint8_t *indexes;
   char sep, *record_begin, *begin, *end, *bend;
   double prop;
@@ -109,12 +109,7 @@ database_read(database_t *database) {
 
     while(*end != '\n') {
       if(*end == sep) {
-        if(begin == end) {
-          indexes[i++] = 1;
-        } else {
-          size = end - begin + 1;
-          indexes[i++] = size;
-        }
+        indexes[i++] = end - begin + 1;
         *end = '\0';
         begin = end + 1;
       }
@@ -130,10 +125,11 @@ database_read(database_t *database) {
     array_push(database->records, record);
 
     total++;
-    prop = 100.0 * total / rows;
 
-    if(!(total % 1000000))
+    if(!(total % 1000000)) {
+      prop = 100.0 * total / rows;
       printf("Registros lidos: %lu/%lu (%2.2f%%)\n", total, rows, prop);
+    }
   }
 
   printf("Registros lidos: %lu/%lu (%2.2f%%)\n", rows, rows, 100.0);

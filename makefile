@@ -14,7 +14,7 @@ OPT = -O3 -march=native -flto
 .PHONY: install clean dist-gzip dist-bzip2 dist-xz dist
 .SILENT: install clean dist-gzip dist-bzip2 dist-xz dist
 
-%.o: %.c $(DEPS)
+%.o: %.c %.h
 	$(CC) $(CFLAGS) $(OPT) -c -o $@ $<
 
 $(NAME): $(OBJ)
