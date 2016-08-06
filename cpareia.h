@@ -12,7 +12,6 @@
 #include "errors.h"
 #include "database.h"
 #include "blocking.h"
-#include "mem.h"
 #include "comparator.h"
 
 #endif
