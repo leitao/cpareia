@@ -12,7 +12,6 @@
 #include "record.h"
 #include "errors.h"
 #include "array.h"
-#include "csv.h"
 
 typedef struct database_t {
   array_t *records;
