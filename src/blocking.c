@@ -61,15 +61,13 @@ blocking_generate_all_keys(void *data) {
   size = project->d0->nrows;
 
   for(i = rank; i < size; i += total_ranks) {
-    while(!array_get(project->d0->records, i)) usleep(0.1);
+    while(!array_get(project->d0->records, i)) sleep(1);
     if(!(i % 1000000)) {
       prop = 100.0 * i / size;
       printf("Registros blocados: %lu/%lu (%2.2f%%)\n", i, size, prop);
     }
     blocking_generate_keys(project, i);
   }
-
-  printf("Registros blocados: %lu/%lu (%2.2f%%)\n", size, size, 100.0);
 
   blocking_thread_params_free(param);
 
