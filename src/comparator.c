@@ -1,5 +1,21 @@
 #include "comparator.h"
 
+static uint8_t
+compare_diff(uint32_t *f1, uint32_t *f2) {
+  uint16_t u, v;
+  __m128i a1, a2;
+
+  a1 = _mm_loadu_si128((__m128i const *)(f1));
+  a2 = _mm_loadu_si128((__m128i const *)(f2));
+  u = _mm_movemask_epi8(_mm_cmpeq_epi32(a1, a2));
+
+  a1 = _mm_loadu_si128((__m128i const *)(f1 + 4));
+  a2 = _mm_loadu_si128((__m128i const *)(f2 + 4));
+  v = _mm_movemask_epi8(_mm_cmpeq_epi32(a1, a2));
+
+  return !(u || v);
+}
+
 double
 compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
