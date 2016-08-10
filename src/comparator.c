@@ -1,23 +1,5 @@
 #include "comparator.h"
 
-work_t *
-work_new(uint_array_t *uint_array, int start, int step) {
-  work_t *work;
-
-  work = malloc(sizeof(work_t));
-
-  work->array = uint_array;
-  work->start = start;
-  work->step = step;
-
-  return work;
-}
-
-void
-work_free(work_t *work) {
-  free(work);
-}
-
 double
 compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
@@ -73,170 +55,90 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
 }
 
 double
-compare_all(
-    classifier_t *classifier,
-    record_t *r,
-    record_t *s,
-    double *scores) {
+compare_all(classifier_t *classifier, record_t *r, record_t *s, double *score) {
   size_t i;
-  double score;
+  double ret_score;
 
-  score = 0;
+  ret_score = 0;
 
   for(i = 0; i < array_size(classifier->comparators); i++) {
-    scores[i] = compare(array_get(classifier->comparators, i), r, s, i);
-    score += scores[i];
+    score[i] = compare(array_get(classifier->comparators, i), r, s, i);
+    ret_score += score[i];
   }
 
-  return score;
-}
-
-void
-compare_block(work_t *work, project_t *project, int id) {
-  size_t i, j, size, classes;
-  record_t *r1, *r2;
-  double *scores;
-  double score;
-  char status;
-
-  size = array_size(work->array);
-  classes = array_size(project->classifier->comparators);
-  scores = malloc(sizeof(double) * classes);
-
-  for(i = work->start; i < size - 1; i += work->step) {
-    r1 = array_get(project->d0->records, array_get(work->array, i));
-    for(j = i + 1; j < size; j++) {
-      r2 = array_get(project->d0->records, array_get(work->array, j));
-      score = compare_all(project->classifier, r1, r2, scores);
-
-      if(score < project->output->min) {
-        status = 'N';
-      } else if(score > project->output->max) {
-        status = 'Y';
-      } else {
-        status = '?';
-      }
-      if(between(score, project->output->min, project->output->max)) {
-        output_write(
-            project->output,
-            record_get_field(r1, 0),
-            record_get_field(r2, 0),
-            status,
-            score,
-            scores,
-            classes,
-            id);
-      }
-    }
-  }
-  free(scores);
-  work_free(work);
+  return ret_score;
 }
 
 void *
 compare_block_void(void *data) {
-  unsigned long int i, size, step;
-  int id, last_thread;
-  double prop;
+  unsigned long int size, step;
+  size_t rank, row, i, j, col, end_col, end_row;
+  double *scores, score;
+  char status;
+  record_t *r1, *r2;
   comparator_pthread_params_t *par;
   project_t *project;
+  size_t classes;
+  char *i1, *i2;
+  output_t *output;
 
   par = data;
 
   project = par->project;
-  id = par->id;
+  output = project->output;
 
-  size = (unsigned long int) array_size(project->works);
+  classes = array_size(project->classifier->comparators);
+  scores = malloc(sizeof(double) * classes);
 
-  last_thread = id == par->num_threads - 1;
+  rank = par->rank;
+  project = par->project;
+  size = project->d0->nrows;
 
-  step = size < 100 ? size : size * 0.01;
+  step = TILE_SIDE * par->num_threads;
 
-  for(i = id; i < size; i += par->num_threads) {
-    if(last_thread && !(i % step)) {
-      prop = 100.0 * i / size;
-      printf("Blocos processados: %lu/%lu (%2.2f%%)\n", i, size, prop);
+  for(row = rank * TILE_SIDE; row < size; row += step) {
+    end_row = row + TILE_SIDE > size ? size : row + TILE_SIDE;
+
+    for(col = row; col < size; col += TILE_SIDE) {
+      end_col = col + TILE_SIDE > size ? size : col + TILE_SIDE;
+
+      for(i = row; i < end_row; i++) {
+        r1 = array_get(project->d0->records, i);
+        i1 = record_get_id(r1);
+        for(j = col; j < end_col; j++) {
+          if(i >= j) continue;
+          r2 = array_get(project->d0->records, j);
+          i2 = record_get_id(r2);
+
+          score = compare_all(project->classifier, r1, r2, scores);
+
+          if(score < project->output->min) {
+            status = 'N';
+          } else if(score > project->output->max) {
+            status = 'Y';
+          } else {
+            status = '?';
+          }
+          if(between(score, project->output->min, project->output->max))
+            output_write(output, i1, i2, status, score, scores, classes, rank);
+        }
+      }
     }
-    compare_block(array_get(project->works, i), project, id);
   }
 
-  if(last_thread)
-    printf("Blocos processados: %lu/%lu (%2.2f%%)\n", size, size, 100.0);
-
+  free(scores);
   free(data);
 
   return NULL;
-}
-
-void
-comparator_get_block(const char *key, uint_array_t *array, void *proj) {
-  work_t *work;
-  project_t *project;
-  float prop;
-  int i;
-  size_t size;
-  (void) key;
-
-  project = (project_t *) proj;
-  size = uint_array_size(array);
-
-  prop = size / project->blocks_mean_size;
-  prop = prop > 2 ? prop : 1;
-
-  for(i = 0; i < prop; i++) {
-    work = work_new(array, i, prop);
-    array_push(project->works, work);
-  }
-}
-
-int
-comparator_calc_sum(const char *key, uint_array_t *array, void *ac) {
-  size_t size;
-  float *acc;
-  (void) key;
-
-  acc = (float *) ac;
-  size = uint_array_size(array);
-
-  if(size == 1) {
-    return 1;
-  }
-
-  *acc += size;
-
-  return 0;
 }
 
 pthread_t **
 comparator_run_async(project_t *project) {
   pthread_t **threads;
   comparator_pthread_params_t *param;
-  int i, size;
-  float acc = 0;
+  int i;
 
   threads = malloc(sizeof(pthread_t *) * project->args->max_threads);
-
-  size = block_size(project->block);
-  printf("Calculando trabalho médio e removendo blocos únicos\n");
-  printf("Quantidade de blocos: %d\n", size);
-
-  block_foreach_remove(project->block, comparator_calc_sum, &acc);
-  size = MAX((int)block_size(project->block), project->args->max_threads);
-
-  project->blocks_mean_size = acc / size;
-
-  if(!size) {
-    handle_error("Erro. Nenhum bloco restou para ser comparado\n");
-  }
-
-  printf("Trabalho médio: %.0f registros\n", project->blocks_mean_size);
-  printf("Novos blocos: %d\n", size);
-
-  project->works = array_new(size);
-
-  printf("Dividindo e compartilhando blocos para a comparação\n");
-  block_foreach(project->block, comparator_get_block, project);
-  printf("Todos os blocos foram alocados\nComeçando comparação em si\n");
 
   output_open_files(project->output, project->args->max_threads);
 
@@ -244,7 +146,7 @@ comparator_run_async(project_t *project) {
     threads[i] = malloc(sizeof(pthread_t));
     param = malloc(sizeof(comparator_pthread_params_t));
     param->project = project;
-    param->id = i;
+    param->rank = i;
     param->num_threads = project->args->max_threads;
     pthread_create(threads[i], NULL, compare_block_void, param);
   }
