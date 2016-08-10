@@ -12,7 +12,7 @@
 #define between(val, min, max) val >= min && val <= max
 #define MAX(a, b) a > b ? a : b
 #define MIN(a, b) a < b ? a : b
-#define TILE_SIDE 4
+#define TILE_SIDE 50000
 
 typedef struct comparator_pthread_params_t {
   project_t *project;

@@ -40,8 +40,7 @@ blocking_generate_keys(project_t *project, uint32_t id) {
         handle_error("Unknown transformation");
       }
     }
-    if(key[0] != '\0')
-      record->_keys[acc++] = blocking_hash(key);
+    record->_keys[acc++] = blocking_hash(key);
   }
 }
 

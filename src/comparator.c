@@ -122,12 +122,14 @@ compare_block_void(void *data) {
         r1 = array_get(project->d0->records, i);
         i1 = record_get_id(r1);
         for(j = col; j < end_col; j++) {
-          if(i >= j) continue;
           r2 = array_get(project->d0->records, j);
           i2 = record_get_id(r2);
 
+          if(i >= j || compare_diff(r1->_keys, r2->_keys)) continue;
+
           score = compare_all(project->classifier, r1, r2, scores);
 
+          /*
           if(score < project->output->min) {
             status = 'N';
           } else if(score > project->output->max) {
@@ -137,6 +139,7 @@ compare_block_void(void *data) {
           }
           if(between(score, project->output->min, project->output->max))
             output_write(output, i1, i2, status, score, scores, classes, rank);
+            */
         }
       }
     }
