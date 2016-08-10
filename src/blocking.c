@@ -1,13 +1,20 @@
 #include "blocking.h"
 
-void
+static inline uint32_t
+blocking_hash(const char *s) {
+	uint32_t h = (uint32_t) *s;
+	if(h) for(++s; *s; ++s) h = (h << 5) - h + (uint32_t) *s;
+	return h;
+}
+
+inline void
 blocking_thread_params_free(blocking_thread_params_t *params) {
   free(params);
 }
 
 void
 blocking_generate_keys(project_t *project, uint32_t id) {
-  size_t i, j;
+  size_t i, j, acc;
   conjunction_t *conjunction;
   part_t *part;
   record_t *record;
@@ -18,6 +25,7 @@ blocking_generate_keys(project_t *project, uint32_t id) {
   for(i = 0; i < array_size(project->conjunctions); i++) {
     conjunction = array_get(project->conjunctions, i);
     key[0] = '\0';
+    acc = 0;
 
     for(j = 0; j < array_size(conjunction->parts); j++) {
       part = array_get(conjunction->parts, j);
@@ -32,9 +40,8 @@ blocking_generate_keys(project_t *project, uint32_t id) {
         handle_error("Unknown transformation");
       }
     }
-    if(strlen(key)) {
-      block_insert(project->block, key, id);
-    }
+    if(key[0] != '\0')
+      record->_keys[acc++] = blocking_hash(key);
   }
 }
 
