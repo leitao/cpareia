@@ -54,7 +54,7 @@ database_free(database_t *database) {
     return;
 
   for(i = 0; i < array_size(database->records); i++)
-    record_shallow_free((record_t *) array_get(database->records, i));
+    record_free((record_t *) array_get(database->records, i));
 
   for(i = 0; i < database->nfields; i++)
     free(database->fields[i]);
@@ -121,7 +121,7 @@ database_read(database_t *database) {
     while(*end == '\n' && end != bend)
       end++;
 
-    record = record_new_full(database->nfields, record_begin, indexes);
+    record = record_new(database->nfields, record_begin, indexes);
     array_push(database->records, record);
 
     total++;

@@ -1,81 +1,41 @@
 #include "record.h"
 
 record_t *
-record_new_full(size_t num_fields, char *fields, uint8_t *sizes) {
+record_new(size_t num_fields, char *fields, uint8_t *sizes) {
   record_t *record;
 
   record = malloc(sizeof(record_t));
 
-  record->num_fields = num_fields;
-  record->_used_fields = num_fields;
-  record->_size = 0;
   record->_indexes = sizes;
   record->_fields = fields;
+  record->_num_fields = num_fields;
 
   return record;
-}
-
-record_t *
-record_new(uint8_t num_fields) {
-  record_t *record;
-
-  record = malloc(sizeof(record_t));
-  record->num_fields = num_fields;
-  record->_used_fields = 0;
-  record->_size = 0;
-  record->_indexes = malloc(sizeof(uint8_t) * num_fields);
-  record->_fields = NULL;
-
-  return record;
-}
-
-void
-record_add_field(record_t *record, char *field) {
-  size_t size;
-
-  assert(record->_used_fields < record->num_fields);
-
-  size = strlen(field) + 1;
-
-  record->_indexes[record->_used_fields++] = size;
-
-  record->_fields = realloc(record->_fields, record->_size + size);
-
-  memcpy(record->_fields + record->_size, field, size);
-  record->_size += size;
 }
 
 char *
 record_get_field(record_t *record, uint8_t field) {
-  int i;
+  uint32_t i;
   uint8_t acc = 0;
 
-  for(i = 0; i < field; i++) {
+  for(i = 0; i < field; i++)
     acc += record->_indexes[i];
-  }
 
   return record->_fields + acc;
 }
 
 void
-record_shallow_free(record_t *record) {
+record_free(record_t *record) {
   free(record->_indexes);
   free(record);
 }
 
 void
-record_free(record_t *record) {
-  free(record->_fields);
-  record_shallow_free(record);
-}
-
-void
 record_print(record_t *record) {
-  int i;
+  uint32_t i;
 
   printf("FIELDS:\n");
 
-  for(i = 0; i < record->_used_fields; i++) {
+  for(i = 0; i < record->_num_fields; i++)
     printf("\t%d: %s\n", i, record_get_field(record, i));
-  }
 }

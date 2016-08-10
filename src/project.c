@@ -188,7 +188,7 @@ project_parse_datasource(project_t *project, xmlXPathContextPtr ctx) {
   database = database_new((char *) filename, nfields, nrows, sep);
 
   for(i = 0; i < xpath->nodesetval->nodeNr; i++) {
-    database->fields[i] = xmlGetProp(
+    database->fields[i] = (char *) xmlGetProp(
         xpath->nodesetval->nodeTab[i],
         BAD_CAST "name");
   }
