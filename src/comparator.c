@@ -1,5 +1,6 @@
 #include "comparator.h"
 
+/*
 static uint8_t
 compare_diff(uint32_t *f1, uint32_t *f2) {
   uint16_t u, v;
@@ -14,6 +15,16 @@ compare_diff(uint32_t *f1, uint32_t *f2) {
   v = _mm_movemask_epi8(_mm_cmpeq_epi32(a1, a2));
 
   return !(u || v);
+}*/
+
+uint8_t
+compare_skip(uint32_t *f1, uint32_t *f2, uint32_t size) {
+  uint32_t i;
+
+  for(i = 0; i < size; i++)
+    if(f1[i] == f2[i]) return 0;
+
+  return 1;
 }
 
 double
@@ -88,7 +99,7 @@ compare_all(classifier_t *classifier, record_t *r, record_t *s, double *score) {
 void *
 compare_block_void(void *data) {
   unsigned long int size, step;
-  size_t rank, row, i, j, col, end_col, end_row;
+  size_t rank, row, i, j, col, end_col, end_row, conj;
   double *scores, score;
   char status;
   record_t *r1, *r2;
@@ -112,6 +123,8 @@ compare_block_void(void *data) {
 
   step = TILE_SIDE * par->num_threads;
 
+  conj = array_size(project->conjunctions);
+
   for(row = rank * TILE_SIDE; row < size; row += step) {
     end_row = row + TILE_SIDE > size ? size : row + TILE_SIDE;
 
@@ -125,7 +138,7 @@ compare_block_void(void *data) {
           r2 = array_get(project->d0->records, j);
           i2 = record_get_id(r2);
 
-          if(i >= j || compare_diff(r1->_keys, r2->_keys)) continue;
+          if(i >= j || compare_skip(r1->_keys, r2->_keys, conj)) continue;
 
           score = compare_all(project->classifier, r1, r2, scores);
 

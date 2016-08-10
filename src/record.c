@@ -10,6 +10,8 @@ record_new(size_t num_fields, char *fields, uint8_t *sizes) {
   record->_fields = fields;
   record->_num_fields = num_fields;
 
+  bzero(record->_keys, sizeof(record->_keys));
+
   return record;
 }
 
