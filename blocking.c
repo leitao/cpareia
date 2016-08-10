@@ -118,16 +118,18 @@ pthread_t **
 blocking_async(project_t *project) {
   pthread_t **threads;
   blocking_thread_params_t *param;
-  int i;
+  int i, total_rank;
 
-  threads = malloc(sizeof(pthread_t *) * project->args->max_threads - 1);
+  total_rank = project->args->max_threads - 1;
 
-  for(i = 0; i < project->args->max_threads - 1; i++) {
+  threads = malloc(sizeof(pthread_t *) * total_rank);
+
+  for(i = 0; i < total_rank; i++) {
     threads[i] = malloc(sizeof(pthread_t));
     param = malloc(sizeof(blocking_thread_params_t));
     param->project = project;
     param->rank = i;
-    param->total_ranks = project->args->max_threads;
+    param->total_ranks = total_rank;
 
     pthread_create(threads[i], NULL, blocking_generate_all_keys, param);
   }
