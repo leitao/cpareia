@@ -7,10 +7,8 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define MAX_BLOCK 9
-
 typedef struct record_t {
-  uint32_t _keys[MAX_BLOCK];
+  uint32_t *_keys;
   uint32_t _num_fields;
   uint8_t *_indexes;
   char *_fields;

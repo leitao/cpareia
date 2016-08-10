@@ -47,9 +47,9 @@ project_free(project_t *project) {
   free(project->name);
   database_free(project->d0);
 
-  for(i = 0; i < array_size(project->conjunctions); i++) {
+  for(i = 0; i < array_size(project->conjunctions); i++)
     conjunction_free(array_get(project->conjunctions, i));
-  }
+
 
   block_free(project->block);
   array_free(project->conjunctions);

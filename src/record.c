@@ -9,8 +9,7 @@ record_new(size_t num_fields, char *fields, uint8_t *sizes) {
   record->_indexes = sizes;
   record->_fields = fields;
   record->_num_fields = num_fields;
-
-  bzero(record->_keys, sizeof(record->_keys));
+  record->_keys = NULL;
 
   return record;
 }
@@ -29,6 +28,7 @@ record_get_field(record_t *record, uint8_t field) {
 void
 record_free(record_t *record) {
   free(record->_indexes);
+  free(record->_keys);
   free(record);
 }
 

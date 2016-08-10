@@ -140,9 +140,9 @@ compare_block_void(void *data) {
 
           if(i >= j || compare_skip(r1->_keys, r2->_keys, conj)) continue;
 
+          /*
           score = compare_all(project->classifier, r1, r2, scores);
 
-          /*
           if(score < project->output->min) {
             status = 'N';
           } else if(score > project->output->max) {
