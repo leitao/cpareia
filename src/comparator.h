@@ -8,6 +8,7 @@
 #include "record.h"
 #include "project.h"
 #include "output.h"
+#include "block.h"
 
 #define between(val, min, max) val >= min && val <= max
 #define MAX(a, b) a > b ? a : b

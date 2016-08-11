@@ -86,7 +86,7 @@ compare_all(classifier_t *classifier, record_t *r, record_t *s, double *score) {
 void *
 compare_block_void(void *data) {
   unsigned long int size, step;
-  size_t rank, row, i, j, col, end_col, end_row, conj;
+  size_t rank, row, i, j, k, col, end_col, end_row, conj;
   double *scores, score;
   char status;
   record_t *r1, *r2;
@@ -95,6 +95,7 @@ compare_block_void(void *data) {
   size_t classes;
   char *i1, *i2;
   output_t *output;
+  block_t *block;
 
   par = data;
 
@@ -118,32 +119,40 @@ compare_block_void(void *data) {
     for(col = row; col < size; col += TILE_SIDE) {
       end_col = col + TILE_SIDE > size ? size : col + TILE_SIDE;
 
+      block = block_new();
+
       for(i = row; i < end_row; i++) {
         r1 = array_get(project->d0->records, i);
-        i1 = record_get_id(r1);
-        for(j = col; j < end_col; j++) {
-          r2 = array_get(project->d0->records, j);
-          i2 = record_get_id(r2);
-
-          if(i >= j || compare_skip(r1->_keys, r2->_keys, conj)) continue;
-
-          /*
-          score = compare_all(project->classifier, r1, r2, scores);
-
-          if(score < project->output->min) {
-            status = 'N';
-          } else if(score > project->output->max) {
-            status = 'Y';
-          } else {
-            status = '?';
-          }
-          if(between(score, project->output->min, project->output->max))
-            output_write(output, i1, i2, status, score, scores, classes, rank);
-            */
-        }
+        for(k = 0; k < conj; k++)
+          block_insert(block, i, r1->_keys[k]);
       }
+
+      for(j = col; j < end_col; j++) {
+        r2 = array_get(project->d0->records, j);
+        for(k = 0; k < conj; k++)
+          block_insert(block, j, r2->_keys[k]);
+      }
+
+      block_free(block);
     }
   }
+
+  /*if(i >= j || compare_skip(r1->_keys, r2->_keys, conj)) continue;
+    i1 = record_get_id(r1);
+    i2 = record_get_id(r2);
+
+    score = compare_all(project->classifier, r1, r2, scores);
+
+    if(score < project->output->min) {
+    status = 'N';
+    } else if(score > project->output->max) {
+    status = 'Y';
+    } else {
+    status = '?';
+    }
+    if(between(score, project->output->min, project->output->max))
+    output_write(output, i1, i2, status, score, scores, classes, rank);
+    */
 
   free(scores);
   free(data);
