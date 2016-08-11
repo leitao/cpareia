@@ -8,8 +8,6 @@ project_new() {
 
   project->conjunctions = array_new(1);
 
-  project->block = block_new();
-
   project->args = args_new();
 
   return project;
@@ -50,8 +48,6 @@ project_free(project_t *project) {
   for(i = 0; i < array_size(project->conjunctions); i++)
     conjunction_free(array_get(project->conjunctions, i));
 
-
-  block_free(project->block);
   array_free(project->conjunctions);
   classifier_free(project->classifier);
   args_free(project->args);

@@ -30,7 +30,7 @@ compare_skip(uint32_t *f1, uint32_t *f2, uint32_t size) {
 double
 compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   int match;
-  double score, freqf1, freqf2;
+  double score, freq1, freq2;
   array_t *array1, *array2;
   char *f1, *f2;
   int s1, s2;
@@ -38,9 +38,8 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
   f1 = record_get_field(r, field);
   f2 = record_get_field(s, field);
 
-  if(!f1 || !f2) {
+  if(!f1 || !f2)
     return 0;
-  }
 
   if(comparator->exact) {
     match = !strcmp(f1, f2);
@@ -52,25 +51,13 @@ compare(comparator_t *comparator, record_t *r, record_t *s, int field) {
 
   if(match) {
     if(comparator->use_weight_table) {
-      /*
-       * Implementar tabela de peso
-       * score = inverse_freq_f1 | inverse_freq_f2 | default_weight
-       */
       array1 = hash_get(comparator->frequency_table, f1);
       array2 = hash_get(comparator->frequency_table, f2);
 
-      freqf1 = array1 ? *(double *)array_get(array1, 0) : 0;
-      freqf2 = array2 ? *(double *)array_get(array2, 0) : 0;
+      freq1 = array1 ? *(double *)array_get(array1, 0) : 0;
+      freq2 = array2 ? *(double *)array_get(array2, 0) : 0;
 
-      /* We need to get the smalest inverse frequency, since it means
-       * this element is more frequent.
-       */
-      if(!freqf1 && !freqf2) {
-        score = comparator->default_weight;
-      } else {
-        score = MIN(freqf1, freqf2);
-      }
-
+      score = !freq1 && !freq2 ? comparator->default_weight : MIN(freq1, freq2);
     } else {
       score = comparator->log2_m_u;
     }

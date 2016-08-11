@@ -2,26 +2,28 @@
 #define _BLOCK_H_
 
 #include <stdint.h>
-#include <pthread.h>
 #include "khash.h"
 #include "uint_array.h"
 
-KHASH_MAP_INIT_STR(string, uint_array_t *)
+KHASH_MAP_INIT_INT(32, uint_array_t *)
 
-typedef void (*block_foreach_fn)(const char *, uint_array_t *, void *);
-typedef int (*block_foreach_rm_fn)(const char *, uint_array_t *, void *);
+typedef void (*block_foreach_fn)(uint32_t key, uint_array_t *array, void *p);
+typedef int (*block_foreach_rm_fn)(uint32_t key, uint_array_t *array, void *p);
 
-typedef struct block_t {
-  khash_t(string) *blocks;
-  pthread_mutex_t mutex;
-} block_t;
+typedef khash_t(32) block_t;
 
 block_t *block_new();
-void block_insert(block_t *, char *, uint32_t);
-void block_free(block_t *);
-size_t block_size(block_t *);
+void block_insert(block_t *block, uint32_t key, uint32_t value);
+size_t block_size(block_t *block);
 
-void block_foreach(block_t *, block_foreach_fn, void *);
-void block_foreach_remove(block_t *, block_foreach_rm_fn, void *);
+#define block_size(block) kh_size((block))
+
+void block_foreach(block_t *block, block_foreach_fn, void *p);
+void block_free(block_t *block);
+void block_foreach_remove(block_t *block, block_foreach_rm_fn, void *p);
+
+/*
+uint_array_t *block_get(block_t *block, uint32_t key);
+*/
 
 #endif

@@ -9,7 +9,6 @@
 #include "database.h"
 #include "conjunction.h"
 #include "classifier.h"
-#include "block.h"
 #include "output.h"
 #include "args.h"
 
@@ -17,10 +16,8 @@ typedef struct project_t {
   unsigned char *name, *task;
   database_t *d0;
   array_t *conjunctions, *works;
-  block_t *block;
   classifier_t *classifier;
   output_t *output;
-  float blocks_mean_size;
   args_t *args;
 } project_t;
 

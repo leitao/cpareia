@@ -1,21 +1,16 @@
 #include "test_block.h"
 
-#define KEY "key1"
-#define VAL 6
-
 void
-test_block_foreach(const char *key, uint_array_t *val, void *data) {
+block_test_foreach(uint32_t key, uint_array_t *val, void *data) {
   (void) data;
-  int i;
-  assert_string_equal(key, KEY);
 
-  for(i = 0; i < VAL; i++)
-    assert_int_equal(uint_array_get(val, i), i);
+  assert_int_equal(uint_array_get(val, 0), key);
 }
 
 int
-test_block_foreach_rm(const char *key, uint_array_t *val, void *data) {
-  test_block_foreach(key, val, data);
+block_test_foreach_rm(uint32_t key, uint_array_t *val, void *data) {
+  block_test_foreach(key, val, data);
+
   return 1;
 }
 
@@ -26,13 +21,14 @@ test_block() {
 
   block = block_new();
 
-  for(i = 0; i < VAL; i++)
-    block_insert(block, KEY, i);
+  for(i = 0; i < 100; i++)
+    block_insert(block, i, i);
 
-  assert_int_equal(block_size(block), 1);
+  assert_int_equal(block_size(block), 100);
 
-  block_foreach(block, test_block_foreach, NULL);
-  block_foreach_remove(block, test_block_foreach_rm, NULL);
+  block_foreach(block, block_test_foreach, NULL);
+
+  block_foreach_remove(block, block_test_foreach_rm, NULL);
 
   assert_int_equal(block_size(block), 0);
 

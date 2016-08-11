@@ -11,7 +11,6 @@
 
 typedef struct args_t {
   char *project_file;
-  char *blocking_file;
   int max_threads;
 } args_t;
 

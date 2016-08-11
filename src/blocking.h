@@ -16,7 +16,6 @@ typedef struct blocking_thread_params_t {
 
 void blocking_generate_keys(project_t *, uint32_t);
 pthread_t **blocking_async(project_t *);
-pthread_t **blocking_read_file_async(project_t *);
 void blocking_print(project_t *);
 void blocking_thread_params_free(blocking_thread_params_t *);
 

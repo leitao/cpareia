@@ -13,7 +13,7 @@ uint_array_t *uint_array_new(size_t);
 void uint_array_free(uint_array_t *);
 void uint_array_push(uint_array_t *, uint32_t);
 
-#define uint_array_size(uint_array) (kv_size(*uint_array))
-#define uint_array_get(uint_array, i) (kv_A(*uint_array, i))
+#define uint_array_size(array) (kv_size(*(array)))
+#define uint_array_get(array, i) (kv_A(*(array), (i)))
 
 #endif
