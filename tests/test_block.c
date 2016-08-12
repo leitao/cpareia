@@ -18,6 +18,7 @@ void
 test_block() {
   int i;
   block_t *block;
+  uint_array_t *array;
 
   block = block_new();
 
@@ -25,6 +26,11 @@ test_block() {
     block_insert(block, i, i);
 
   assert_int_equal(block_size(block), 100);
+
+  array = block_get(block, 10);
+
+  assert_int_equal(uint_array_size(array), 1);
+  assert_int_equal(uint_array_get(array, 0), 10);
 
   block_foreach(block, block_test_foreach, NULL);
 

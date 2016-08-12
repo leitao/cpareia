@@ -10,6 +10,15 @@ block_new() {
   return block;
 }
 
+uint_array_t *
+block_get(block_t *block, uint32_t key) {
+  unsigned int k;
+
+  k = kh_get(32, block, key);
+
+  return k == kh_end(block) ? NULL : kh_value(block, key);
+}
+
 void
 block_insert(block_t *block, uint32_t key, uint32_t val) {
   int absent, k;
