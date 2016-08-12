@@ -62,7 +62,7 @@ compare_block(uint32_t key, uint_array_t *array, void *p) {
   record_t *r1, *r2;
   double *scores;
   double score;
-  char status, *i1, *i2;;
+  char status, *i1, *i2;
   project_t *project;
   output_t *output;
   work_t *work;
