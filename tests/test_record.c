@@ -25,6 +25,8 @@ record_test_new_full() {
   assert_string_equal("ab", record_get_field(record, 4));
   assert_string_equal("c", record_get_field(record, 5));
 
+  assert_string_equal("ab", record_get_id(record));
+
   record_free(record);
 }
 

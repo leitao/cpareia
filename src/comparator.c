@@ -56,31 +56,77 @@ compare_all(classifier_t *classifier, record_t *r, record_t *s, double *score) {
   return ret_score;
 }
 
+int
+compare_block(uint32_t key, uint_array_t *array, void *p) {
+  size_t i, j, size, classes, id;
+  record_t *r1, *r2;
+  double *scores;
+  double score;
+  char status, *i1, *i2;;
+  project_t *project;
+  output_t *output;
+  work_t *work;
+
+  (void) key;
+
+  work = p;
+
+  project = work->project;
+  id = work->id;
+  output = project->output;
+
+  size = uint_array_size(array);
+  classes = array_size(project->classifier->comparators);
+  scores = malloc(sizeof(double) * classes);
+
+  if(uint_array_size(array) == 1)
+    return 1;
+
+  for(i = 0; i < size; i++) {
+    r1 = array_get(project->d0->records, uint_array_get(array, i));
+    i1 = record_get_id(r1);
+
+    for(j = i + 1; j < size; j++) {
+      r2 = array_get(project->d0->records, uint_array_get(array, j));
+      i2 = record_get_id(r2);
+
+      score = compare_all(project->classifier, r1, r2, scores);
+
+      if(score < project->output->min) {
+        status = 'N';
+      } else if(score > project->output->max) {
+        status = 'Y';
+      } else {
+        status = '?';
+      }
+      if(between(score, project->output->min, project->output->max))
+        output_write(output, i1, i2, status, score, scores, classes, id);
+    }
+  }
+  free(scores);
+
+  return 1;
+}
+
 void *
-compare_block_void(void *data) {
+compare_void(void *data) {
   unsigned long int size, step;
   size_t rank, row, i, j, k, col, end_col, end_row, conj;
-  double *scores, score;
-  char status;
   record_t *r1, *r2;
   comparator_pthread_params_t *par;
   project_t *project;
-  size_t classes;
-  char *i1, *i2;
-  output_t *output;
   block_t *block;
+  work_t work;
 
   par = data;
 
   project = par->project;
-  output = project->output;
-
-  classes = array_size(project->classifier->comparators);
-  scores = malloc(sizeof(double) * classes);
 
   rank = par->rank;
-  project = par->project;
   size = project->d0->nrows;
+
+  work.project = project;
+  work.id = rank;
 
   step = TILE_SIDE * par->num_threads;
 
@@ -97,37 +143,19 @@ compare_block_void(void *data) {
       for(i = row; i < end_row; i++) {
         r1 = array_get(project->d0->records, i);
         for(k = 0; k < conj; k++)
-          block_insert(block, i, r1->_keys[k]);
+          block_insert(block, r1->_keys[k], i);
       }
 
       for(j = col; j < end_col; j++) {
         r2 = array_get(project->d0->records, j);
         for(k = 0; k < conj; k++)
-          block_insert(block, j, r2->_keys[k]);
+          block_insert(block, r2->_keys[k], j);
       }
 
-      block_free(block);
+      block_foreach_remove(block, compare_block, &work);
     }
   }
 
-  /*
-    i1 = record_get_id(r1);
-    i2 = record_get_id(r2);
-
-    score = compare_all(project->classifier, r1, r2, scores);
-
-    if(score < project->output->min) {
-    status = 'N';
-    } else if(score > project->output->max) {
-    status = 'Y';
-    } else {
-    status = '?';
-    }
-    if(between(score, project->output->min, project->output->max))
-    output_write(output, i1, i2, status, score, scores, classes, rank);
-    */
-
-  free(scores);
   free(data);
 
   return NULL;
@@ -149,7 +177,7 @@ comparator_run_async(project_t *project) {
     param->project = project;
     param->rank = i;
     param->num_threads = project->args->max_threads;
-    pthread_create(threads[i], NULL, compare_block_void, param);
+    pthread_create(threads[i], NULL, compare_void, param);
   }
 
   return threads;

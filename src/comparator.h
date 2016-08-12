@@ -15,6 +15,11 @@
 #define MIN(a, b) a < b ? a : b
 #define TILE_SIDE 50000
 
+typedef struct work_t {
+  project_t *project;
+  size_t id;
+} work_t;
+
 typedef struct comparator_pthread_params_t {
   project_t *project;
   int rank, num_threads;
