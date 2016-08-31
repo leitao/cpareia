@@ -1,4 +1,3 @@
-AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
 #NAME = cpareia
 #CC = gcc

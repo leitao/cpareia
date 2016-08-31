@@ -6,7 +6,6 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_FILES([Makefile src/Makefile])
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 
