@@ -5,17 +5,17 @@ experimentos/*
 experimentos/*
 input/*
 
-# Autotools
-Makefile
-Makefile.in
-.deps
-.libs
-*.la
-*.lo
+/Makefile
+/Makefile.in
 /aclocal.m4
+/autom4te.cache/
+/compile
+/config.log
+/config.status
 /configure
-/config.*
-/autom4te.cache
-/libtool
-/stamp-h1
-.dirstamp
+/depcomp
+/install-sh
+/missing
+/src/.deps
+/src/Makefile
+/src/Makefile.in
