@@ -4,3 +4,18 @@ cpareia
 experimentos/*
 experimentos/*
 input/*
+
+# Autotools
+Makefile
+Makefile.in
+.deps
+.libs
+*.la
+*.lo
+/aclocal.m4
+/configure
+/config.*
+/autom4te.cache
+/libtool
+/stamp-h1
+.dirstamp
