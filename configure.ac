@@ -1,10 +1,11 @@
 AC_PREREQ([2.69])
 AC_INIT([cpareia], [1.0.0], [michel.boaventura@gmail.com])
 AC_CONFIG_SRCDIR([src/cpareia.c])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror])
+￼
 AM_SILENT_RULES([yes])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 
 # Checks for programs.
 AC_PROG_CC
@@ -26,5 +27,6 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero memset munmap strdup strndup strtoull])
 
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0])
+PKG_CHECK_MODULES([CMOCKA], [cmocka])
 
 AC_OUTPUT

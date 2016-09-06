@@ -1,7 +1,7 @@
-#include "record_test.h"
+#include "test_record.h"
 
 void
-record_test() {
+test_record() {
   record_t *record;
   int i, size, field_size;
   char *fields[] = {"ab", "abc", "abcd", "abcde", "ab", "c"};
@@ -27,7 +27,7 @@ record_test() {
 }
 
 void
-record_test_new_full() {
+test_record_new_full() {
   record_t *record;
   char fields[] = "ab\0abc\0abcd\0abcde\0ab\0c";
   uint8_t *sizes;
@@ -56,8 +56,8 @@ record_test_new_full() {
 
 int main(void) {
   const struct CMUnitTest tests[] = {
-    cmocka_unit_test(record_test),
-    cmocka_unit_test(record_test_new_full),
+    cmocka_unit_test(test_record),
+    cmocka_unit_test(test_record_new_full),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

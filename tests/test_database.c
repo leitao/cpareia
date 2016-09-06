@@ -1,7 +1,7 @@
-#include "database_test.h"
+#include "test_database.h"
 
 void
-database_test() {
+test_database() {
   database_t *database;
   char *filename;
   record_t *record;
@@ -38,7 +38,7 @@ database_test() {
 int
 main(void) {
   const struct CMUnitTest tests[] = {
-    cmocka_unit_test(database_test),
+    cmocka_unit_test(test_database),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

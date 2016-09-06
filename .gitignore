@@ -19,3 +19,7 @@ input/*
 /src/.deps
 /src/Makefile
 /src/Makefile.in
+/tests/.deps
+/tests/Makefile
+/tests/Makefile.in
+/test-driver

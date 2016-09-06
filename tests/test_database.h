@@ -1,10 +1,10 @@
-#ifndef _BLOCK_TEST_H_
-#define _BLOCK_TEST_H_
+#ifndef _TEST_DATABASE_H_
+#define _TEST_DATABASE_H_
 
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
-#include "block.h"
+#include "../src/database.h"
 
 #endif
