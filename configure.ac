@@ -29,20 +29,43 @@ AC_CHECK_FUNCS([bzero memset munmap strdup strndup strtoull])
 
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0])
 
+#Checks for cmocka, used in tests
 AC_ARG_WITH([cmocka], AS_HELP_STRING([--without-cmocka], [Disable tests]))
 
-AS_IF([test "x$with_cmocka" != "xno"],
-      [PKG_CHECK_MODULES([CMOCKA], [cmocka >= 1.0.0], [have_cmocka=yes], [have_cmocka=no])],
-      [have_cmocka=no]
-)
+AS_IF(
+  [test "x$with_cmocka" != "xno"],
+  [PKG_CHECK_MODULES(
+    [CMOCKA], [cmocka >= 1.0.0], [have_cmocka=yes], [have_cmocka=no])],
+  [have_cmocka=no])
 
-AS_IF([test "x$have_cmocka" = "xyes"],
-      [AC_CONFIG_FILES([tests/Makefile])],
-      [AS_IF([test "x$with_cmocka" = "xyes"],
-             [AC_MSG_ERROR([cmocka requested but not found])
-      ])
-])
+AS_IF(
+  [test "x$have_cmocka" = "xyes"],
+  [AC_CONFIG_FILES([tests/Makefile])],
+  [AS_IF(
+    [test "x$with_cmocka" = "xyes"],
+    [AC_MSG_ERROR([cmocka requested but not found])])])
 
 AM_CONDITIONAL([CMOCKA], [test "x$have_cmocka" = "xyes"])
+
+#Checks for tcmalloc, which improves performance
+AC_ARG_WITH(
+  [tcmalloc],
+  AS_HELP_STRING([--without-tcmalloc], [Disable tcmalloc usage]))
+
+AS_IF(
+  [test "x$with_tcmalloc" != "xno"],
+  [PKG_CHECK_MODULES(
+    [TCMALLOC],
+    [libtcmalloc_minimal], [have_tcmalloc=yes], [have_tcmalloc=no])],
+  [have_tcmalloc=no])
+
+AS_IF(
+  [test "x$have_tcmalloc" = "xyes"],
+  [],
+  [AS_IF(
+    [test "x$with_tcmalloc" = "xyes"],
+    [AC_MSG_ERROR([tcmalloc requested but not found])])])
+
+AM_CONDITIONAL([TCMALLOC], [test "x$have_tcmalloc" = "xyes"])
 
 AC_OUTPUT
