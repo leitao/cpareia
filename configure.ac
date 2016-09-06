@@ -32,7 +32,7 @@ PKG_CHECK_MODULES([LIBXML], [libxml-2.0])
 AC_ARG_WITH([cmocka], AS_HELP_STRING([--without-cmocka], [Disable tests]))
 
 AS_IF([test "x$with_cmocka" != "xno"],
-      [PKG_CHECK_MODULES([CMOCKA], [cmocka], [have_cmocka=yes], [have_cmocka=no])],
+      [PKG_CHECK_MODULES([CMOCKA], [cmocka >= 1.0.0], [have_cmocka=yes], [have_cmocka=no])],
       [have_cmocka=no]
 )
 
