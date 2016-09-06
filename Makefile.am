@@ -1,1 +1,5 @@
-SUBDIRS = src tests
+SUBDIRS = src
+
+if CMOCKA
+SUBDIRS += tests
+endif

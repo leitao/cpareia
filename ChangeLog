@@ -1,3 +1,4 @@
 2016-09-06	Michel Boaventura <michel.boaventura@gmail.com>
 
-    Finishing autotools conversion
+    * Finishing autotools conversion
+    * Making cmocka a optional dependency
