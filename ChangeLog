@@ -5,3 +5,4 @@
     * Using AC_PROG_CC_C_O
     * We need CMocka version >= 1.0.0
     * Enable by default tcmalloc
+    * Handling zlib with pkg-config

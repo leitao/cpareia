@@ -28,6 +28,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero memset munmap strdup strndup strtoull])
 
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0])
+PKG_CHECK_MODULES([ZLIB], [zlib])
 
 #Checks for cmocka, used in tests
 AC_ARG_WITH([cmocka], AS_HELP_STRING([--without-cmocka], [Disable tests]))
