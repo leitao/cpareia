@@ -17,6 +17,7 @@ input/*
 /install-sh
 /missing
 /src/.deps
+/src/.dirstamp
 /src/Makefile
 /src/Makefile.in
 /tests/.deps
