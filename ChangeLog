@@ -7,3 +7,4 @@
     * Enable by default tcmalloc
     * Handling zlib with pkg-config
     * Handling libm and pthread with pkg-config
+    * Using semaphore's badge
