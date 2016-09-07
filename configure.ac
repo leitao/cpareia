@@ -27,6 +27,18 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero memset munmap strdup strndup strtoull])
 
+AC_SEARCH_LIBS(
+  [log2],
+  [m],
+  [],
+  [AC_MSG_ERROR([unable to find the log2() function])])
+
+AC_SEARCH_LIBS(
+  [pthread_create],
+  [pthread],
+  [],
+  [AC_MSG_ERROR([unable to find the pthread_create() function])])
+
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0])
 PKG_CHECK_MODULES([ZLIB], [zlib])
 

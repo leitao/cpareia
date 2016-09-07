@@ -6,3 +6,4 @@
     * We need CMocka version >= 1.0.0
     * Enable by default tcmalloc
     * Handling zlib with pkg-config
+    * Handling libm and pthread with pkg-config
