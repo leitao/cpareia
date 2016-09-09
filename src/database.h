@@ -9,6 +9,10 @@
 #include <sys/stat.h>
 #include <pthread.h>
 
+#ifdef HAVE_SSE2
+#include <emmintrin.h>
+#endif
+
 #include "record.h"
 #include "errors.h"
 #include "array.h"

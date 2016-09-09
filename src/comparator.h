@@ -1,8 +1,6 @@
 #ifndef _COMPARATOR_H_
 #define _COMPARATOR_H_
 
-#include <emmintrin.h>
-
 #include "field_comparator.h"
 #include "classifier.h"
 #include "record.h"

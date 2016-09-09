@@ -1,6 +1,6 @@
 #include "database.h"
-#include <emmintrin.h>
 
+#ifdef HAVE_SSE2
 int8_t
 find_byte(char const *s, char ch) {
   unsigned u, v;
@@ -15,6 +15,20 @@ find_byte(char const *s, char ch) {
 
   return (s + ffs(v) - 1) - s;
 }
+#else
+int8_t
+find_byte(char const *s, char ch) {
+  int i;
+
+  for(i = 0; i < 16; i++) {
+    if(s[i] == ch)
+      return i;
+    if(!s[i])
+      return 0;
+  }
+  return 0;
+}
+#endif
 
 void
 database_open_file(database_t *database) {
