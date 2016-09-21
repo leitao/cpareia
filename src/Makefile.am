@@ -11,8 +11,14 @@ cpareia_SOURCES = args.c args.h array.c array.h block.c block.h blocking.c   \
 
 cpareia_LDADD   = $(ZLIB_LIBS) $(LIBXML_LIBS) $(TCMALLOC_LIBS)
 cpareia_CFLAGS  = $(ZLIB_CFLAGS) $(LIBXML_CFLAGS) $(TCMALLOC_CFLAGS)
+cpareia_LDFLAGS =
 
 if TCMALLOC
-cpareia_LDFLAGS = -fno-builtin-malloc -fno-builtin-calloc \
-                  -fno-builtin-realloc -fno-builtin-free
+cpareia_LDFLAGS += -fno-builtin-malloc -fno-builtin-calloc \
+                   -fno-builtin-realloc -fno-builtin-free
+endif
+
+if SSE2
+cpareia_LDFLAGS += -msse2
+cpareia_CFLAGS  += -DHAVE_SSE2
 endif

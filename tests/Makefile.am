@@ -1,4 +1,4 @@
-TESTS = test_block test_database test_record
+TESTS = test_block test_database test_record test_args
 
 check_PROGRAMS = $(TESTS)
 test_block_SOURCES  = test_block.c test_block.h \
@@ -21,3 +21,9 @@ test_record_SOURCES = test_record.c test_record.h \
                       ../src/errors.h ../src/errors.c
 test_record_LDADD   = $(CMOCKA_LIBS)
 test_record_CFLAGS  = $(CMOCKA_CFLAGS)
+
+test_args_SOURCES = test_args.c test_args.h \
+                    ../src/args.h ../src/args.c \
+                    ../src/errors.h ../src/errors.c
+test_args_LDADD   = $(CMOCKA_LIBS)
+test_args_CFLAGS  = $(CMOCKA_CFLAGS)

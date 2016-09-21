@@ -81,4 +81,37 @@ AS_IF(
 
 AM_CONDITIONAL([TCMALLOC], [test "x$have_tcmalloc" = "xyes"])
 
+#Checks for sse2, which improves performance
+AC_ARG_WITH([sse2], AS_HELP_STRING([--without-sse2], [Disable sse2 usage]))
+
+AS_IF(
+  [test "x$with_sse2" != "xno"],
+  [
+    AC_LINK_IFELSE(
+      [
+        AC_LANG_PROGRAM(
+          [
+            #include <emmintrin.h>
+          ],
+          [__m128i input1;
+            unsigned char buf1[[128]];
+            input1 = _mm_loadu_si128((const __m128i *)buf1);
+            return(0);]
+        )
+      ],
+      [have_sse2=yes],
+      [have_sse2=no]
+    )
+  ],
+  [have_sse2=no])
+
+AS_IF(
+  [test "x$have_sse2" = "xyes"],
+  [],
+  [AS_IF(
+    [test "x$with_sse2" = "xyes"],
+    [AC_MSG_ERROR([sse2 requested but not supported])])])
+
+AM_CONDITIONAL([SSE2], [test "x$have_sse2" = "xyes"])
+
 AC_OUTPUT

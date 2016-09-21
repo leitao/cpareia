@@ -11,11 +11,10 @@
 
 typedef struct args_t {
   char *project_file;
-  char *blocking_file;
   int max_threads;
 } args_t;
 
-args_t *args_new();
+args_t *args_new(void);
 void args_free(args_t *);
 void args_parse(args_t *, int, char **);
 
