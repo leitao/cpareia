@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([cpareia], [1.0.0], [michel.boaventura@gmail.com])
+AC_INIT([cpareia], [1.1.0], [michel.boaventura@gmail.com])
 AC_CONFIG_SRCDIR([src/cpareia.c])
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall -Werror])
 
