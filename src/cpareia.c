@@ -22,19 +22,12 @@ main(int argc, char *argv[]) {
   printf("Começando leitura e blocagem\n\n");
   read_thread = database_read_async(project->d0);
 
-  if(project->args->blocking_file) {
-    pthread_join(*read_thread, NULL);
-    blocking_threads = blocking_read_file_async(project);
-    pthread_join(*blocking_threads[0], NULL);
-    free(blocking_threads[0]);
-  } else {
-    blocking_threads = blocking_async(project);
-    pthread_join(*read_thread, NULL);
+  blocking_threads = blocking_async(project);
+  pthread_join(*read_thread, NULL);
 
-    for(i = 0; i < project->args->max_threads - 1; i++) {
-      pthread_join(*blocking_threads[i], NULL);
-      free(blocking_threads[i]);
-    }
+  for(i = 0; i < project->args->max_threads - 1; i++) {
+    pthread_join(*blocking_threads[i], NULL);
+    free(blocking_threads[i]);
   }
 
   free(blocking_threads);

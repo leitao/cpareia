@@ -9,15 +9,21 @@
 #include <sys/stat.h>
 #include <pthread.h>
 
+#ifdef HAVE_SSE2
+#include <emmintrin.h>
+#endif
+
 #include "record.h"
 #include "errors.h"
 #include "array.h"
 
 typedef struct database_t {
+  char sep;
+  uint16_t nfields;
+  uint32_t nrows;
+  uint64_t filesize;
   array_t *records;
-  unsigned char **fields, sep;
-  size_t nfields, nrows, filesize;
-  char *filename, *buf;
+  char **fields, *filename, *buf;
 } database_t;
 
 database_t *database_new(char *, int, size_t, char);

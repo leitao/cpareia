@@ -1,5 +1,35 @@
 #include "database.h"
 
+#ifdef HAVE_SSE2
+int8_t
+find_byte(char const *s, char ch) {
+  unsigned u, v;
+  __m128i x, zero, cx16;
+
+  zero = _mm_setzero_si128();
+  cx16 = _mm_set1_epi8(ch);
+
+  x = _mm_loadu_si128((__m128i const *)s);
+  u = _mm_movemask_epi8(_mm_cmpeq_epi8(zero, x));
+  v = _mm_movemask_epi8(_mm_cmpeq_epi8(cx16, x)) & ~u & (u - 1);
+
+  return (s + ffs(v) - 1) - s;
+}
+#else
+int8_t
+find_byte(char const *s, char ch) {
+  int i;
+
+  for(i = 0; i < 16; i++) {
+    if(s[i] == ch)
+      return i;
+    if(!s[i])
+      return 0;
+  }
+  return 0;
+}
+#endif
+
 void
 database_open_file(database_t *database) {
   int fd;
@@ -54,7 +84,7 @@ database_free(database_t *database) {
     return;
 
   for(i = 0; i < array_size(database->records); i++)
-    record_shallow_free((record_t *) array_get(database->records, i));
+    record_free((record_t *) array_get(database->records, i));
 
   for(i = 0; i < database->nfields; i++)
     free(database->fields[i]);
@@ -88,45 +118,53 @@ database_read_async(database_t *database) {
 
 void
 database_read(database_t *database) {
-  size_t i, total, rows;
-  uint8_t *indexes;
-  char sep, *record_begin, *begin, *end, *bend;
+  size_t total, rows, acc;
+  uint16_t i;
+  uint8_t *indexes, sep;
+  int8_t where;
+  char *record_begin, *begin, *bend, *end;
   double prop;
   record_t *record;
 
-  total = 0;
+  acc = total = 0;
   rows = database->nrows;
-  sep = database->sep;
 
   end = database->buf;
-  bend = database->buf + database->filesize / sizeof(*database->buf) - 1;
+  bend = end + database->filesize / sizeof(*database->buf) - 1;
+
+  sep = database->sep;
 
   while(end < bend) {
     record_begin = begin = end;
-    i = 0;
 
     indexes = malloc(sizeof(uint8_t) * database->nfields);
 
-    while(*end != '\n') {
-      if(*end == sep) {
-        indexes[i++] = end - begin + 1;
-        *end = '\0';
-        begin = end + 1;
-      }
-      end++;
+    for(i = 0; i < database->nfields - 1; i++) {
+      while((where = find_byte(end, sep)) == -1)
+        end += 16;
+
+      end += where;
+
+      *(end++) = '\0';
+
+      indexes[i] = end - begin;
+      begin = end;
     }
-    *(end++) = '\0';
 
-    /* Skipping multiple \n's */
-    while(*end == '\n' && end != bend)
+    while(*end != '\n')
       end++;
 
-    record = record_new_full(database->nfields, record_begin, indexes);
+    *(end++) = '\0';
+    indexes[i] = end - begin;
+
+    record = record_new(database->nfields, record_begin, indexes);
     array_push(database->records, record);
 
+    acc++;
     total++;
 
-    if(!(total % 1000000)) {
+    if(acc == 1000000) {
+      acc = 0;
       prop = 100.0 * total / rows;
       printf("Registros lidos: %lu/%lu (%2.2f%%)\n", total, rows, prop);
     }
