@@ -1,5 +1,61 @@
 #include "field_comparator.h"
 
+inline int
+min(int a, int b) {
+  return a < b ? a : b;
+}
+
+inline int
+max(int a, int b) {
+  return a > b ? a : b;
+}
+
+inline int
+min3(int a, int b, int c) {
+  return a < b ? min(a, c) : min(b, c);
+}
+
+float
+sift4(char *s, char *t, int ss, int st) {
+  if(!ss || !st)
+    return 0;
+
+  int i, c1, c2, lcss, local_cs, max_str, max_offset;
+
+  c1 = 0;
+  c2 = 0;
+  lcss = 0;
+  local_cs = 0;
+  max_str = max(ss, st);
+  max_offset = max_str / 2 - 1;
+
+  while (c1 < ss && c2 < st) {
+    if (s[c1] == t[c2]) {
+      local_cs++;
+    } else {
+      lcss += local_cs;
+      local_cs = 0;
+      if (c1 != c2)
+        c1 = c2 = max(c1, c2);
+      for (i = 0; i < max_offset && (c1 + i < ss || c2 + i < st); i++) {
+        if (c1 + i < ss && s[c1 + i] == t[c2]) {
+          c1 += i;
+          local_cs++;
+          break;
+        }
+        if (c2 + i < st && s[c1] == t[c2 + i]) {
+          c2 += i;
+          local_cs++;
+          break;
+        }
+      }
+    }
+    c1++;
+    c2++;
+  }
+  return (lcss + local_cs) / max_str;
+}
+
 char *
 common_chars(char *s, char *t, int ss, int st, int halflen, float *size){
   char common[1000], copy[1000], *out;
@@ -68,7 +124,7 @@ jaro(char *s,  char *t, size_t ss, size_t st) {
 int
 common_prefix_length(int max, char *s, char *t, int ss, int st) {
   int i, n;
-  n = MIN3(max, ss, st);
+  n = min3(max, ss, st);
 
   for (i = 0; i < n; i++) {
     if (s[i] != t[i]) return i;
