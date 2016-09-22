@@ -1,5 +1,20 @@
 #include "blocking.h"
 
+int
+blocking_compare_int(const void *a, const void *b) {
+  const int *ia = (const int *) a;
+  const int *ib = (const int *) b;
+
+  return (*ia > *ib) - (*ia < *ib);
+}
+
+uint32_t
+blocking_hash(const char *s) {
+  uint32_t h = (uint32_t) *s;
+  if(h) for(++s; *s; ++s) h = (h << 5) - h + (uint32_t) *s;
+  return h;
+}
+
 void
 blocking_thread_params_free(blocking_thread_params_t *params) {
   free(params);
@@ -7,15 +22,20 @@ blocking_thread_params_free(blocking_thread_params_t *params) {
 
 void
 blocking_generate_keys(project_t *project, uint32_t id) {
-  size_t i, j;
+  size_t i, j, conj;
   conjunction_t *conjunction;
   part_t *part;
   record_t *record;
   char buffer[5], key[1024];
 
+  conj = array_size(project->conjunctions);
+
   record = array_get(project->d0->records, id);
 
-  for(i = 0; i < array_size(project->conjunctions); i++) {
+  record->_keys = malloc(sizeof(uint32_t) * conj);
+  bzero(record->_keys, sizeof(uint32_t) * conj);
+
+  for(i = 0; i < conj; i++) {
     conjunction = array_get(project->conjunctions, i);
     key[0] = '\0';
 
@@ -32,10 +52,9 @@ blocking_generate_keys(project_t *project, uint32_t id) {
         handle_error("Unknown transformation");
       }
     }
-    if(strlen(key)) {
-      block_insert(project->block, key, id);
-    }
+    record->_keys[i] = blocking_hash(key);
   }
+  qsort(record->_keys, conj, sizeof(uint32_t), blocking_compare_int);
 }
 
 void *
@@ -54,15 +73,13 @@ blocking_generate_all_keys(void *data) {
   size = project->d0->nrows;
 
   for(i = rank; i < size; i += total_ranks) {
-    while(!array_get(project->d0->records, i)) usleep(0.1);
+    while(!array_get(project->d0->records, i)) sleep(1);
     if(!(i % 1000000)) {
       prop = 100.0 * i / size;
       printf("Registros blocados: %lu/%lu (%2.2f%%)\n", i, size, prop);
     }
     blocking_generate_keys(project, i);
   }
-
-  printf("Registros blocados: %lu/%lu (%2.2f%%)\n", size, size, 100.0);
 
   blocking_thread_params_free(param);
 
