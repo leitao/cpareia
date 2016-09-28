@@ -83,6 +83,12 @@ compare_all(
 
   score = 0;
 
+  if(strlen(record_get_id(r)) != strlen(record_get_id(s)))
+    return 100;
+  else
+    return -100;
+
+
   for(i = 0; i < array_size(classifier->comparators); i++) {
     scores[i] = compare(array_get(classifier->comparators, i), r, s, i);
     score += scores[i];
@@ -109,18 +115,13 @@ compare_block(work_t *work, project_t *project, int id) {
       r2 = array_get(project->d0->records, array_get(work->array, j));
       score = compare_all(project->classifier, r1, r2, scores);
 
-      if(score < project->output->min) {
-        status = 'N';
-      } else if(score > project->output->max) {
-        status = 'Y';
-      } else {
-        status = '?';
-      }
-      if(between(score, project->output->min, project->output->max)) {
+      status = score == 100 ? 'Y' : 'N';
+
+      if(score == 100) {
         output_write(
             project->output,
-            record_get_field(r1, 0),
-            record_get_field(r2, 0),
+            record_get_id(r1),
+            record_get_id(r2),
             status,
             score,
             scores,

@@ -15,21 +15,17 @@ output_write(
     double *scores,
     int num_scores,
     int file_id) {
-  int i;
-  gzFile file;
 
-  if(score < output->min || score > output->max) {
-    return;
-  }
+  (void) status;
+  (void) score;
+  (void) scores;
+  (void) num_scores;
+
+  gzFile file;
 
   file = output_get_file(output, file_id);
 
-  gzprintf(file, "%c %c %s %s %f", status, 'X', id1, id2, score);
-
-  for(i = 0; i < num_scores; i++) {
-    gzprintf(file, " %f", scores[i]);
-  }
-  gzprintf(file, "\n");
+  gzprintf(file, "%s %s\n", id1, id2);
 }
 
 output_t *
