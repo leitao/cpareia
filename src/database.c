@@ -24,9 +24,9 @@ find_byte(char const *s, char ch) {
     if(s[i] == ch)
       return i;
     if(!s[i])
-      return 0;
+      return -1;
   }
-  return 0;
+  return -1;
 }
 #endif
 
