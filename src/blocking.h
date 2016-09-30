@@ -9,6 +9,8 @@
 #include "field_comparator.h"
 #include "block.h"
 
+extern void buscabr(char *, char *);
+
 typedef struct blocking_thread_params_t {
   project_t *project;
   int rank, total_ranks;

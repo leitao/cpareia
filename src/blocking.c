@@ -11,7 +11,7 @@ blocking_generate_keys(project_t *project, uint32_t id) {
   conjunction_t *conjunction;
   part_t *part;
   record_t *record;
-  char buffer[5], key[1024];
+  char buffer[100], key[1024];
 
   record = array_get(project->d0->records, id);
 
@@ -26,6 +26,9 @@ blocking_generate_keys(project_t *project, uint32_t id) {
         strcat(key, record_get_field(record, part->field));
       } else if(!strcmp(part->transform, "brsoundex")) {
         brsoundex(record_get_field(record, part->field), buffer, 5);
+        strcat(key, buffer);
+      } else if(!strcmp(part->transform, "buscabr")) {
+        buscabr(record_get_field(record, part->field), buffer);
         strcat(key, buffer);
       }
       else {

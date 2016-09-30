@@ -7,7 +7,7 @@ cpareia_SOURCES = args.c args.h array.c array.h block.c block.h blocking.c   \
                   errors.c errors.h field_comparator.c field_comparator.h    \
                   hash.c hash.h khash.h kvec.h Makefile.am output.c output.h \
                   project.c project.h record.c record.h uint_array.c         \
-                  uint_array.h
+                  uint_array.h buscabr.cc buscabr.h
 
 cpareia_LDADD   = $(ZLIB_LIBS) $(LIBXML_LIBS) $(TCMALLOC_LIBS)
 cpareia_CFLAGS  = $(ZLIB_CFLAGS) $(LIBXML_CFLAGS) $(TCMALLOC_CFLAGS)
