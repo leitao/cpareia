@@ -1,6 +1,16 @@
 #include "test_database.h"
 
 void
+test_find_byte() {
+  char test[] = "abcdefghijklmnopqrstuvwxyz";
+
+  assert_int_equal(find_byte(test, 'a'),  0);
+  assert_int_equal(find_byte(test, 'p'), 15);
+  assert_int_equal(find_byte(test, 'q'), -1);
+  assert_int_equal(find_byte(test, 'r'), -1);
+}
+
+void
 test_database() {
   database_t *database;
   char *filename;
@@ -39,6 +49,7 @@ int
 main(void) {
   const struct CMUnitTest tests[] = {
     cmocka_unit_test(test_database),
+    cmocka_unit_test(test_find_byte),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

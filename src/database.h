@@ -31,5 +31,6 @@ void database_free(database_t *);
 void database_read(database_t *);
 pthread_t *database_read_async(database_t *);
 void database_print(database_t *);
+int8_t find_byte(const char *, char);
 
 #endif
