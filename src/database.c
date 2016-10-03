@@ -18,15 +18,12 @@ find_byte(char const *s, char ch) {
 #else
 int8_t
 find_byte(char const *s, char ch) {
-  int i;
+  char *p = memchr(s, ch, 16);
 
-  for(i = 0; i < 16; i++) {
-    if(s[i] == ch)
-      return i;
-    if(!s[i])
-      return -1;
-  }
-  return -1;
+  if (p == NULL)
+    return -1;
+  else
+    return p - s;
 }
 #endif
 
